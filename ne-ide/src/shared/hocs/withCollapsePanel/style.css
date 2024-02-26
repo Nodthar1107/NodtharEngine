@@ -1,0 +1,17 @@
+.named-panel {
+    position: relative;
+}
+
+.collapsed-panel {
+    position: relative;
+    
+    width: 100%;
+    min-height: 36px;
+    
+    background-color: var(--side-bar-panel-collapsed-background);
+}
+
+.collapsed-panel_use-vertical-align {
+    width: 56px;
+    min-height: 100%;
+}

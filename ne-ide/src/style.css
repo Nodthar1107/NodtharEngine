@@ -1,0 +1,46 @@
+body, html {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+
+:root {
+    position: relative;
+    min-height: 100%;
+
+    --activity-bar-background: rgb(54, 67, 70);
+    --activity-bar-border-color: rgb(41, 53, 56);
+    
+    --side-bar-panel-background: rgb(54, 67, 70);
+    --side-bar-panel-collapsed-background: rgb(41, 53, 56);
+
+    --file-explorer-background: rgb(41, 53, 56 );
+
+    --resize-panel-background: rgb(54, 67, 70);
+    --resize-panel-background-hovered: rgb(107, 181, 255);
+
+    --tree-item-hover: rgb(134, 134, 134);
+    --tree-item-selected: rgb(30, 30, 30);
+
+    --panel-header-background: rgb(41, 53, 56);
+    --panel-header-color: white;
+    --panel-header-font-size: 12px;
+    --panel-header-font-family: Arial, Helvetica, sans-serif;
+}
+
+.NodtharEngine {
+    display: flex;
+
+    min-height: 100vh;
+    justify-content: start;
+    align-items: stretch;
+}
+
+.main-section {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    flex-direction: column;
+}
+

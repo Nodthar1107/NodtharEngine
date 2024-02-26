@@ -1,0 +1,12 @@
+.tree-viewer {
+    width: 200px;
+    min-height: 100%;
+
+    background-color: var(--side-bar-panel-background);
+}
+
+.tree-viewer_collapsed {
+    max-width: 56px;
+
+    background-color: var(--side-bar-panel-collapsed-background);
+}

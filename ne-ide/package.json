@@ -1,0 +1,29 @@
+{
+  "name": "ne-ide",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.83",
+    "@types/react": "^18.2.58",
+    "@types/react-dom": "^18.2.19",
+    "css-loader": "^6.10.0",
+    "node-sass": "^9.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "sass-loader": "^14.1.1",
+    "style-loader": "^3.3.4",
+    "ts-loader": "^9.5.1",
+    "typescript": "^4.9.5"
+  },
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack server"
+  },
+  "devDependencies": {
+    "sass": "^1.71.1",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4"
+  }
+}

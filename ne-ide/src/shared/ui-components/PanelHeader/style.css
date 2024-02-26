@@ -1,0 +1,27 @@
+.panel-header {
+    display: flex;
+    box-sizing: border-box;
+    justify-content: start;
+    align-items: center;
+
+    padding: 10px 20px;
+    column-gap: 10px;
+
+    background-color: var(--panel-header-background);
+}
+
+.panel-header_collapsed.panel-header_use-vertical-align {
+    display: flex;
+    flex-direction: row;
+    
+    writing-mode: vertical-lr;
+}
+
+.panel-header__title {
+    text-transform: uppercase;
+
+    font-size: var(--panel-header-font-size);
+    font-weight: bold;
+    font-family: var(--panel-header-font-family);
+    color: var(--panel-header-color);
+}

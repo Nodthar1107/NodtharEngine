@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ES6",
+    "skipLibCheck": true,
+    // "allowJs": false,
+    // "esModuleInterop": true,
+    // "allowSyntheticDefaultImports": true,
+    "strict": true,
+    // //"forceConsistentCasingInFileNames": true,
+    // "noFallthroughCasesInSwitch": true,
+    // "resolveJsonModule": true,
+    // "isolatedModules": true,
+    // "noEmit": true,
+    "baseUrl": ".",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx"
+  },
+
+  "paths": {
+    "@activity-bar/*": ["./src/activity-bar/*"],
+    "@shared/*": ["./src/shared/*"]
+  },
+
+  "include": [
+    "src"
+  ]
+}

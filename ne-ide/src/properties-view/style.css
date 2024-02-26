@@ -1,0 +1,6 @@
+.property-view {
+    width: 200px;
+    min-height: 100%;
+
+    background-color: var(--side-bar-panel-background);
+}

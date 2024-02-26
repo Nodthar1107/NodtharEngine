@@ -1,0 +1,9 @@
+.panel-header-expand-icon circle,
+.panel-header-collapse-icon circle {
+    fill: orange;
+}
+
+.panel-header-expand-icon:hover circle,
+.panel-header-collapse-icon:hover circle {
+    fill: white;
+}
