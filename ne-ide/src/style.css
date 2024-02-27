@@ -11,6 +11,11 @@ body, html {
     --activity-bar-background: rgb(54, 67, 70);
     --activity-bar-border-color: rgb(41, 53, 56);
     
+    --activity-bar-item-background-hovered: rgb(44, 57, 60);
+    --activity-bar-item-background-active: rgb(32, 41, 43);
+    --activity-bar-item-fill: rgb(155, 158, 154);
+    --activity-bar-item-fill-active: white;
+    
     --side-bar-panel-background: rgb(54, 67, 70);
     --side-bar-panel-collapsed-background: rgb(41, 53, 56);
 

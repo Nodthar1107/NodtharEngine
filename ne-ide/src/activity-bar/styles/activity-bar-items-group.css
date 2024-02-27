@@ -1,0 +1,4 @@
+.activity-bar-items-group {
+    display: flex;
+    flex-direction: column;
+}

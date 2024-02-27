@@ -24,4 +24,4 @@ const FilesExplorer: React.FC = (): React.ReactElement => {
     );
 }
 
-export const FilesExplorerPanel = withCollapseHeader(FilesExplorer, '2px', '0px')
+export const FilesExplorerPanel = withCollapseHeader(FilesExplorer, '4px', '0px')

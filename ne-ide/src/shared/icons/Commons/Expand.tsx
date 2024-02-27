@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { IIconProps } from './IIconProps';
+import { IIconProps } from '../IIconProps';
 
-import './commons.css';
+import '../commons.css';
 
 
 export const Expand: React.FC<IIconProps> = (props: IIconProps): React.ReactElement => {
@@ -15,8 +15,8 @@ export const Expand: React.FC<IIconProps> = (props: IIconProps): React.ReactElem
             {...props}
             className={`ui-component-icon ${props.className}`}>
             <rect width='15' height='15' fill='white'/>
-            <rect x='6' y='1' width='3' height='13' fill='#D9D9D9'/>
-            <rect x='1' y='6' width='13' height='3' fill='#D9D9D9'/>
+            <rect x='6' y='1' width='3' height='13' fill='inherit'/>
+            <rect x='1' y='6' width='13' height='3' fill='inherit'/>
         </svg>
     );
 } 
