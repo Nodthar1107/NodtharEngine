@@ -1,12 +1,16 @@
 import * as React from 'react';
 
+import { DIContext } from '../commons/contexts/DIContext/di-context';
+import { IItemComponentsProvider } from './providers/IItemComponentsProvider';
+import { ACTIVITY_BAR_TYPES } from './module-types';
+
 import './style.css';
-import { activityBarItemsProvider } from './providers/ActivityBarItemsProviderMockImpl';
-import { itemsComponentsProvider } from './providers/ItemsComponentsProvider';
 
 export const ActivityBarPanel: React.FC = (): React.ReactElement => {
+    const injector = React.useContext(DIContext).injector;
+
     const items = React.useMemo<React.ReactElement[]>(() => {
-        return itemsComponentsProvider.getItems();
+        return injector.get<IItemComponentsProvider>(ACTIVITY_BAR_TYPES.IItemComponentsProvider).getItems();
     }, []);
     
     return (

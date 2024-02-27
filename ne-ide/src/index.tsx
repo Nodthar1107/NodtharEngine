@@ -1,26 +1,28 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { App } from './App';
+import { Container } from 'inversify';
+import { DIContext } from './commons/contexts/DIContext/di-context';
+import { ActivityBarModule } from './activity-bar/module';
+import { CoreModule } from './core/module';
+import { IDIModule } from './commons/IDIModule';
 
-import { ActivityBarPanel } from './activity-bar';
-import { FilesExplorerPanel } from './files-explorer/FilesExplorer';
-import { PropertyViewPanel } from './properties-view';
-import { TreeViewPanel } from './tree-view';
-
-import './style.css';
+import 'reflect-metadata';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const injector = new Container();
+
+[new ActivityBarModule(), new CoreModule()].forEach((module: IDIModule) => {
+    module.registerModule(injector);
+})
+
 root.render(
-  <React.StrictMode>
-    <div className='NodtharEngine'>
-      <ActivityBarPanel />
-      <TreeViewPanel title='Иерархия' useVerticalAlign />
-      <div className='main-section' style={{ minWidth: '10%' }}>
-        <div className='viewport' style={{ flex: '1 1 auto', minHeight: '10%' }}></div>
-        <FilesExplorerPanel title='Проводник' />
-      </div>
-      <PropertyViewPanel title='Свойства' useVerticalAlign />
-    </div>
-  </React.StrictMode>
+    <React.StrictMode>
+        <DIContext.Provider value={{ injector: injector }}>
+            <App />
+        </DIContext.Provider>
+    </React.StrictMode>
 );

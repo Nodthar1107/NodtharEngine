@@ -1,1 +1,0 @@
-export const CSS_CLASSES_PREFIX = '';

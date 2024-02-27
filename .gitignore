@@ -3,3 +3,7 @@
 
 #dependencies
 */dist
+/node_modules
+
+# .lock
+yarn.lock

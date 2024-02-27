@@ -12,6 +12,9 @@
     // "resolveJsonModule": true,
     // "isolatedModules": true,
     // "noEmit": true,
+    "types": ["reflect-metadata"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "moduleResolution": "Node",
     "jsx": "react-jsx"

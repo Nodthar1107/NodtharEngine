@@ -1,6 +1,10 @@
+import { injectable } from 'inversify';
 import { IActivityBarItemDescriptor } from '../items/IActivityBarItemDescriptor';
 import { IActivityBarItemsProvider } from './IActivityBarItemsProvider';
 
+import 'reflect-metadata';
+
+@injectable()
 export class ActivityBarItemsProviderMockImpl implements IActivityBarItemsProvider {
     public getItems(): IActivityBarItemDescriptor[] {
         return [
@@ -44,9 +48,7 @@ export class ActivityBarItemsProviderMockImpl implements IActivityBarItemsProvid
                 id: 'activity-bar.redo',
                 category: '3operations-performing@2',
                 iconId: 'redo-operation' 
-            },
+            }
         ];
     }
 }
-
-export const activityBarItemsProvider = new ActivityBarItemsProviderMockImpl();

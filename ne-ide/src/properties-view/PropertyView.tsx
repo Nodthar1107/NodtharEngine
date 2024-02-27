@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { withCollapseHeader } from '../shared/hocs/withCollapsePanel/withCollapseHeader';
-import { PanelHeaderCollapse, PanelHeaderExpand } from '../shared/icons';
-import { PanelHeader, ResizablePanel } from '../shared/ui-components';
+import { withCollapseHeader } from '../core/hocs/withCollapsePanel/withCollapseHeader';
+import { PanelHeaderCollapse, PanelHeaderExpand } from '../core/icons';
+import { PanelHeader, ResizablePanel } from '../core/ui-components';
 
 import './style.css';
 

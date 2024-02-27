@@ -1,20 +1,22 @@
+import { inject, injectable } from 'inversify';
 import * as React from 'react';
+
 import { IActivityBarItemDescriptor } from '../items/IActivityBarItemDescriptor';
 import { IActivityBarItemsProvider } from './IActivityBarItemsProvider';
 import { ActivityBarItemsGroup } from '../items/ActivityBarItemsGroup';
 import { ActivityBarItem } from '../items/ActivityBarItem';
-import { IconsProvider, iconsProvider } from '../../shared/providers/IconsProvider';
-import { IIconProps } from '../../shared/icons/IIconProps';
-import { activityBarItemsProvider } from './ActivityBarItemsProviderMockImpl';
+import { IconsProvider } from '../../core/providers/IconsProvider';
+import { IIconProps } from '../../core/icons/IIconProps';
+import { IItemComponentsProvider } from './IItemComponentsProvider';
+import { ACTIVITY_BAR_TYPES } from '../module-types';
+import { CORE_TYPES } from '../../core/module-types';
 
-export class ItemsComponentsProvider {
-    private itemsProvider: IActivityBarItemsProvider;
-    private iconsProvider: IconsProvider;
+import 'reflect-metadata';
 
-    constructor(itemsProvider: IActivityBarItemsProvider, iconsProvider: IconsProvider) {
-        this.itemsProvider = itemsProvider;
-        this.iconsProvider = iconsProvider;
-    }
+@injectable()
+export class ItemsComponentsProvider implements IItemComponentsProvider {
+    @inject(ACTIVITY_BAR_TYPES.IActivityBarItemsProvider) private itemsProvider!: IActivityBarItemsProvider;
+    @inject(CORE_TYPES.IIconsProvider) private iconsProvider!: IconsProvider
 
     public getItems(): React.ReactElement[] {
         const descriptors = this.itemsProvider.getItems().sort();
@@ -73,5 +75,3 @@ export class ItemsComponentsProvider {
         return category.substring(0, category.indexOf('@'));
     }
 }
-
-export const itemsComponentsProvider = new ItemsComponentsProvider(activityBarItemsProvider, iconsProvider);

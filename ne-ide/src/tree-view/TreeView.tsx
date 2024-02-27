@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import './style.css';
-import { ResizablePanel } from '../shared/ui-components';
-import { withCollapseHeader } from '../shared/hocs/withCollapsePanel/withCollapseHeader';
+import { ResizablePanel } from '../core/ui-components';
+import { withCollapseHeader } from '../core/hocs/withCollapsePanel/withCollapseHeader';
 
 const TreeView: React.FC = (): React.ReactElement => {
     return (

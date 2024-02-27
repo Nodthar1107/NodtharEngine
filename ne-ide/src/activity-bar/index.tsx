@@ -1,3 +1,3 @@
-import { ActivityBarPanel } from "./ActivityBarPanel";
+import { ActivityBarPanel } from './ActivityBarPanel';
 
 export { ActivityBarPanel };
