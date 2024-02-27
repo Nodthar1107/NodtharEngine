@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IIconProps } from './IIconProps';
+import { IIconProps } from '../IIconProps';
 
 export const NotFoundIcon: React.FC<IIconProps> = (props: IIconProps): React.ReactElement => {
     return (

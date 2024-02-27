@@ -3,7 +3,7 @@
 
 #dependencies
 */dist
-/node_modules
+ne-ide/node_modules
 
 # .lock
-yarn.lock
+ne-ide/yarn.lock

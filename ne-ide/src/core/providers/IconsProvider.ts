@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { injectable } from 'inversify';
+
 import { ICONS_MAP } from '../config/icons.config';
 import { IIconProps } from '../icons/IIconProps';
 import { IIconsProvider } from './IIconsProvider';
-import { NotFoundIcon } from '../icons/NotFoundIcon';
-import { injectable } from 'inversify';
+import { NotFoundIcon } from '../icons/Commons/NotFoundIcon';
 
 @injectable()
 export class IconsProvider implements IIconsProvider {
