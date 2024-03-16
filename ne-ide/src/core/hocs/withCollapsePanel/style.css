@@ -1,5 +1,6 @@
 .named-panel {
     position: relative;
+    background-color: var(--side-bar-panel-background);
 }
 
 .collapsed-panel {

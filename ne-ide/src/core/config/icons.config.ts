@@ -1,7 +1,17 @@
 import * as React from 'react';
 import { MoveObject } from '../icons/ActivityBarPanel/MoveObject';
 import { IIconProps } from '../icons/IIconProps';
+import { Scene } from '../icons/hierarchy/Scene';
+import { Box } from '../icons/hierarchy/Box';
+import { Sphere } from '../icons/hierarchy/Sphere';
+import { Collapse, Expand } from '../icons';
 
 export const ICONS_MAP: Map<string, React.FC<IIconProps>> = new Map([
-    ['move-object', MoveObject]
+    ['move-object', MoveObject],
+    ['scene', Scene],
+    ['box', Box],
+    ['sphere', Sphere],
+    ['collapse', Collapse],
+    ['expand', Expand],
+    
 ]);

@@ -1,0 +1,16 @@
+.tree-view-sphere .sphere-circle {
+    stroke: var(--icon-stroke-color);
+    fill-opacity: 0;
+}
+
+.tree-view-sphere .sphere-ellipse {
+    fill: var(--icon-fill-color);
+}
+
+.tree-view-sphere:hover .sphere-circle {
+    stroke: var(--icon-hovered-stroke-color);
+}
+
+.tree-view-sphere:hover .sphere-ellipse {
+    fill: var(--icon-hovered-fill-color);;
+}

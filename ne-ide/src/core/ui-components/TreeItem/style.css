@@ -1,17 +1,35 @@
+.ui-component-tree-view-item {
+}
+
 .ui-component-tree-view-item__item_selected {
     background-color: var(--tree-item-selected);
 }
 
-.ui-component-tree-view-item__header
-
 .ui-component-tree-view-item__header {
     display: flex;
+    align-items: center;
     column-gap: 10px;
+
+    padding: 2px 5px;
+
+    color: rgb(184, 184, 184);
+
+    cursor: pointer;
+}
+
+.ui-component-tree-view-item__label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ui-component-tree-view-item__header:hover {
     border-radius: 6px;
     background-color: var(--tree-item-hover);
+}
+
+.ui-component-tree-view-item__header:hover .ui-component-tree-view-item__start-icon {
+    fill: var(--icon-hovered-fill-color);
 }
 
 .ui-component-tree-view-item__children {

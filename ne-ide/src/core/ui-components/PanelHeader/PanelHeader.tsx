@@ -15,24 +15,26 @@ interface IPanelHeaderProps {
     style?: React.CSSProperties;
 }
 
-export const PanelHeader: React.FC<IPanelHeaderProps> = (props: IPanelHeaderProps): React.ReactElement => {
-    const className = [
-        'panel-header',
-        !props.expanded && 'panel-header_collapsed',
-        props.useVerticalAlign && 'panel-header_use-vertical-align'
-    ]
-        .filter(Boolean)
-        .join(' ');
+export const PanelHeader = React.forwardRef(
+    (props: IPanelHeaderProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+        const className = [
+            'panel-header',
+            !props.expanded && 'panel-header_collapsed',
+            props.useVerticalAlign && 'panel-header_use-vertical-align'
+        ]
+            .filter(Boolean)
+            .join(' ');
 
-    const collapsedIcon = props.expanded ? props.collapseIcon : props.expandIcon;
-    
-    return (
-        <div className={className} style={props.style}>
-            {React.cloneElement(collapsedIcon, {
-                ...collapsedIcon.props,
-                onClick: props.onExpandChange
-            })}
-            <span className='panel-header__title'>{props.title}</span>
-        </div>
-    );
-}
+        const collapsedIcon = props.expanded ? props.collapseIcon : props.expandIcon;
+        
+        return (
+            <div className={className} style={props.style} ref={ref}>
+                {React.cloneElement(collapsedIcon, {
+                    ...collapsedIcon.props,
+                    onClick: props.onExpandChange
+                })}
+                <span className='panel-header__title'>{props.title}</span>
+            </div>
+        );
+    }
+)

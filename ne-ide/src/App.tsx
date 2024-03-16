@@ -13,7 +13,8 @@ export const App: React.FC = (): React.ReactElement => {
             <ActivityBarPanel />
             <TreeViewPanel title='Иерархия' useVerticalAlign />
             <div className='main-section' style={{ minWidth: '10%' }}>
-                <div className='viewport' style={{ flex: '1 1 auto', minHeight: '10%' }}></div>
+                <div className='viewport' style={{ flex: '1 1 auto', minHeight: '10%' }}>
+                </div>
                 <FilesExplorerPanel title='Проводник' />
             </div>
             <PropertyViewPanel title='Свойства' useVerticalAlign />

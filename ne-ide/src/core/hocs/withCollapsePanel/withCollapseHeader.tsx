@@ -33,11 +33,12 @@ export function withCollapseHeader<IBaseProps extends IAdditionalProps>(
                     position: 'absolute',
                     width: '100%',
                     top: headerTop,
-                    left: headerBottom
+                    left: headerBottom,
+                    zIndex: 2
                 }}
             />
         )
-    
+
         if (!expanded) {
             const className = [
                 'collapsed-panel',

@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { IActivityBarItemDescriptor } from './IActivityBarItemDescriptor';
+import { ICommandDescriptor } from '../../core/providers/commandsProvider/ICommandDescriptor';
 
 import '../styles/activity-bar-item.css';
 
 export interface IActivityBarItemProps {
-    command: IActivityBarItemDescriptor;
+    command: ICommandDescriptor;
     active?: boolean;
     disabled?: boolean;
     controlled?: boolean;

@@ -1,21 +1,25 @@
 import * as React from 'react';
 
-import { DIContext } from '../commons/contexts/DIContext/di-context';
-import { IItemComponentsProvider } from './providers/IItemComponentsProvider';
-import { ACTIVITY_BAR_TYPES } from './module-types';
+import { ProvidersContext } from '../contexts/servicesContext';
+import { CommandContext } from '../core/providers/commandsProvider/CommandsContexts';
+import { ActivityBarCommandsAdapter } from './items/ActivityBarCommandsAdapter';
 
 import './style.css';
+import { MainMenuWidget } from './MainMenuWidget/MainMenuWidget';
 
 export const ActivityBarPanel: React.FC = (): React.ReactElement => {
-    const injector = React.useContext(DIContext).injector;
+    const commandsProvider = React.useContext(ProvidersContext).commandsProvider;
 
     const items = React.useMemo<React.ReactElement[]>(() => {
-        return injector.get<IItemComponentsProvider>(ACTIVITY_BAR_TYPES.IItemComponentsProvider).getItems();
+        return new ActivityBarCommandsAdapter().getItems(
+            commandsProvider.getCommandsByContext(CommandContext.ACTIVITY_BAR.toString())
+        );
     }, []);
     
     return (
         <div className='activity-bar'>
+            <MainMenuWidget />
             {items}
         </div>
-    )
+    );
 }

@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-interface ITreeViewItemProps {
+import './style.css';
+
+export interface ITreeViewItemProps {
     label: string;
     nodeId: string;
 
@@ -25,13 +27,16 @@ export const TreeViewItem: React.FC<ITreeViewItemProps> = (props: ITreeViewItemP
         .filter(Boolean)
         .join(' ');
 
-    const expanded = (props.expanded as Set<string>).has(props.nodeId);
+    const expanded = true;
 
     return (
         <div className='ui-component-tree-view-item'>
             <div className={headerClassName} onClick={() => props.onItemSelect?.(props.nodeId)}>
                 {expanded ? props.collapseIcon : props.expandIcon}
-                {props.startIcon}
+                {props.startIcon && React.cloneElement(props.startIcon, {
+                    ...props.startIcon.props,
+                    className: 'ui-component-tree-view-item__start-icon'
+                })}
                 <span className='ui-component-tree-view-item__label'>{props.label}</span>
             </div>
             {expanded && props.children && (
@@ -42,7 +47,6 @@ export const TreeViewItem: React.FC<ITreeViewItemProps> = (props: ITreeViewItemP
                             ...child.props,
                             expanded: props.expanded,
                             selected: props.selected,
-                            startIcon: props.startIcon,
                             collapseIcon: props.collapseIcon,
                             expandIcon: props.expandIcon
                     }))}

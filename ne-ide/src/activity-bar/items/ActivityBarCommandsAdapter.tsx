@@ -1,28 +1,15 @@
 import { inject, injectable } from 'inversify';
 import * as React from 'react';
 
-import { IActivityBarItemDescriptor } from '../items/IActivityBarItemDescriptor';
-import { IActivityBarItemsProvider } from './IActivityBarItemsProvider';
-import { ActivityBarItemsGroup } from '../items/ActivityBarItemsGroup';
-import { ActivityBarItem } from '../items/ActivityBarItem';
-import { IconsProvider } from '../../core/providers/IconsProvider';
+import { ActivityBarItemsGroup } from './ActivityBarItemsGroup';
+import { ActivityBarItem } from './ActivityBarItem';
 import { IIconProps } from '../../core/icons/IIconProps';
-import { IItemComponentsProvider } from './IItemComponentsProvider';
-import { ACTIVITY_BAR_TYPES } from '../module-types';
-import { CORE_TYPES } from '../../core/module-types';
+import { ICommandDescriptor } from 'src/core/providers/commandsProvider/ICommandDescriptor';
 
-import 'reflect-metadata';
-
-@injectable()
-export class ItemsComponentsProvider implements IItemComponentsProvider {
-    @inject(ACTIVITY_BAR_TYPES.IActivityBarItemsProvider) private itemsProvider!: IActivityBarItemsProvider;
-    @inject(CORE_TYPES.IIconsProvider) private iconsProvider!: IconsProvider
-
-    public getItems(): React.ReactElement[] {
-        const descriptors = this.itemsProvider.getItems().sort();
-
+export class ActivityBarCommandsAdapter {
+    public getItems(descriptors: ICommandDescriptor[]): React.ReactElement[] {
         const groupedDescriptors = descriptors.reduce<Map<string, number[]>>(
-            (constructedMap: Map<string, number[]>, descriptor: IActivityBarItemDescriptor, index: number) => {
+            (constructedMap: Map<string, number[]>, descriptor: ICommandDescriptor, index: number) => {
                 const commandGroup = this.getCommandGroup(descriptor.category);
                 if (!constructedMap.has(commandGroup)) {
                     constructedMap.set(commandGroup, []);
@@ -39,7 +26,7 @@ export class ItemsComponentsProvider implements IItemComponentsProvider {
     }
 
     private getComponentsBySortedMap(
-        descriptors: IActivityBarItemDescriptor[],
+        descriptors: ICommandDescriptor[],
         groupedDescriptors: Map<string, number[]>
     ): React.ReactElement[] {
         return Array.from(groupedDescriptors.entries()).map(
@@ -61,11 +48,11 @@ export class ItemsComponentsProvider implements IItemComponentsProvider {
         );
     }
 
-    private getActivityBarItemComponent(descriptor: IActivityBarItemDescriptor): React.ReactElement {
+    private getActivityBarItemComponent(descriptor: ICommandDescriptor): React.ReactElement {
         return (
             <ActivityBarItem
                 command={descriptor}
-                icon={React.createElement<IIconProps>(this.iconsProvider.getIconById(descriptor.iconId))}
+                icon={descriptor.icon && React.createElement<IIconProps>(descriptor.icon)}
                 onActivate={() => {}}
             />
         );

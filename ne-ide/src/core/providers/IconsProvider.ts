@@ -6,6 +6,8 @@ import { IIconProps } from '../icons/IIconProps';
 import { IIconsProvider } from './IIconsProvider';
 import { NotFoundIcon } from '../icons/Commons/NotFoundIcon';
 
+import 'reflect-metadata';
+
 @injectable()
 export class IconsProvider implements IIconsProvider {
     public getIconById(iconId: string | undefined): React.FC<IIconProps> {

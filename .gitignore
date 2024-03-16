@@ -1,9 +1,6 @@
 # build
-*/dist
+ne-ide/dist
 
 #dependencies
-*/dist
 ne-ide/node_modules
 
-# .lock
-ne-ide/yarn.lock
