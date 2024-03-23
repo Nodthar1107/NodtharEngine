@@ -11,6 +11,7 @@ interface IResizablePanelProps {
     maxWidth?: string;
     minHeight?: string;
     maxHeight?: string;
+    zIndex?: string;
 
     children?: React.ReactElement | React.ReactElement[] | string;
     style?: React.CSSProperties;
@@ -74,7 +75,7 @@ export const ResizablePanel: React.FC<IResizablePanelProps> = (props: IResizable
                 maxHeight: props.maxHeight
             }}
             ref={containerRef}>
-            <div className='resizable-panel__resize-bar' ref={resizableBarRef}></div>
+            <div className='resizable-panel__resize-bar' style={{ zIndex: props.zIndex }} ref={resizableBarRef}></div>
             <div className='resizable-panel__content'>
                 {props.children}
             </div>

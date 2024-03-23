@@ -63,25 +63,25 @@
     background-color: var(--resize-panel-background-hovered);
 }
 
-.resizable-panel_direction-vertical .resizable-panel__resize-bar {
-    width: 2px;
+.resizable-panel_direction-vertical > .resizable-panel__resize-bar {
+    width: 4px;
     min-height: 100%;
 
     cursor: col-resize;
 }
 
-.resizable-panel_direction-vertical .resizable-panel__resize-bar:hover {
+.resizable-panel_direction-vertical > .resizable-panel__resize-bar:hover {
     width: 4px;
 }
 
-.resizable-panel_direction-horizontal .resizable-panel__resize-bar {
-    height: 2px;
+.resizable-panel_direction-horizontal > .resizable-panel__resize-bar {
+    height: 4px;
     min-width: 100%;
 
     cursor: row-resize;
 }
 
-.resizable-panel_direction-horizontal .resizable-panel__resize-bar:hover {
+.resizable-panel_direction-horizontal > .resizable-panel__resize-bar:hover {
     height: 4px;
 }
 
