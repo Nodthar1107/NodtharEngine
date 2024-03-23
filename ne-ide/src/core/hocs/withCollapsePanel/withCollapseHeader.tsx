@@ -34,7 +34,7 @@ export function withCollapseHeader<IBaseProps extends IAdditionalProps>(
                     width: '100%',
                     top: headerTop,
                     left: headerBottom,
-                    zIndex: 2
+                    zIndex: 10
                 }}
             />
         )

@@ -1,0 +1,43 @@
+.files-explorer {
+    width: 100%;
+    min-height: 100%;
+
+    background-color: var(--file-explorer-background);
+}
+
+.resource-viewer-widget {
+    min-height: 100%;
+    display: flex;
+
+    padding-top: 36px;
+    box-sizing: border-box;
+
+    background-color: #2C393C;
+
+    &__hierarchial-tree {
+        padding: 10px 20px;
+    }
+}
+
+.resource-widget {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    font-family: var(--text-font-family);
+    color: white;
+
+    &_big-icon {
+        .resource-widget__icon {
+            height: 128px;
+            width: 128px;
+
+            background-color: white;
+        }
+
+        .resource-widget__label {
+            padding-top: 5px;
+            font-size: 16px;
+        }
+    }
+}

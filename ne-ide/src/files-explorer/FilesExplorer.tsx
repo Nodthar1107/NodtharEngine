@@ -4,7 +4,8 @@ import { withCollapseHeader } from '../core/hocs/withCollapsePanel/withCollapseH
 import { PanelHeaderCollapse, PanelHeaderExpand } from '../core/icons';
 import { PanelHeader, ResizablePanel } from '../core/ui-components';
 
-import './style.css';
+import './style.scss';
+import { ResourceViewerWidget } from './ResourceViewer/ResourceWiewerWidget';
 
 const FilesExplorer: React.FC = (): React.ReactElement => {
     return (
@@ -13,13 +14,9 @@ const FilesExplorer: React.FC = (): React.ReactElement => {
             direction='horizontal'
             resizePosition='top'
             minHeight='100px'
-            maxHeight='600px'>
-            <PanelHeader
-                title='Проводник'
-                expanded={true}
-                expandIcon={<PanelHeaderExpand />}
-                collapseIcon={<PanelHeaderCollapse />}
-            />
+            maxHeight='600px'
+            zIndex='3'>
+            <ResourceViewerWidget />
         </ResizablePanel>
     );
 }

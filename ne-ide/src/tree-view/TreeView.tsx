@@ -14,7 +14,7 @@ const TreeView: React.FC = (): React.ReactElement => {
             resizePosition='right'
             minWidth='150px'
             maxWidth='40vw'> 
-            <div style={{ padding: '40px 5px 10px 20px',  }}>
+            <div style={{ padding: '40px 5px 10px 20px' }}>
                 <TreeViewHierarchy />
             </div>
         </ResizablePanel>
