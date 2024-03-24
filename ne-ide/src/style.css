@@ -46,6 +46,8 @@ body, html {
     min-height: 100vh;
     justify-content: start;
     align-items: stretch;
+
+    user-select: none;
 }
 
 .main-section {
