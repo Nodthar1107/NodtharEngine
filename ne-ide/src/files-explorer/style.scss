@@ -9,35 +9,81 @@
     min-height: 100%;
     display: flex;
 
+    overflow: hidden;
+
     padding-top: 36px;
     box-sizing: border-box;
 
-    background-color: #2C393C;
+    background-color: #2c393c;
 
     &__hierarchial-tree {
         padding: 10px 20px;
     }
 }
 
+.folder-viewer-widget {
+    position: relative;
+
+    display: flex;
+    min-height: 150px;
+    max-height: 100%;
+
+    flex: 1 1 auto;
+
+    overflow: hidden;
+
+    &__content {
+        position: absolute;
+        right: 0;
+        left: 0;
+
+        display: flex;
+        flex-wrap: wrap;
+
+        box-sizing: border-box;
+
+        height: 100%;
+        padding: 20px;
+        overflow: auto;
+    }
+}
+
 .resource-widget {
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
 
     font-family: var(--text-font-family);
+    font-weight: lighter;
     color: white;
 
-    &_big-icon {
-        .resource-widget__icon {
-            height: 128px;
-            width: 128px;
+    &:hover {
+        background-color: #293538;
+    }
 
-            background-color: white;
+    &_big-icon {
+        width: 104px;
+        height: 104px;
+
+        .resource-widget__icon {
+            height: 64px;
+            width: 64px;
         }
 
         .resource-widget__label {
+            width: inherit;
+
+            text-align: center;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+
+            font-family: var(--text-font-family);
+
             padding-top: 5px;
-            font-size: 16px;
+            font-size: 12px;
         }
     }
 }

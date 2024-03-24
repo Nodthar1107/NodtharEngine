@@ -14,6 +14,9 @@ import 'reflect-metadata';
 import { ITreeViewManager } from './tree-view/TreeViewManager/ITreeViewManager';
 import { TREE_VIEW_MODULE } from './tree-view/module-types';
 import { TreeViewModule } from './tree-view/module';
+import { FilesExplorerModule } from './files-explorer/module';
+import { IResourcesManager } from './files-explorer/ResourcesManager/IResourcesManager';
+import { FILES_EXPLORER_MODULE } from './files-explorer/module-types';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -21,7 +24,7 @@ const root = ReactDOM.createRoot(
 
 const injector = new Container();
 
-[new CoreModule(), new TreeViewModule()].forEach((module: IDIModule) => {
+[new CoreModule(), new TreeViewModule(), new FilesExplorerModule()].forEach((module: IDIModule) => {
     module.registerModule(injector);
 });
 
@@ -31,7 +34,8 @@ root.render(
             value={{
                 commandsProvider: injector.get<ICommandsProvider>(CORE_TYPES.ICommandsProvider),
                 iconstProvider: injector.get<IIconsProvider>(CORE_TYPES.IIconsProvider),
-                treeViewManager: injector.get<ITreeViewManager>(TREE_VIEW_MODULE.ITreeViewManager)
+                treeViewManager: injector.get<ITreeViewManager>(TREE_VIEW_MODULE.ITreeViewManager),
+                resourcesManager: injector.get<IResourcesManager>(FILES_EXPLORER_MODULE.IResourcesManager)
             }}>
             <App />
         </ProvidersContext.Provider>

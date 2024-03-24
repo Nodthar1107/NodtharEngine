@@ -5,9 +5,11 @@ import { ITreeViewItemProps } from '../TreeItem/TreeViewItem';
 interface ITreeViewProps {
     children: React.ReactElement<ITreeViewItemProps>[] | React.ReactElement<ITreeViewItemProps>;
 
-    rootElementLabel?: string;
+    rootElementId?: string;
     selected?: string;
     expanded?: string[];
+
+    expandIfChildSelected?: boolean;
 
     collapseIcon?: React.ReactElement;
     expandIcon?: React.ReactElement;
@@ -32,7 +34,7 @@ export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React
         updatedNodeSet.has(nodeId) ? updatedNodeSet.delete(nodeId) : updatedNodeSet.add(nodeId);
 
         setExpandedNodes(updatedNodeSet);
-    }
+    };
 
     const onItemSelectChange = (nodeId: string) => {
         if (props.onItemSelectChange) {
@@ -42,12 +44,21 @@ export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React
         }
 
         setSelected(nodeId);
-    }
+    };
+
+    React.useEffect(() => {
+        setSelected(props.selected as string)
+    }, [props.selected]);
+
+    React.useEffect(() => {
+        setExpandedNodes(new Set<string>(props.expanded));
+    }, [props.expanded]);
 
     return (
         <div className='ui-component-tree-view'>
             {React.Children.map(props.children, (child: React.ReactElement<ITreeViewItemProps>) => React.cloneElement(child, {
                 ...child.props,
+                root: props.rootElementId === child.props.nodeId,
                 startIcon: child.props.startIcon,
                 selected: selected,
                 expanded: expandedNodes,

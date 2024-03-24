@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { IIconProps } from '../IIconProps';
 
+import './style.css';
+import '../commons.css';
+
 export const Box: React.FC<IIconProps> = (props: IIconProps) => {
     return (
         <svg

@@ -17,6 +17,7 @@ export interface ITreeViewItemProps {
 
     children?: React.ReactElement | React.ReactElement[] | undefined;
 
+    expandIfChildSelected?: boolean;
     paddingLeft?: number;
 
     onItemSelect?: (nodeId: string) => void;

@@ -5,7 +5,7 @@ import { PanelHeaderCollapse, PanelHeaderExpand } from '../core/icons';
 import { PanelHeader, ResizablePanel } from '../core/ui-components';
 
 import './style.scss';
-import { ResourceViewerWidget } from './ResourceViewer/ResourceWiewerWidget';
+import { ResourceViewerWidget } from './ResourceViewer/ResourceViewerWidget';
 
 const FilesExplorer: React.FC = (): React.ReactElement => {
     return (
@@ -15,6 +15,7 @@ const FilesExplorer: React.FC = (): React.ReactElement => {
             resizePosition='top'
             minHeight='100px'
             maxHeight='600px'
+            hideOverflow
             zIndex='3'>
             <ResourceViewerWidget />
         </ResizablePanel>

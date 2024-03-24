@@ -1,5 +1,5 @@
 export enum ResourceType {
-    Foldre = 'Folder',
+    Folder = 'Folder',
 
     Blueprint = 'Blueprit',
 
