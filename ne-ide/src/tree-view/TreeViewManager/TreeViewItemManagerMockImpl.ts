@@ -13,19 +13,19 @@ export class TreeViewManagerMockImpl implements ITreeViewManager {
         return {
             label: 'scene',
             id: 'scene',
-            uri: '',
+            uri: 'scene',
             icon: Scene,
             children: [
                 {
                     label: 'box',
                     id: 'box',
-                    uri: '',
+                    uri: 'box',
                     icon: Box,
                     children: [
                         {
                             label: 'super-mega-long-name',
                             id: 'box-1',
-                            uri: '',
+                            uri: 'box-1',
                             icon: Box,
                         }
                     ]
@@ -33,7 +33,7 @@ export class TreeViewManagerMockImpl implements ITreeViewManager {
                 {
                     label: 'sphere',
                     id: 'sphere',
-                    uri: '',
+                    uri: 'sphere',
                     icon: Sphere,
                 }
             ],

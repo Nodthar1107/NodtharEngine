@@ -7,9 +7,9 @@ import { Collapse, Expand } from '../../core/icons';
 export const TreeViewHierarchy: React.FC = (): React.ReactElement => {
     const treeViewProvider = React.useContext(ProvidersContext).treeViewManager;
 
-    const getTreeViewItemsChildren = (children: IHierarchyItem | IHierarchyItem[] | undefined): React.ReactElement | React.ReactElement[] => {
+    const getTreeViewItemsChildren = (children: IHierarchyItem | IHierarchyItem[] | undefined): React.ReactElement | React.ReactElement[] | undefined => {
         if (children === undefined) {
-            return <></>;
+            return undefined;
         }
 
         if (Array.isArray(children)) {
@@ -38,10 +38,6 @@ export const TreeViewHierarchy: React.FC = (): React.ReactElement => {
     
     return (
         <TreeView
-            selected={''}
-            expanded={[]}
-            onItemSelectChange={() => {}}
-            onItemExpandChange={() => {}}
             collapseIcon={<Collapse />}
             expandIcon={<Expand />}>
             {treeViewItems}

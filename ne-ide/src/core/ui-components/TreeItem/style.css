@@ -1,8 +1,9 @@
 .ui-component-tree-view-item {
 }
 
-.ui-component-tree-view-item__item_selected {
-    background-color: var(--tree-item-selected);
+.ui-component-tree-view-item__header_selected {
+    border-radius: 6px;
+    background-color: var(--tree-item-selected) !important;
 }
 
 .ui-component-tree-view-item__header {
@@ -15,6 +16,18 @@
     color: rgb(184, 184, 184);
 
     cursor: pointer;
+}
+
+.ui-component-tree-view-item__named-header {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+
+    flex: 1 1 auto;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ui-component-tree-view-item__label {
@@ -30,8 +43,4 @@
 
 .ui-component-tree-view-item__header:hover .ui-component-tree-view-item__start-icon {
     fill: var(--icon-hovered-fill-color);
-}
-
-.ui-component-tree-view-item__children {
-    padding-left: 15px;
 }
