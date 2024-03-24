@@ -9,9 +9,12 @@ interface IResizablePanelProps {
 
     minWidth?: string;
     maxWidth?: string;
+    startWidth?: string;
+    startHeight?: string;
     minHeight?: string;
     maxHeight?: string;
     zIndex?: string;
+    hideOverflow?: boolean;
 
     children?: React.ReactElement | React.ReactElement[] | string;
     style?: React.CSSProperties;
@@ -72,7 +75,10 @@ export const ResizablePanel: React.FC<IResizablePanelProps> = (props: IResizable
                 minWidth: props.minWidth,
                 maxWidth: props.maxWidth,
                 minHeight: props.minHeight,
-                maxHeight: props.maxHeight
+                maxHeight: props.maxHeight,
+                width: props.startWidth,
+                height: props.startHeight,
+                overflow: props.hideOverflow ? 'hidden' : 'auto'
             }}
             ref={containerRef}>
             <div className='resizable-panel__resize-bar' style={{ zIndex: props.zIndex }} ref={resizableBarRef}></div>
