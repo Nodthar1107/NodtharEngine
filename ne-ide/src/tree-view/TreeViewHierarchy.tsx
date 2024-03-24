@@ -8,11 +8,12 @@ export const TreeViewHierarchy: React.FC = (): React.ReactElement => {
     const treeViewProvider = React.useContext(ProvidersContext).treeViewManager;
 
     const treeViewItems = React.useMemo(() => {
-        return getTreeViewItem(treeViewProvider.getSceneHierarchy(''), true);
+        return getTreeViewItem(treeViewProvider.getSceneHierarchy(''));
     }, []);
     
     return (
         <TreeView
+            rootElementId={'scene'}
             collapseIcon={<Collapse />}
             expandIcon={<Expand />}>
             {treeViewItems}
@@ -36,10 +37,9 @@ const getTreeViewItemsChildren = (
     return getTreeViewItem(children as IHierarchyItem);
 }
 
-const getTreeViewItem = (item: IHierarchyItem, root = false): React.ReactElement => {
+const getTreeViewItem = (item: IHierarchyItem): React.ReactElement => {
     return (
         <TreeViewItem
-            root={root}
             label={item.label}
             nodeId={item.uri}
             startIcon={item.icon && React.createElement(item.icon)}>
