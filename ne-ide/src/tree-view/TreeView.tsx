@@ -4,7 +4,7 @@ import './style.css';
 import { ResizablePanel } from '../core/ui-components';
 import { withCollapseHeader } from '../core/hocs/withCollapsePanel/withCollapseHeader';
 
-import { TreeViewHierarchy } from './TreeViewPanel/TreeViewHierarchy';
+import { TreeViewHierarchy } from './TreeViewHierarchy';
 
 const TreeView: React.FC = (): React.ReactElement => {
     return (
@@ -13,6 +13,7 @@ const TreeView: React.FC = (): React.ReactElement => {
             direction='vertical'
             resizePosition='right'
             minWidth='150px'
+            startWidth='250px'
             maxWidth='40vw'> 
             <div style={{ padding: '40px 5px 10px 10px' }}>
                 <TreeViewHierarchy />

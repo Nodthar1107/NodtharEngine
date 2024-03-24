@@ -7,6 +7,7 @@ export interface ITreeViewItemProps {
     label: string;
     nodeId: string;
 
+    root?: boolean;
     expanded?: Set<string>;
     selected?: string;
     startIcon?: React.ReactElement;
@@ -30,20 +31,14 @@ export const TreeViewItem: React.FC<ITreeViewItemProps> = (props: ITreeViewItemP
         .filter(Boolean)
         .join(' ');
 
-    const expanded = props.expanded?.has(props.nodeId);
-    const expandIcon = (expanded ? props.collapseIcon : props.expandIcon) as React.ReactElement<IIconProps>;
+    const expanded = props.expanded?.has(props.nodeId) as boolean;
 
     return (
         <div className='ui-component-tree-view-item'>
             <div
                 className={headerClassName}
                 style={{ paddingLeft: `${props.paddingLeft as number + 5}px` }}>
-                {props.children && React.cloneElement(expandIcon, {
-                    ...expandIcon.props,
-                    onClick: () => props.onExpandChange?.(props.nodeId as string)
-                }) || (
-                    <span className='empty-icon' style={{ width: '16px' }} />
-                )}
+                {getExpandIcon(props, expanded)}
                 <div className='ui-component-tree-view-item__named-header' onClick={() => props.onItemSelect?.(props.nodeId)}>
                     {props.startIcon && React.cloneElement(props.startIcon, {
                         ...props.startIcon.props,
@@ -52,7 +47,7 @@ export const TreeViewItem: React.FC<ITreeViewItemProps> = (props: ITreeViewItemP
                     <span className='ui-component-tree-view-item__label'>{props.label}</span>
                 </div>
             </div>
-            {expanded && props.children && (
+            {(props.root || expanded) && props.children && (
                 <div className='ui-component-tree-view-item__children'>
                     {React.Children.map(
                         props.children, 
@@ -70,4 +65,21 @@ export const TreeViewItem: React.FC<ITreeViewItemProps> = (props: ITreeViewItemP
             )}
         </div>
     );
+}
+
+const getExpandIcon = (props: ITreeViewItemProps, expanded: boolean): React.ReactElement => {
+    if (props.root) {
+        return <></>;
+    }
+    
+    if (!props.children) {
+        return <span className='empty-icon' style={{ width: '16px' }} />;
+    }
+
+    const expandIcon = (expanded ? props.collapseIcon : props.expandIcon) as React.ReactElement<IIconProps>;
+
+    return React.cloneElement(expandIcon, {
+        ...expandIcon.props,
+        onClick: () => props.onExpandChange?.(props.nodeId as string)
+    });
 }

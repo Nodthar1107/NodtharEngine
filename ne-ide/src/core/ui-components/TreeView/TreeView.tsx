@@ -4,13 +4,14 @@ import { ITreeViewItemProps } from '../TreeItem/TreeViewItem';
 
 interface ITreeViewProps {
     children: React.ReactElement<ITreeViewItemProps>[] | React.ReactElement<ITreeViewItemProps>;
-    
+
+    rootElementLabel?: string;
     selected?: string;
     expanded?: string[];
-    
+
     collapseIcon?: React.ReactElement;
     expandIcon?: React.ReactElement;
-    
+
     onItemSelectChange?: (nodeId: string) => void;
     onItemExpandChange?: (nodeId: string) => void;
 }
@@ -18,8 +19,8 @@ interface ITreeViewProps {
 
 export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React.ReactElement => {
     const [selected, setSelected] = React.useState(props.selected || '');
-    const [expandedNodes, setExpandedNodes] = React.useState(new Set<string>(props.expanded)); 
-    
+    const [expandedNodes, setExpandedNodes] = React.useState(new Set<string>(props.expanded));
+
     const onNodeExpandedChange = (nodeId: string) => {
         if (props.onItemExpandChange) {
             props.onItemExpandChange(nodeId);
@@ -27,7 +28,6 @@ export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React
             return;
         }
 
-        
         const updatedNodeSet = new Set(expandedNodes.values());
         updatedNodeSet.has(nodeId) ? updatedNodeSet.delete(nodeId) : updatedNodeSet.add(nodeId);
 
