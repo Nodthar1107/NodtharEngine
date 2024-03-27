@@ -14,7 +14,7 @@ export class IconsProvider implements IIconsProvider {
         if (!iconId) {
             return NotFoundIcon;
         }
-        
+
         return ICONS_MAP.get(iconId) || NotFoundIcon;
     }
 }

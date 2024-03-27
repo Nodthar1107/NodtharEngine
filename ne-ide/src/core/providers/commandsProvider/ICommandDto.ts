@@ -8,7 +8,7 @@ export interface ICommandDto {
     context: string;
 
     /** Command group */
-    category: string;
+    category?: string;
 
     /** Path to icon */
     iconId?: string;

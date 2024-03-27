@@ -1,5 +1,7 @@
-import { ICommandDescriptor } from './ICommandDescriptor';
+import { ICommand } from './commands';
 
 export interface ICommandsProvider {
-    getCommandsByContext: (context: string) => ICommandDescriptor[];
+    executeCommand: (commandId: string, ...args: any[]) => Promise<any>;
+
+    getCommandsByContext: (context: string) => ICommand[];
 }
