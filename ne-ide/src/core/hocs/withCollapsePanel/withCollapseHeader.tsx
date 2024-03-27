@@ -3,6 +3,7 @@ import { PanelHeaderCollapse, PanelHeaderExpand } from '../../icons';
 import { PanelHeader } from '../../ui-components';
 
 import './style.css';
+import { CommandContext } from 'src/core/providers/commandsProvider/CommandsContexts';
 
 interface IAdditionalProps {
     title: string;
@@ -16,7 +17,8 @@ interface IBaseProps {
 export function withCollapseHeader<IBaseProps extends IAdditionalProps>(
     Component: React.ComponentType<IBaseProps>,
     headerTop: string = '0',
-    headerBottom: string = '0'
+    headerBottom: string = '0',
+    context?: CommandContext | undefined
 ) {
     const containerElement = (props: IBaseProps): React.ReactElement => {
         const [expanded, setExpanded] = React.useState(true);
@@ -28,6 +30,7 @@ export function withCollapseHeader<IBaseProps extends IAdditionalProps>(
                 useVerticalAlign={props.useVerticalAlign}
                 collapseIcon={<PanelHeaderCollapse />}
                 expandIcon={<PanelHeaderExpand />}
+                commandsContext={context}
                 onExpandChange={() => setExpanded(!expanded)}
                 style={{
                     position: 'absolute',

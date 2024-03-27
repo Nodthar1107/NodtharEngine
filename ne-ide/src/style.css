@@ -38,6 +38,9 @@ body, html {
     --icon-stroke-color: #B8B8B8;
 
     --text-font-family: 'Times New Roman', Helvetica, sans-serif;
+
+    --toolbarIcon-width: 16px;
+    --toolbarIcon-height: 18px;
 }
 
 .NodtharEngine {

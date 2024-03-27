@@ -5,15 +5,26 @@ import { IconsProvider } from './providers/IconsProvider';
 import { CORE_TYPES } from './module-types';
 import { ICommandsProvider } from './providers/commandsProvider/ICommandsProvider';
 import { CommandsProviderMockImpl } from './providers/commandsProvider/CommandsProviderMockImpl';
+import { ICommandRegister } from './providers/commandsProvider/ICommandRegister';
 
 export class CoreModule implements IDIModule {
     public registerModule(container: Container) {
         container
             .bind<IIconsProvider>(CORE_TYPES.IIconsProvider)
-            .to(IconsProvider);
+            .to(IconsProvider)
+            .inSingletonScope();
+        container
+            .bind<CommandsProviderMockImpl>(CommandsProviderMockImpl)
+            .toSelf()
+            .inSingletonScope();
         container
             .bind<ICommandsProvider>(CORE_TYPES.ICommandsProvider)
-            .to(CommandsProviderMockImpl);
+            .to(CommandsProviderMockImpl)
+            .inSingletonScope();
+        container
+            .bind<ICommandRegister>(CORE_TYPES.ICommandRegister)
+            .to(CommandsProviderMockImpl)
+            .inSingletonScope();
     };
     
 }

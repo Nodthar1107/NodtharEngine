@@ -6,6 +6,7 @@ import { Box } from '../icons/hierarchy/Box';
 import { Sphere } from '../icons/hierarchy/Sphere';
 import { Collapse, Expand } from '../icons';
 import { Folder } from '../icons/hierarchy/Folder';
+import { Add } from '../icons/Commons/Add';
 
 export const ICONS_MAP: Map<string, React.FC<IIconProps>> = new Map([
     ['move-object', MoveObject],
@@ -14,5 +15,6 @@ export const ICONS_MAP: Map<string, React.FC<IIconProps>> = new Map([
     ['sphere', Sphere],
     ['collapse', Collapse],
     ['expand', Expand],
-    ['Folder', Folder]
+    ['Folder', Folder],
+    ['add', Add]
 ]);

@@ -17,6 +17,7 @@ import { TreeViewModule } from './tree-view/module';
 import { FilesExplorerModule } from './files-explorer/module';
 import { IResourcesManager } from './files-explorer/ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './files-explorer/module-types';
+import { ActivityBarModule } from './activity-bar/module';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -24,7 +25,12 @@ const root = ReactDOM.createRoot(
 
 const injector = new Container();
 
-[new CoreModule(), new TreeViewModule(), new FilesExplorerModule()].forEach((module: IDIModule) => {
+[
+    new CoreModule(),
+    new TreeViewModule(),
+    new FilesExplorerModule(),
+    new ActivityBarModule()
+].forEach((module: IDIModule) => {
     module.registerModule(injector);
 });
 

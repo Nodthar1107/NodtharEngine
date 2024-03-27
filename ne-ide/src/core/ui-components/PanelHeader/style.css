@@ -25,3 +25,18 @@
     font-family: var(--panel-header-font-family);
     color: var(--panel-header-color);
 }
+
+.panel-header__toolbar {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 2px
+}
+
+.panel-header__toolbar-command {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--toolbarIcon-width);
+    height: var(--toolbarIcon-height);
+}

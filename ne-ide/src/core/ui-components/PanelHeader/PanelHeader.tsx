@@ -1,5 +1,9 @@
 import * as React from 'react';
 
+import { CommandContext } from '../../providers/commandsProvider/CommandsContexts';
+import { ProvidersContext } from '../../../contexts/servicesContext';
+import { ICommand } from '../../providers/commandsProvider/commands';
+
 import './style.css';
 
 interface IPanelHeaderProps {
@@ -11,12 +15,17 @@ interface IPanelHeaderProps {
     expandIcon: React.ReactElement;
     collapseIcon: React.ReactElement;
 
-    onExpandChange?: () => void;
+    commandsContext?: CommandContext;
+
     style?: React.CSSProperties;
+    onExpandChange?: () => void;
 }
 
 export const PanelHeader = React.forwardRef(
     (props: IPanelHeaderProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+        const commandsProvider = React.useContext(ProvidersContext).commandsProvider;
+        const contextRef = React.useRef(props.commandsContext);
+        
         const className = [
             'panel-header',
             !props.expanded && 'panel-header_collapsed',
@@ -27,6 +36,24 @@ export const PanelHeader = React.forwardRef(
 
         const collapsedIcon = props.expanded ? props.collapseIcon : props.expandIcon;
         
+        const toolbarCommands = (): React.ReactElement[] | undefined => {
+            if (!contextRef.current) {
+                return;
+            }
+
+            return commandsProvider.getCommandsByContext(contextRef.current).map((command: ICommand) => {
+                return (
+                    <span className='panel-header__toolbar-command' onClick={command.execute}>
+                        {command.iconComponent && React.createElement(command.iconComponent)}
+                    </span>
+                );
+            })
+        }
+
+        React.useEffect(() => {
+            contextRef.current = props.commandsContext;
+        }, [props.commandsContext])
+
         return (
             <div className={className} style={props.style} ref={ref}>
                 {React.cloneElement(collapsedIcon, {
@@ -34,6 +61,11 @@ export const PanelHeader = React.forwardRef(
                     onClick: props.onExpandChange
                 })}
                 <span className='panel-header__title'>{props.title}</span>
+                {props.expanded && (
+                    <div className='panel-header__toolbar'>
+                        {toolbarCommands()}
+                    </ div>
+                )}
             </div>
         );
     }

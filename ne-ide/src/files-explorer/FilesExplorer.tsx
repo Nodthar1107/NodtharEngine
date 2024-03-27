@@ -6,6 +6,7 @@ import { PanelHeader, ResizablePanel } from '../core/ui-components';
 
 import './style.scss';
 import { ResourceViewerWidget } from './ResourceViewer/ResourceViewerWidget';
+import { CommandContext } from '../core/providers/commandsProvider/CommandsContexts';
 
 const FilesExplorer: React.FC = (): React.ReactElement => {
     return (
@@ -22,4 +23,4 @@ const FilesExplorer: React.FC = (): React.ReactElement => {
     );
 }
 
-export const FilesExplorerPanel = withCollapseHeader(FilesExplorer, '4px', '0px')
+export const FilesExplorerPanel = withCollapseHeader(FilesExplorer, '4px', '0px', CommandContext.FILES_EXPLORER_CONTEXT)
