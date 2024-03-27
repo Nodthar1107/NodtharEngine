@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { ICommandDescriptor } from '../../core/providers/commandsProvider/ICommandDescriptor';
+import { ICommand } from '../../core/providers/commandsProvider/commands';
 
 import '../styles/activity-bar-item.css';
 
 export interface IActivityBarItemProps {
-    command: ICommandDescriptor;
+    command: ICommand;
     active?: boolean;
     disabled?: boolean;
     controlled?: boolean;
@@ -16,6 +16,8 @@ export interface IActivityBarItemProps {
 
 export const ActivityBarItem: React.FC<IActivityBarItemProps> = (props: IActivityBarItemProps): React.ReactElement => {
     const [active, setActive] = React.useState(Boolean(props.active));
+
+    console.log(props.icon);
 
     const onClickHandler = () => {
         if (!props.controlled) {
