@@ -37,7 +37,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
 
     public addResourceToCurrentFolder(resource: IFileSystemNodeDescriptor) {
         if (isFolderDescriptor(resource)) {
-            this.currentFolderDescriptor.folders.push(resource);
+            this.putResourceToFolder(this.currentFolderDescriptor, resource);
             this.eventEmmiter.fireEvents([
                 new NotificationEvent(EventType.TREE_VIEW_UPDATED),
                 new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
@@ -50,8 +50,14 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
     }
 
-    public changeCurrentDirectory() {
+    public changeCurrentDirectory(uri: string) {
+        const folder = this.getFolderByRelativePath(uri);
+        if (folder === undefined) {
+            return;
+        }
 
+        this.currentFolderDescriptor = folder;
+        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
     }
 
     public getCurrentFolderContent(): { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } {

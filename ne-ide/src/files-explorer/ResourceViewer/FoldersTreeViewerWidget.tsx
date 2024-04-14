@@ -41,6 +41,12 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
         }
     }
 
+    protected onNodeRowSelect(index: number): void {
+        super.onNodeRowSelect(index);
+
+        this.props.resourceManager.changeCurrentDirectory(this.state.nodeRows[index].node.uri);
+    }
+
     private transformModelToNodeRows(): ITreeNodeRow[] {
         const root = this.props.resourceManager.getRootFolder();
 
