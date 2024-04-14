@@ -1,9 +1,13 @@
+import { IEventEmmiter } from '../events/IEventEmmiter';
+import { IEventEmiterProvider } from '../events/IEventEmmiterProvider';
 import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } from './model';
 
-export interface IResourcesManager {
+export interface IResourcesManager extends IEventEmiterProvider {
     getRootFolder: () => IFolderDescriptor; 
-    getFileSystemNodeDescriptorByRelativePath: (relativePath: string) => IFileSystemNodeDescriptor | undefined;
-    getFolderByRelativePath: (relativePath: string) => IFolderDescriptor | undefined;
+
     changeCurrentDirectory: (uri: string) => void;
+
     getCurrentFolderContent: () => { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] };
+
+    addResourceToCurrentFolder: (resource: IFileSystemNodeDescriptor) => void;
 }

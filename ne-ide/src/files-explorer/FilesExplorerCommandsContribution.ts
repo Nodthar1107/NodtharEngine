@@ -5,9 +5,7 @@ import { ICommandRegister } from '../core/providers/commandsProvider/ICommandReg
 import 'reflect-metadata';
 import { IResourcesManager } from './ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './module-types';
-import { filesExplorerStore } from './store/FilesExplorerStore';
-import { ResourceType } from './ResourcesManager/ResourceType';
-import { addFolder } from './store/DirectoryContentSlice';
+import { generateFolder } from './ResourcesManager/resourceUtils';
 
 @injectable()
 export class FilesExplorerCommandsContribution implements ICommandContribution {
@@ -26,7 +24,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             title: 'Добавить ресурс',
             iconId: 'add',
             execute: () => {
-                alert('Hello world');
+                this.resourceManager.addResourceToCurrentFolder(generateFolder('Новая папка'))
             }
         })
     }

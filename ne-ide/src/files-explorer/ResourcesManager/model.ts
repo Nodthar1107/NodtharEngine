@@ -19,5 +19,5 @@ export interface IFolderDescriptor extends IOwnedDescriptor {
 }
 
 export function isFolderDescriptor(descriptor: IFileSystemNodeDescriptor): descriptor is IFolderDescriptor {
-    return 'foldres' in descriptor && 'resources' in descriptor;
+    return descriptor.resourceType === ResourceType.Folder;
 }

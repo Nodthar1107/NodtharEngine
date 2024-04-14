@@ -4,12 +4,14 @@ import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
 import { ITreeNodeRow } from 'src/core/ne-widgets/tree/model';
 import { IFileSystemNodeDescriptor, IFolderDescriptor } from '../ResourcesManager/model';
 import { Folder } from '../../core/icons/hierarchy/Folder';
+import { ISubscriberable } from '../events/ISubscriberable';
+import { EventType, NotificationEvent } from '../events/NotificationEvent';
 
 interface IFoldersTreeViewerWidgetProps extends ITreeWidgetProps {
     resourceManager: IResourcesManager;
 }
 
-export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidgetProps> {
+export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidgetProps> implements ISubscriberable {
     constructor(props: IFoldersTreeViewerWidgetProps) {
         super(props);
 
@@ -19,8 +21,24 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
         };
     }
 
+    public componentDidMount(): void {
+        this.props.resourceManager.getEventEmmiter().subscribe(this);
+    }
+
+    public componentWillUnmount(): void {
+        this.props.resourceManager.getEventEmmiter().dispose(this);
+    }
+
     public render(): ReactNode {
         return super.render();
+    }
+
+    public fireEvent(event: NotificationEvent) {
+        if (event.type === EventType.TREE_VIEW_UPDATED) {
+            this.setState({
+                nodeRows: this.transformModelToNodeRows()
+            })
+        }
     }
 
     private transformModelToNodeRows(): ITreeNodeRow[] {

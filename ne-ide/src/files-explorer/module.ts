@@ -9,7 +9,8 @@ export class FilesExplorerModule implements IDIModule {
     public registerModule(container: Container) {
         container
             .bind(FILES_EXPLORER_MODULE.IResourcesManager)
-            .to(ResourceManagerMockImpl);
+            .to(ResourceManagerMockImpl)
+            .inSingletonScope();
         container
             .bind(CORE_TYPES.ICommandContribution)
             .to(FilesExplorerCommandsContribution);

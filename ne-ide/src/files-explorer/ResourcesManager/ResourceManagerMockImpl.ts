@@ -1,10 +1,14 @@
 import { injectable } from 'inversify';
 
-import { IFileSystemNodeDescriptor, IFolderDescriptor, IOwnedDescriptor, IResourceDescriptor } from './model';
+import { IFileSystemNodeDescriptor, IFolderDescriptor, IOwnedDescriptor, IResourceDescriptor, isFolderDescriptor } from './model';
 import { IResourcesManager } from './IResourcesManager';
 import { ResourceType } from './ResourceType';
 
 import 'reflect-metadata';
+import { IEventEmmiter } from '../events/IEventEmmiter';
+import { EventType, NotificationEvent } from '../events/NotificationEvent';
+import { EventEmmiter } from '../events/EventEmmiter';
+import { generateFolder, generateResource } from './resourceUtils';
 
 @injectable()
 export class ResourceManagerMockImpl implements IResourcesManager {
@@ -17,16 +21,78 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         resources: []
     }
     private currentFolderDescriptor = this.resourcesRoot;
+    private eventEmmiter = new EventEmmiter();
 
     public constructor() {
         this.configureModel();
+    }
+
+    public getEventEmmiter(): IEventEmmiter {
+        return this.eventEmmiter;
     }
     
     public getRootFolder(): IFolderDescriptor {
         return this.resourcesRoot;
     }
 
-    public getFileSystemNodeDescriptorByRelativePath(relativePath: string): IFileSystemNodeDescriptor | undefined {
+    public addResourceToCurrentFolder(resource: IFileSystemNodeDescriptor) {
+        if (isFolderDescriptor(resource)) {
+            this.currentFolderDescriptor.folders.push(resource);
+            this.eventEmmiter.fireEvents([
+                new NotificationEvent(EventType.TREE_VIEW_UPDATED),
+                new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
+            );
+
+            return;
+        }
+
+        this.currentFolderDescriptor.resources.push(resource as IResourceDescriptor);
+        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
+    }
+
+    public changeCurrentDirectory() {
+
+    }
+
+    public getCurrentFolderContent(): { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } {
+        return {
+            folders: this.currentFolderDescriptor.folders,
+            resources: this.currentFolderDescriptor.resources
+        };
+    }
+
+    private configureModel() {
+        this.putResourceToFolderByPath(
+            generateFolder('test-folder-1'),
+            '/'
+        ).putResourceToFolderByPath(
+            generateFolder('test-folder-2'),
+            '/'
+        ).putResourceToFolderByPath(
+            generateResource('SceneBlueprint.bp', ResourceType.Blueprint),
+            '/'
+        ).putResourceToFolderByPath(
+            generateFolder('models'),
+            '/test-folder-1'
+        ).putResourceToFolderByPath(
+            generateResource('Sphere.obj', ResourceType.Model),
+            '/test-folder-1/models'
+        ).putResourceToFolderByPath(
+            generateResource('Box.obj', ResourceType.Model),
+            '/test-folder-1/models'
+        ).putResourceToFolderByPath(
+            generateResource('Cone.obj', ResourceType.Model),
+            '/test-folder-1/models'
+        ).putResourceToFolderByPath(
+            generateResource('3DObjBlueprint.bp', ResourceType.Blueprint),
+            '/test-folder-1'
+        ).putResourceToFolderByPath(
+            generateResource('FooBlock.java', ResourceType.SourceJava),
+            '/test-folder-1'
+        );
+    }
+
+    private getFileSystemNodeDescriptorByRelativePath(relativePath: string): IFileSystemNodeDescriptor | undefined {
         if (relativePath === '/') {
             return this.resourcesRoot;
         }
@@ -44,9 +110,9 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         }
 
         return taregtElement;
-    } 
+    }
 
-    public getFolderByRelativePath(relativePath: string): IFolderDescriptor | undefined {
+    private getFolderByRelativePath(relativePath: string): IFolderDescriptor | undefined {
         const node = this.getFileSystemNodeDescriptorByRelativePath(relativePath);
 
         if (node === undefined || node.resourceType !== ResourceType.Folder) {
@@ -54,48 +120,6 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         }
 
         return node as IFolderDescriptor;
-    }
-
-    public changeCurrentDirectory() {
-
-    }
-
-    public getCurrentFolderContent(): { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } {
-        return {
-            folders: this.currentFolderDescriptor.folders,
-            resources: this.currentFolderDescriptor.resources
-        };
-    }
-
-    private configureModel() {
-        this.putResourceToFolderByPath(
-            this.generateFolder('test-folder-1'),
-            '/'
-        ).putResourceToFolderByPath(
-            this.generateFolder('test-folder-2'),
-            '/'
-        ).putResourceToFolderByPath(
-            this.generateResource('SceneBlueprint.bp', ResourceType.Blueprint),
-            '/'
-        ).putResourceToFolderByPath(
-            this.generateFolder('models'),
-            '/test-folder-1'
-        ).putResourceToFolderByPath(
-            this.generateResource('Sphere.obj', ResourceType.Model),
-            '/test-folder-1/models'
-        ).putResourceToFolderByPath(
-            this.generateResource('Box.obj', ResourceType.Model),
-            '/test-folder-1/models'
-        ).putResourceToFolderByPath(
-            this.generateResource('Cone.obj', ResourceType.Model),
-            '/test-folder-1/models'
-        ).putResourceToFolderByPath(
-            this.generateResource('3DObjBlueprint.bp', ResourceType.Blueprint),
-            '/test-folder-1'
-        ).putResourceToFolderByPath(
-            this.generateResource('FooBlock.java', ResourceType.SourceJava),
-            '/test-folder-1'
-        );
     }
 
     private putResourceToFolder(folder: IFolderDescriptor, resource: IOwnedDescriptor) {
@@ -116,25 +140,5 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.putResourceToFolder(taregtElement as IFolderDescriptor, resource);
         
         return this;
-    }
-
-    private generateResource(label: string, type: ResourceType): IResourceDescriptor {
-        return {
-            label: label,
-            parent: null,
-            uri: '',
-            resourceType: type
-        }
-    }
-
-    private generateFolder(label: string): IFolderDescriptor {
-        return {
-            label: label,
-            parent: null,
-            uri: '',
-            resourceType: ResourceType.Folder,
-            folders: [],
-            resources: []
-        }
     }
 }

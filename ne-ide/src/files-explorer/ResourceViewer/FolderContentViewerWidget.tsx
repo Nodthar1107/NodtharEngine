@@ -2,6 +2,8 @@ import * as React from 'react';
 import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } from '../ResourcesManager/model';
 import { ResourceWidget, ResourceDisplayMode } from './ResourceWidget';
 import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
+import { ISubscriberable } from '../events/ISubscriberable';
+import { EventType, NotificationEvent } from '../events/NotificationEvent';
 
 interface IFolderViewerWidgetProps {
     resourceManager: IResourcesManager;
@@ -14,13 +16,32 @@ interface IFolderViewerState {
     resources: IResourceDescriptor[];
 }
 
-export class FolderContentViewerWidget extends React.Component<IFolderViewerWidgetProps, IFolderViewerState> {
+export class FolderContentViewerWidget
+    extends React.Component<IFolderViewerWidgetProps, IFolderViewerState>
+    implements ISubscriberable
+{
     constructor(props: IFolderViewerWidgetProps) {
         super(props);
 
         this.state = {
             ...this.props.resourceManager.getCurrentFolderContent()
         };
+    }
+
+    public componentDidMount(): void {
+        this.props.resourceManager.getEventEmmiter().subscribe(this);
+    }
+
+    public componentWillUnmount(): void {
+        this.props.resourceManager.getEventEmmiter().dispose(this);
+    }
+
+    public fireEvent(event: NotificationEvent) {
+        if (event.type === EventType.FOLDER_CONTENT_UPDATED) {
+            this.setState({
+                ...this.props.resourceManager.getCurrentFolderContent()
+            });
+        }
     }
 
     public render(): React.ReactNode {
