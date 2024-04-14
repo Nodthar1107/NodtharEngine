@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import { withCollapseHeader } from '../core/hocs/withCollapsePanel/withCollapseHeader';
-import { PanelHeaderCollapse, PanelHeaderExpand } from '../core/icons';
-import { PanelHeader, ResizablePanel } from '../core/ui-components';
+import { ResizablePanel } from '../core/ui-components';
 
 import './style.scss';
 import { ResourceViewerWidget } from './ResourceViewer/ResourceViewerWidget';

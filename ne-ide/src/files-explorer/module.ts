@@ -12,6 +12,6 @@ export class FilesExplorerModule implements IDIModule {
             .to(ResourceManagerMockImpl);
         container
             .bind(CORE_TYPES.ICommandContribution)
-            .to(FilesExplorerCommandsContribution)
+            .to(FilesExplorerCommandsContribution);
     }
 }

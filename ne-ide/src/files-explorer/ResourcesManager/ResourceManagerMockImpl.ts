@@ -8,7 +8,7 @@ import 'reflect-metadata';
 
 @injectable()
 export class ResourceManagerMockImpl implements IResourcesManager {
-    private resourcesModel: IFolderDescriptor = {
+    private resourcesRoot: IFolderDescriptor = {
         label: '/',
         parent: null,
         resourceType: ResourceType.Folder,
@@ -16,24 +16,23 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         folders: [],
         resources: []
     }
-    private isInitialized: boolean = false
+    private currentFolderDescriptor = this.resourcesRoot;
+
+    public constructor() {
+        this.configureModel();
+    }
     
     public getRootFolder(): IFolderDescriptor {
-        if (!this.isInitialized) {
-            this.configureModel();
-            this.isInitialized = true;
-        }
-
-        return this.resourcesModel;
+        return this.resourcesRoot;
     }
 
     public getFileSystemNodeDescriptorByRelativePath(relativePath: string): IFileSystemNodeDescriptor | undefined {
         if (relativePath === '/') {
-            return this.resourcesModel;
+            return this.resourcesRoot;
         }
 
         const foldersList = relativePath.split('/').slice(1);
-        let taregtElement: IFolderDescriptor | undefined = this.resourcesModel;
+        let taregtElement: IFolderDescriptor | undefined = this.resourcesRoot;
         for (const folderName of foldersList) {
             taregtElement = taregtElement?.folders?.find((folder: IResourceDescriptor) => {
                 return folder.label === folderName;
@@ -55,6 +54,17 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         }
 
         return node as IFolderDescriptor;
+    }
+
+    public changeCurrentDirectory() {
+
+    }
+
+    public getCurrentFolderContent(): { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } {
+        return {
+            folders: this.currentFolderDescriptor.folders,
+            resources: this.currentFolderDescriptor.resources
+        };
     }
 
     private configureModel() {

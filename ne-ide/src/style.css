@@ -26,6 +26,7 @@ body, html {
 
     --tree-item-hover: rgb(134, 134, 134);
     --tree-item-selected: rgb(30, 30, 30);
+    --tree-item-iconSize: 16px;
 
     --panel-header-background: rgb(41, 53, 56);
     --panel-header-color: white;

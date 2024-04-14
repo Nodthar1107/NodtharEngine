@@ -3,7 +3,7 @@ import { Collapse, Expand } from '../../icons';
 import { ITreeViewItemProps } from '../TreeItem/TreeViewItem';
 
 interface ITreeViewProps {
-    children: React.ReactElement<ITreeViewItemProps>[] | React.ReactElement<ITreeViewItemProps>;
+    children?: React.ReactElement<ITreeViewItemProps>[] | React.ReactElement<ITreeViewItemProps> | null;
 
     rootElementId?: string;
     selected?: string;
@@ -56,7 +56,7 @@ export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React
 
     return (
         <div className='ui-component-tree-view'>
-            {React.Children.map(props.children, (child: React.ReactElement<ITreeViewItemProps>) => React.cloneElement(child, {
+            {props.children && React.Children.map(props.children, (child: React.ReactElement<ITreeViewItemProps>) => React.cloneElement(child, {
                 ...child.props,
                 root: props.rootElementId === child.props.nodeId,
                 startIcon: child.props.startIcon,
