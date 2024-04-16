@@ -1,0 +1,14 @@
+.tabbar-toolbar__command {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    width: 18px;
+    height: 18px;
+
+    padding: 2px;
+
+    &_disabled svg {
+        fill: var(--icon-disabledColor) !important;
+    }
+}

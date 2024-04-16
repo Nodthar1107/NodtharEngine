@@ -1,11 +1,12 @@
 import { ReactNode } from 'react';
 import { ITreeWidgetProps, TreeWidget } from '../../core/ne-widgets/tree/TreeWidget';
 import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
-import { ITreeNodeRow } from 'src/core/ne-widgets/tree/model';
+import { ITreeNode, ITreeNodeRow } from 'src/core/ne-widgets/tree/model';
 import { IFileSystemNodeDescriptor, IFolderDescriptor } from '../ResourcesManager/model';
 import { Folder } from '../../core/icons/hierarchy/Folder';
 import { ISubscriberable } from '../events/ISubscriberable';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
+import { tagParameter } from 'inversify/lib/annotation/decorator_utils';
 
 interface IFoldersTreeViewerWidgetProps extends ITreeWidgetProps {
     resourceManager: IResourcesManager;
@@ -35,9 +36,41 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
 
     public fireEvent(event: NotificationEvent) {
         if (event.type === EventType.TREE_VIEW_UPDATED) {
+            const targetFolder = this.props.resourceManager.getCurrentFolder();
+            const parentsRowsUris: string[] = [];
+            let parent = !!targetFolder ? targetFolder.parent as IFolderDescriptor : null;  
+            while (parent) {
+                parentsRowsUris.push(parent.uri);
+                parent = parent.parent as IFolderDescriptor;
+            }
+
+            const updatedRows = this.transformModelToNodeRows();
+            const oldIndexedRows = this.state.nodeRows.reduce(
+                (map: Map<string, ITreeNodeRow>, row: ITreeNodeRow) => {
+                    map.set(row.node.uri, row);
+                    
+                    return map;
+                },
+                new Map()
+            );
+
+            let selectedRowIndex: number | null = null;
+            updatedRows.forEach((row: ITreeNodeRow, index: number) => {
+                const oldRow = oldIndexedRows.get(row.node.uri);
+                if (oldRow) {
+                    row.node.epxanded = parentsRowsUris.indexOf(row.node.uri) !== -1 ? true : oldRow.node.epxanded; 
+                }
+
+                if (row.node.uri === targetFolder?.uri) {
+                    row.selected = true;
+                    selectedRowIndex = index;
+                }
+            });
+
             this.setState({
-                nodeRows: this.transformModelToNodeRows()
-            })
+                nodeRows: updatedRows,
+                selectedRowIndex: selectedRowIndex
+            });
         }
     }
 
@@ -49,6 +82,10 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
 
     private transformModelToNodeRows(): ITreeNodeRow[] {
         const root = this.props.resourceManager.getRootFolder();
+
+        if (root === undefined) {
+            return [];
+        }
 
         return this.toNodeRows(root.folders, 1, [this.toNodeRow(root, 0, 0, root.folders.length > 0, true)]);
     }
@@ -75,5 +112,22 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
             hasChildren: hasChildren,
             selected: false
         };
+    }
+
+    private findActiveNodeRowIndex(uri: string | undefined, rows = this.state.nodeRows): number | null {
+        if (uri === undefined) {
+            return this.state.selectedRowIndex;
+        }
+
+        let targetFolderIndex = -1;
+        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+            if (rows[rowIndex].node.uri === uri) {
+                targetFolderIndex = rowIndex;
+
+                break;
+            }
+        }
+
+        return targetFolderIndex;
     }
 }

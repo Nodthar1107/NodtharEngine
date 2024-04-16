@@ -1,13 +1,10 @@
 .ui-component-icon {
+    min-width: 16px;
+    min-height: 16px;
     cursor: pointer;
     fill: var(--icon-fill-color);
 }
 
 .ui-component-icon:hover {
     fill: var(--icon-hovered-fill-color);
-}
-
-.ui-component-icon {
-    min-width: 16px;
-    min-height: 16px;
 }

@@ -24,7 +24,25 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             title: 'Добавить ресурс',
             iconId: 'add',
             execute: () => {
-                this.resourceManager.addResourceToCurrentFolder(generateFolder('Новая папка'))
+                this.resourceManager.addResourceToCurrentFolder(generateFolder('Новая папка'));
+            }
+        });
+
+        register.registerCommand({
+            id: 'filesExplorer.openTopLevelFolder',
+            context: 'files-explorer-context',
+            title: 'Перейти в родительскую папку',
+            iconId: 'back',
+            isEnable: () => {
+                return true;
+            },
+            execute: () => {
+                const folder = this.resourceManager.getCurrentFolder();
+                if (folder === undefined || folder.parent === null) {
+                    return;
+                }
+
+                this.resourceManager.setCurrentDirectory(folder.parent.uri);
             }
         })
     }

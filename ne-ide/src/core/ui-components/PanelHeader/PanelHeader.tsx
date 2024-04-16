@@ -5,6 +5,7 @@ import { ProvidersContext } from '../../../contexts/servicesContext';
 import { ICommand } from '../../providers/commandsProvider/commands';
 
 import './style.css';
+import { CommandComponent } from '../CommandComponent/CommandComponent';
 
 interface IPanelHeaderProps {
     title: string;
@@ -41,12 +42,8 @@ export const PanelHeader = React.forwardRef(
                 return;
             }
 
-            return commandsProvider.getCommandsByContext(contextRef.current).map((command: ICommand) => {
-                return (
-                    <span className='panel-header__toolbar-command' onClick={command.execute}>
-                        {command.iconComponent && React.createElement(command.iconComponent)}
-                    </span>
-                );
+            return commandsProvider.getCommandsByContext(contextRef.current).map((command: ICommand, index: number) => {
+                return <CommandComponent command={command} key={index} />;
             })
         }
 

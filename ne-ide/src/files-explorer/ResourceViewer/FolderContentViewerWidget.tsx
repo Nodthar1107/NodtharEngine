@@ -4,6 +4,7 @@ import { ResourceWidget, ResourceDisplayMode } from './ResourceWidget';
 import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
 import { ISubscriberable } from '../events/ISubscriberable';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
+import { ResourceType } from '../ResourcesManager/ResourceType';
 
 interface IFolderViewerWidgetProps {
     resourceManager: IResourcesManager;
@@ -23,9 +24,12 @@ export class FolderContentViewerWidget
     constructor(props: IFolderViewerWidgetProps) {
         super(props);
 
-        this.state = {
-            ...this.props.resourceManager.getCurrentFolderContent()
-        };
+        const content = this.props.resourceManager.getCurrentFolderContent(); 
+            if (content) {
+                this.state = {
+                    ...content
+                };
+            }
     }
 
     public componentDidMount(): void {
@@ -38,9 +42,12 @@ export class FolderContentViewerWidget
 
     public fireEvent(event: NotificationEvent) {
         if (event.type === EventType.FOLDER_CONTENT_UPDATED) {
-            this.setState({
-                ...this.props.resourceManager.getCurrentFolderContent()
-            });
+            const content = this.props.resourceManager.getCurrentFolderContent(); 
+            if (content) {
+                this.setState({
+                    ...content
+                });
+            }
         }
     }
 
@@ -62,9 +69,17 @@ export class FolderContentViewerWidget
                     label={descriptor.label}
                     resourceType={descriptor.resourceType}
                     mode={this.props.displayMode}
-                    onDoubleClick={() => { }}
+                    onDoubleClick={this.openResource.bind(this, descriptor)}
                 />
             );
         })
+    }
+
+    private openResource(descriptor: IFileSystemNodeDescriptor) {
+        if (descriptor.resourceType === ResourceType.Folder) {
+            this.props.resourceManager.changeCurrentDirectory(descriptor.uri);
+            
+            return;
+        }
     }
 }

@@ -10,10 +10,9 @@ import {
     NE_TREE_VIEW_NODE__EXPAND_ICON
 } from './model';
 
-
 export interface ITreeViewProps {
     rows: ITreeNodeRow[];
-    renderNode?: (node: ITreeNode, index: number) => React.ReactNode;
+    renderNode?: (node: ITreeNode) => React.ReactNode;
     renderExpand?: (node: ITreeNode, hasChildren: boolean, index: number) => React.ReactNode;
     renderTreeIndent?: (indent: number) => React.ReactNode;
 

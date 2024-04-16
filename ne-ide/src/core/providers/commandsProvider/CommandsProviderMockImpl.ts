@@ -47,9 +47,7 @@ export class CommandsProviderMockImpl implements ICommandsProvider, ICommandRegi
             .map<ICommand>((command: ICommandDescriptor) => {
                 return {
                     ...command,
-                    iconComponent: command.iconId
-                        ? this.iconsProvider.getIconById(command.iconId)
-                        : undefined
+                    iconComponent: this.iconsProvider.getIconById(command.iconId)
                 }
             });
     }

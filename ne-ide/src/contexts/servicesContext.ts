@@ -3,7 +3,6 @@ import { IIconsProvider } from '../core/providers/IIconsProvider';
 import { ICommandsProvider } from '../core/providers/commandsProvider/ICommandsProvider';
 import { ITreeViewManager } from '../tree-view/TreeViewManager/ITreeViewManager';
 import { IResourcesManager } from '../files-explorer/ResourcesManager/IResourcesManager';
-import { Container } from 'inversify';
 
 const InitialContex = {
     commandsProvider: {} as ICommandsProvider,
