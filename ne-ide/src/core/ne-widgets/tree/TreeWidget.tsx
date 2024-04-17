@@ -45,6 +45,7 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
                 renderNode={this.renderTreeNode.bind(this)}
                 renderExpand={this.renderExpand.bind(this)}
                 onNodeSelect={this.onNodeRowSelect.bind(this)}
+                onContextMenu={this.onNodeRowRightButtonClick.bind(this)}
             />
         )
     }
@@ -137,5 +138,11 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
                 ...updatedFiels
             }
         }
+    }
+
+    private onNodeRowRightButtonClick(node: ITreeNode, event: React.MouseEvent) {
+        event.preventDefault();
+        
+        alert('Hello Context!');
     }
 }

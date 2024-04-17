@@ -17,13 +17,14 @@ export interface ITreeViewProps {
     renderTreeIndent?: (indent: number) => React.ReactNode;
 
     onNodeSelect?: (index: number) => void;
+    onContextMenu?: (node: ITreeNode, event: React.MouseEvent) => void;
 }
 
 export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React.ReactElement => {
     const _renderTreeIndent = props.renderTreeIndent || renderTreeIndent;
     const _renderExpand = props.renderExpand || renderExpand;
     const _renderNode = props.renderNode || renderNode;
-    
+
     return (
         <div className='tree-view'>
             {filterNodes(props.rows).map((row: ITreeNodeRow, index: number) => {
@@ -33,7 +34,11 @@ export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React
                 ].filter(Boolean).join(' ');
 
                 return (
-                    <div className={className} key={index} onClick={() => { props.onNodeSelect?.(row.index) }}>
+                    <div
+                        className={className}
+                        key={index}
+                        onClick={() => (props.onNodeSelect?.(row.index))}
+                        onContextMenu={(event: React.MouseEvent) => props.onContextMenu?.(row.node, event)}>
                         {_renderTreeIndent(row.indent)}
                         {_renderExpand(row.node, row.hasChildren, row.index)}
                         {_renderNode(row.node, index)}

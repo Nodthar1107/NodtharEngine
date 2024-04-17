@@ -18,6 +18,7 @@ import { FilesExplorerModule } from './files-explorer/module';
 import { IResourcesManager } from './files-explorer/ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './files-explorer/module-types';
 import { ActivityBarModule } from './activity-bar/module';
+import { IDialogService } from './core/services/DialogService/IDialogService';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -41,7 +42,8 @@ root.render(
                 commandsProvider: injector.get<ICommandsProvider>(CORE_TYPES.ICommandsProvider),
                 iconstProvider: injector.get<IIconsProvider>(CORE_TYPES.IIconsProvider),
                 treeViewManager: injector.get<ITreeViewManager>(TREE_VIEW_MODULE.ITreeViewManager),
-                resourcesManager: injector.get<IResourcesManager>(FILES_EXPLORER_MODULE.IResourcesManager)
+                resourcesManager: injector.get<IResourcesManager>(FILES_EXPLORER_MODULE.IResourcesManager),
+                dialogService: injector.get<IDialogService>(CORE_TYPES.IDialogService)
             }}>
             <App />
         </ProvidersContext.Provider>

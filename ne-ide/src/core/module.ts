@@ -6,6 +6,8 @@ import { CORE_TYPES } from './module-types';
 import { ICommandsProvider } from './providers/commandsProvider/ICommandsProvider';
 import { CommandsProviderMockImpl } from './providers/commandsProvider/CommandsProviderMockImpl';
 import { ICommandRegister } from './providers/commandsProvider/ICommandRegister';
+import { IDialogService } from './services/DialogService/IDialogService';
+import { DialogService } from './services/DialogService/DialogService';
 
 export class CoreModule implements IDIModule {
     public registerModule(container: Container) {
@@ -24,6 +26,14 @@ export class CoreModule implements IDIModule {
         container
             .bind<ICommandRegister>(CORE_TYPES.ICommandRegister)
             .to(CommandsProviderMockImpl)
+            .inSingletonScope();
+        container
+            .bind<DialogService>(DialogService)
+            .toSelf()
+            .inSingletonScope();
+        container
+            .bind<IDialogService>(CORE_TYPES.IDialogService)
+            .to(DialogService)
             .inSingletonScope();
     };
     

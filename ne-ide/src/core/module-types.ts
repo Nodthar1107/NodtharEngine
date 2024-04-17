@@ -2,5 +2,6 @@ export const CORE_TYPES = {
     IIconsProvider: Symbol('IIconsProvider'),
     ICommandsProvider: Symbol('ICommandsProvider'),
     ICommandContribution: Symbol('ICommandContribution'),
-    ICommandRegister: Symbol('ICommandRegister')
-}
+    ICommandRegister: Symbol('ICommandRegister'),
+    IDialogService: Symbol('IDialogService')
+};

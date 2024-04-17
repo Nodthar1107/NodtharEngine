@@ -1,0 +1,11 @@
+.context-menu {
+    position: absolute;
+}
+
+.context-menu-item {
+    display: flex;
+
+    &__title {
+        flex: 1 0 auto;
+    }
+}

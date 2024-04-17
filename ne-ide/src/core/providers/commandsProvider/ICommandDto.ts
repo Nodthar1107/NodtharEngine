@@ -12,4 +12,7 @@ export interface ICommandDto {
 
     /** Path to icon */
     iconId?: string;
+
+    /** Hot key */
+    hotKey?: string;
 }
