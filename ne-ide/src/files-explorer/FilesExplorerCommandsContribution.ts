@@ -19,7 +19,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
     public registerCommands(register: ICommandRegister) {
         register.registerCommand({
-            id: 'filesExplorer.openDialog.createNewResource',
+            id: 'filesExplorer.content.openDialog.createNewResource',
             context: 'files-explorer-context',
             title: 'Добавить ресурс',
             iconId: 'add',
@@ -29,7 +29,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         });
 
         register.registerCommand({
-            id: 'filesExplorer.openTopLevelFolder',
+            id: 'filesExplorer.TreeView.openTopLevelFolder',
             context: 'files-explorer-context',
             title: 'Перейти в родительскую папку',
             iconId: 'back',
@@ -44,7 +44,36 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
                 this.resourceManager.setCurrentDirectory(folder.parent.uri);
             }
-        })
-    }
+        });
 
+        register.registerCommand({
+            id: 'filesExplorer.treeView.element.copy',
+            context: 'tree-view-context',
+            category: '1crud-operation@1',
+            title: 'Копировать',
+            execute: (resourceUri: string) => {
+                
+            }
+        });
+
+        register.registerCommand({
+            id: 'filesExplorer.treeView.element.rename',
+            context: 'tree-view-context',
+            title: 'Переименовать',
+            category: '1crud-operation@2',
+            execute: (resourceUri: string) => {
+                
+            }
+        });
+
+        register.registerCommand({
+            id: 'filesExplorer.treeView.element.remove',
+            context: 'tree-view-context',
+            category: '1crud-operation@3',
+            title: 'Удалить',
+            execute: (resourceUri: string) => {
+                
+            }
+        });
+    }
 }

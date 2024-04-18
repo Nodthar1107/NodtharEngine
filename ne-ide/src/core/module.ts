@@ -28,10 +28,6 @@ export class CoreModule implements IDIModule {
             .to(CommandsProviderMockImpl)
             .inSingletonScope();
         container
-            .bind<DialogService>(DialogService)
-            .toSelf()
-            .inSingletonScope();
-        container
             .bind<IDialogService>(CORE_TYPES.IDialogService)
             .to(DialogService)
             .inSingletonScope();

@@ -3,10 +3,12 @@ import * as ReactDom from 'react-dom';
 import { ICommand } from 'src/core/providers/commandsProvider/commands';
 import { ICommandsProvider } from 'src/core/providers/commandsProvider/ICommandsProvider';
 import { ContextMenuCommand } from './ContextMenuCommand';
-import { IDialogService } from './IDialogService';
-import { injectable } from 'inversify';
+import { IDialogService, IDialogServiceRenderer } from './IDialogService';
 
 import 'reflect-metadata';
+import { IDialogRendererRegister } from './ISubscribeRegister';
+
+import './style.scss';
 
 const DIALOG_ROOT_BLOCK = 'dialog-root';
 
@@ -37,6 +39,7 @@ export interface IContextMenuDialogDetails {
 
 export interface IDialogServiceProps {
     commandService: ICommandsProvider;
+    dialogService: IDialogService;
 }
 
 export interface IDialogServiceRendererState {
@@ -44,8 +47,7 @@ export interface IDialogServiceRendererState {
     details: ICreateDialogDetails | null;
 }
 
-@injectable()
-export class DialogService extends React.Component<IDialogServiceProps, IDialogServiceRendererState> implements IDialogService {
+export class DialogServiceRenderer extends React.Component<IDialogServiceProps, IDialogServiceRendererState> implements IDialogServiceRenderer {
     private dialogMountPoint = document.getElementById('overlay') as HTMLElement;
     private dialogRef = React.createRef<HTMLDivElement>();
     
@@ -56,6 +58,10 @@ export class DialogService extends React.Component<IDialogServiceProps, IDialogS
             type: null,
             details: null
         };
+    }
+
+    public componentDidMount(): void {
+        (this.props.dialogService as unknown as IDialogRendererRegister).registerDialogRenderer(this);
     }
 
     public shouldComponentUpdate(): boolean {
@@ -76,7 +82,7 @@ export class DialogService extends React.Component<IDialogServiceProps, IDialogS
         return ReactDom.createPortal(this.renderDialogRoot(), this.dialogMountPoint);
     }
 
-    public showContextMenu(details: IContextMenuDialogDetails): void {
+    public showContextMenu(details: IContextMenuDialogDetails) {
         this.setState({
             type: DialogType.Context,
             details: details

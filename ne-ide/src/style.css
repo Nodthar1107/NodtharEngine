@@ -43,6 +43,11 @@ body, html {
 
     --toolbarIcon-width: 16px;
     --toolbarIcon-height: 18px;
+
+    --context-backgroundColor: #20292B;
+    --context-itemBackgroundColorHovered: #5B7073;
+    --context-itemTextColor: #9BA1A3;
+    --context-ItemTextColorHover: white;
 }
 
 .NodtharEngine {
@@ -61,4 +66,8 @@ body, html {
     justify-content: stretch;
     align-items: stretch;
     flex-direction: column;
+}
+
+#overlay {
+    position: relative;
 }

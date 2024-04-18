@@ -130,6 +130,10 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
         });
     }
 
+    protected onNodeRowRightButtonClick(node: ITreeNode, event: React.MouseEvent) {
+        event.preventDefault();
+    }
+
     private updateNodeRowState(row: ITreeNodeRow, updatedFiels: Partial<ITreeNode>): ITreeNodeRow {
         return {
             ...row,
@@ -138,11 +142,5 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
                 ...updatedFiels
             }
         }
-    }
-
-    private onNodeRowRightButtonClick(node: ITreeNode, event: React.MouseEvent) {
-        event.preventDefault();
-        
-        alert('Hello Context!');
     }
 }

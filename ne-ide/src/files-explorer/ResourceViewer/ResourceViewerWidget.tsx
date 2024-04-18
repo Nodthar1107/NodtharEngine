@@ -7,6 +7,7 @@ import { FoldersTreeViewerWidget } from './FoldersTreeViewerWidget';
 
 export const ResourceViewerWidget: React.FC = (): React.ReactElement => {
     const resourceManager = React.useContext(ProvidersContext).resourcesManager;
+    const dialogService = React.useContext(ProvidersContext).dialogService;
 
     return (
         <div className='resource-viewer-widget'>
@@ -18,7 +19,7 @@ export const ResourceViewerWidget: React.FC = (): React.ReactElement => {
                 minWidth='10%'
                 maxWidth='35%'
                 zIndex='2'>
-                <FoldersTreeViewerWidget resourceManager={resourceManager} />
+                <FoldersTreeViewerWidget resourceManager={resourceManager} dialogService={dialogService} />
             </ResizablePanel>
             <FolderContentViewerWidget
                 resourceManager={resourceManager}

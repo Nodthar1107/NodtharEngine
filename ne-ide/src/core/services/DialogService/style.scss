@@ -1,11 +1,30 @@
+.dialog-root {
+    position: absolute;
+    z-index: 20;
+}
+
 .context-menu {
     position: absolute;
+
+    background-color: var(--context-backgroundColor);
 }
 
 .context-menu-item {
     display: flex;
 
+    padding: 5px 15px;
+    min-width: 150px;
+
+    cursor: pointer;
+
+    color: var(--context-itemTextColor);
+
     &__title {
         flex: 1 0 auto;
+    }
+
+    &:hover {
+        background-color: var(--context-itemBackgroundColorHovered);
+        color: var(--context-ItemTextColorHover);
     }
 }

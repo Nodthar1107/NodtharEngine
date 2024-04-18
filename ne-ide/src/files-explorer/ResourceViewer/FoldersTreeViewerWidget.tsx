@@ -6,10 +6,11 @@ import { IFileSystemNodeDescriptor, IFolderDescriptor } from '../ResourcesManage
 import { Folder } from '../../core/icons/hierarchy/Folder';
 import { ISubscriberable } from '../events/ISubscriberable';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
-import { tagParameter } from 'inversify/lib/annotation/decorator_utils';
+import { IDialogService } from '../../core/services/DialogService/IDialogService';
 
 interface IFoldersTreeViewerWidgetProps extends ITreeWidgetProps {
     resourceManager: IResourcesManager;
+    dialogService: IDialogService
 }
 
 export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidgetProps> implements ISubscriberable {
@@ -80,6 +81,18 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
         this.props.resourceManager.changeCurrentDirectory(this.state.nodeRows[index].node.uri);
     }
 
+    protected onNodeRowRightButtonClick(node: ITreeNode, event: React.MouseEvent): void {
+        super.onNodeRowRightButtonClick(node, event);
+
+        this.props.dialogService.showContextMenu({
+            context: 'tree-view-context',
+            coords: {
+                x: event.clientX,
+                y: event.clientY
+            }
+        });
+    }
+
     private transformModelToNodeRows(): ITreeNodeRow[] {
         const root = this.props.resourceManager.getRootFolder();
 
@@ -112,22 +125,5 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
             hasChildren: hasChildren,
             selected: false
         };
-    }
-
-    private findActiveNodeRowIndex(uri: string | undefined, rows = this.state.nodeRows): number | null {
-        if (uri === undefined) {
-            return this.state.selectedRowIndex;
-        }
-
-        let targetFolderIndex = -1;
-        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-            if (rows[rowIndex].node.uri === uri) {
-                targetFolderIndex = rowIndex;
-
-                break;
-            }
-        }
-
-        return targetFolderIndex;
     }
 }
