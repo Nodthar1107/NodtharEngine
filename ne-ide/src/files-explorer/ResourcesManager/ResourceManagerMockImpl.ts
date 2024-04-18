@@ -79,6 +79,37 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         };
     }
 
+    public removeResourceByUri(uri: string) {
+        const node = this.getFileSystemNodeDescriptorByRelativePath(uri);
+        if (!node) {
+            return;
+        }
+
+        const ownedNode = node as IOwnedDescriptor; 
+        if (!(node as IOwnedDescriptor).parent) {
+            return;
+        }
+
+        if (ownedNode.resourceType === ResourceType.Folder) {
+            (ownedNode.parent as IFolderDescriptor).folders.splice(
+                (ownedNode.parent as IFolderDescriptor).folders.indexOf(ownedNode as IFolderDescriptor),
+                1
+            );
+
+            if (ownedNode === this.currentFolderDescriptor) {
+                this.currentFolderDescriptor = ownedNode.parent as IFolderDescriptor;
+            }
+        } else {
+            (ownedNode.parent as IFolderDescriptor).resources.splice(
+                (ownedNode.parent as IFolderDescriptor).resources.indexOf(ownedNode as IResourceDescriptor),
+                1
+            );
+        }
+
+        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.TREE_VIEW_UPDATED));
+        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));        
+    }
+
     private configureModel() {
         this.putResourceToFolderByPath(
             generateFolder('test-folder-1'),

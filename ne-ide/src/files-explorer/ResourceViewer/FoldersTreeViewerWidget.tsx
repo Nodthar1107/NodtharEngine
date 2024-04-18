@@ -89,7 +89,8 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
             coords: {
                 x: event.clientX,
                 y: event.clientY
-            }
+            },
+            handlerArgs: node.uri
         });
     }
 

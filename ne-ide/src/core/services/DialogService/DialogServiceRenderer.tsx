@@ -23,6 +23,7 @@ export enum DialogType {
 export interface ICreateDialogOptions {
     dialogType: DialogType;
     details: ICreateDialogDetails;
+    handlerArgs?: any;
 }
 
 export interface ICreateDialogDetails {}
@@ -35,6 +36,7 @@ export interface ICoords {
 export interface IContextMenuDialogDetails {
     context: string;
     coords: ICoords;
+    handlerArgs?: any;
 }
 
 export interface IDialogServiceProps {
@@ -45,6 +47,7 @@ export interface IDialogServiceProps {
 export interface IDialogServiceRendererState {
     type: DialogType | null;
     details: ICreateDialogDetails | null;
+    handlerArgs?: any;
 }
 
 export class DialogServiceRenderer extends React.Component<IDialogServiceProps, IDialogServiceRendererState> implements IDialogServiceRenderer {
@@ -85,7 +88,8 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
     public showContextMenu(details: IContextMenuDialogDetails) {
         this.setState({
             type: DialogType.Context,
-            details: details
+            details: details,
+            handlerArgs: details.handlerArgs
         });
     }
 
@@ -137,9 +141,11 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         return sourceCoords;
     }
 
-    private getCommandHandler(execute?: () => void): () => void {
+    private getCommandHandler(execute?: (...args: any) => void): () => void {
         return () => {
-            execute?.();
+            console.log('Исполнение команды');
+
+            execute?.(this.state.handlerArgs);
         };
     }
 }

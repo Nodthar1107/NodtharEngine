@@ -72,7 +72,9 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             category: '1crud-operation@3',
             title: 'Удалить',
             execute: (resourceUri: string) => {
-                
+                if (resourceUri) {
+                    this.resourceManager.removeResourceByUri(resourceUri);
+                } 
             }
         });
     }
