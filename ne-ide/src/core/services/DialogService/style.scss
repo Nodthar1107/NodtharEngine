@@ -1,12 +1,8 @@
-.dialog-root {
-    position: absolute;
-    z-index: 20;
-}
-
 .context-menu {
     position: absolute;
-
     background-color: var(--context-backgroundColor);
+
+    z-index: 3;
 }
 
 .context-menu-item {

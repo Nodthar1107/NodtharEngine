@@ -17,7 +17,7 @@ export interface ITreeViewProps {
     renderTreeIndent?: (indent: number) => React.ReactNode;
 
     onNodeSelect?: (index: number) => void;
-    onContextMenu?: (node: ITreeNode, event: React.MouseEvent) => void;
+    onContextMenu?: (node: ITreeNode, index: number, event: React.MouseEvent) => void;
 }
 
 export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React.ReactElement => {
@@ -38,7 +38,7 @@ export const TreeView: React.FC<ITreeViewProps> = (props: ITreeViewProps): React
                         className={className}
                         key={index}
                         onClick={() => (props.onNodeSelect?.(row.index))}
-                        onContextMenu={(event: React.MouseEvent) => props.onContextMenu?.(row.node, event)}>
+                        onContextMenu={(event: React.MouseEvent) => props.onContextMenu?.(row.node, row.index, event)}>
                         {_renderTreeIndent(row.indent)}
                         {_renderExpand(row.node, row.hasChildren, row.index)}
                         {_renderNode(row.node, index)}

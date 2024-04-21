@@ -81,8 +81,8 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
         this.props.resourceManager.changeCurrentDirectory(this.state.nodeRows[index].node.uri);
     }
 
-    protected onNodeRowRightButtonClick(node: ITreeNode, event: React.MouseEvent): void {
-        super.onNodeRowRightButtonClick(node, event);
+    protected onNodeRowRightButtonClick(node: ITreeNode, index: number, event: React.MouseEvent): void {
+        super.onNodeRowRightButtonClick(node, index, event);
 
         this.props.dialogService.showContextMenu({
             context: 'tree-view-context',

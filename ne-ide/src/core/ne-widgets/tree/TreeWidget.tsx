@@ -68,7 +68,7 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
                     ...expandedIcon.props,
                     onClick: (event: React.MouseEvent) => {
                         event.stopPropagation();
-                        this.changeNodeRowExpand(index)
+                        this.changeNodeRowExpand(index);
                     }
                 })}
             </div>
@@ -130,8 +130,10 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
         });
     }
 
-    protected onNodeRowRightButtonClick(node: ITreeNode, event: React.MouseEvent) {
+    protected onNodeRowRightButtonClick(node: ITreeNode, index: number, event: React.MouseEvent) {
         event.preventDefault();
+
+        this.onNodeRowSelect(index);
     }
 
     private updateNodeRowState(row: ITreeNodeRow, updatedFiels: Partial<ITreeNode>): ITreeNodeRow {

@@ -4,13 +4,12 @@ import { ICommand } from 'src/core/providers/commandsProvider/commands';
 import { ICommandsProvider } from 'src/core/providers/commandsProvider/ICommandsProvider';
 import { ContextMenuCommand } from './ContextMenuCommand';
 import { IDialogService, IDialogServiceRenderer } from './IDialogService';
+import { IDialogRendererRegister } from './ISubscribeRegister';
+import { ContextMenu } from './ContextMenu';
 
 import 'reflect-metadata';
-import { IDialogRendererRegister } from './ISubscribeRegister';
 
 import './style.scss';
-
-const DIALOG_ROOT_BLOCK = 'dialog-root';
 
 export enum DialogType {
     Context = 'context',
@@ -52,14 +51,14 @@ export interface IDialogServiceRendererState {
 
 export class DialogServiceRenderer extends React.Component<IDialogServiceProps, IDialogServiceRendererState> implements IDialogServiceRenderer {
     private dialogMountPoint = document.getElementById('overlay') as HTMLElement;
-    private dialogRef = React.createRef<HTMLDivElement>();
     
     constructor(props: IDialogServiceProps) {
         super(props);
 
         this.state = {
             type: null,
-            details: null
+            details: null,
+            handlerArgs: null
         };
     }
 
@@ -67,22 +66,12 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         (this.props.dialogService as unknown as IDialogRendererRegister).registerDialogRenderer(this);
     }
 
-    public shouldComponentUpdate(): boolean {
-        if (this.dialogRef.current) {
-            this.dialogRef.current.addEventListener('click', () => {
-                // TODO: Добавить оработку клика за пределами компоненты
-            });
-        }
-        
-        return true;
-    }
-
     public render(): React.ReactNode {
         if (this.state.type === null) {
             return null;
         }
 
-        return ReactDom.createPortal(this.renderDialogRoot(), this.dialogMountPoint);
+        return ReactDom.createPortal(this.renderDialog(), this.dialogMountPoint);
     }
 
     public showContextMenu(details: IContextMenuDialogDetails) {
@@ -91,19 +80,6 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
             details: details,
             handlerArgs: details.handlerArgs
         });
-    }
-
-    private renderDialogRoot(): React.ReactNode {
-        const dialogClass = [
-            DIALOG_ROOT_BLOCK,
-            this.state.type && `dialog-${this.state.type}`
-        ].filter(Boolean).join(' ');
-
-        return (
-            <div className={dialogClass} ref={this.dialogRef}>
-                {this.renderDialog()}
-            </div>
-        );
     }
 
     private renderDialog(): React.ReactNode {
@@ -119,10 +95,8 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         const details = this.state.details as IContextMenuDialogDetails;
         const commands = this.props.commandService.getCommandsByContext(details.context);
         
-        const resultCoords = this.getContextMenuRenderCoordinates(details.coords);
-
         return (
-            <div className='context-menu' style={{ top: resultCoords.y, left: resultCoords.x }}>
+            <ContextMenu position={details.coords} onContextMenuHide={this.onDialogHide.bind(this)}>
                 {commands.map((command: ICommand, index: number) => {
                     return (
                         <ContextMenuCommand
@@ -133,19 +107,23 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
                         />
                     );
                 })}
-            </div>
+            </ContextMenu>    
         );
-    }
-
-    private getContextMenuRenderCoordinates(sourceCoords: ICoords): ICoords {
-        return sourceCoords;
     }
 
     private getCommandHandler(execute?: (...args: any) => void): () => void {
         return () => {
-            console.log('Исполнение команды');
-
             execute?.(this.state.handlerArgs);
+
+            this.onDialogHide();
         };
+    }
+
+    private onDialogHide() {
+        this.setState({
+            details: null,
+            type: null,
+            handlerArgs: null
+        });
     }
 }
