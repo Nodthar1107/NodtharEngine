@@ -110,6 +110,19 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));        
     }
 
+    public renameElement(uri: string, label: string) {
+        const node = this.getFileSystemNodeDescriptorByRelativePath(uri);
+
+        if (node !== undefined) {
+            node.label = label;
+        }
+
+        this.eventEmmiter.fireEvents([
+            new NotificationEvent(EventType.TREE_VIEW_UPDATED),
+            new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
+        );
+    }
+
     private configureModel() {
         this.putResourceToFolderByPath(
             generateFolder('test-folder-1'),

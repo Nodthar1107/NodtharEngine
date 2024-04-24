@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { IContextMenuDialogDetails } from './DialogServiceRenderer';
+import { IContextMenuDialogDetails, IInputDialogDetails } from './DialogServiceRenderer';
 import { IDialogService, IDialogServiceRenderer } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
 
@@ -17,5 +17,14 @@ export class DialogService implements IDialogService, IDialogRendererRegister {
         if (this.renderer !== null) {
             this.renderer.showContextMenu(details);
         }
+    }
+
+    public showInputDialog(options: IInputDialogDetails): Promise<string> {
+        return new Promise((resolve) => {
+            if (this.renderer !== null) {
+                options.resolve = resolve;
+                this.renderer.showInputDialog(options);
+            }
+        });
     }
 }

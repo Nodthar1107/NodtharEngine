@@ -15,5 +15,7 @@ export interface IResourcesManager extends IEventEmiterProvider {
 
     getCurrentFolder: () => Readonly<IFolderDescriptor> | undefined;
 
+    renameElement: (uri: string, label: string) => void;
+
     removeResourceByUri: (uri: string) => void;
 }

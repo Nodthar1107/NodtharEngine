@@ -1,11 +1,12 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
-import { ICommand } from 'src/core/providers/commandsProvider/commands';
 import { ICommandsProvider } from 'src/core/providers/commandsProvider/ICommandsProvider';
-import { ContextMenuCommand } from './ContextMenuCommand';
 import { IDialogService, IDialogServiceRenderer } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
 import { ContextMenu } from './ContextMenu';
+import { IQuickInputItem } from './QuickInputDialog';
+import { DialogWidget } from './DialogWidget';
+import { InputDialog } from './InputDialog';
 
 import 'reflect-metadata';
 
@@ -25,17 +26,29 @@ export interface ICreateDialogOptions {
     handlerArgs?: any;
 }
 
-export interface ICreateDialogDetails {}
+export interface ICreateDialogDetails {
+    title?: string;
+    description?: string;
+}
 
 export interface ICoords {
     x: number;
     y: number;
 }
 
-export interface IContextMenuDialogDetails {
+export interface IContextMenuDialogDetails extends ICreateDialogDetails {
     context: string;
     coords: ICoords;
     handlerArgs?: any;
+}
+
+export interface IInputDialogDetails extends ICreateDialogDetails {
+    resolve?: (value: string) => void;
+}
+
+export interface IQuickInputDialogDetails extends ICreateDialogDetails {
+    items: IQuickInputItem[];
+    hideInput?: boolean;
 }
 
 export interface IDialogServiceProps {
@@ -82,13 +95,49 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         });
     }
 
+    public showInputDialog(details: IInputDialogDetails) {
+        this.setState({
+            type: DialogType.Input,
+            details: details
+        });
+
+        return new Promise<string>((resolve) => {
+            resolve('Aboba');
+        });
+    }
+
     private renderDialog(): React.ReactNode {
+        let content: React.ReactNode | null = null;
+        let position: { top: string; left: string } = { top: '0', left: 'auto' };
+        let isStyled = true;
+        
         switch (this.state.type) {
             case DialogType.Context:
-                return this.renderContextMenu();
+                const coords = (this.state.details as IContextMenuDialogDetails).coords;
+                position = { top: `${coords.y}`, left: `${coords.x}` }
+                isStyled = false;
+                content = this.renderContextMenu();
+                break;
+            case DialogType.Input:
+                content = this.renderInput();
+                break;
+            case DialogType.QuickInput:
+                content = this.renderQuickInput();
+                break;
             default:
-                return null;
+                content = null;
         }
+
+        return (
+            <DialogWidget
+                title={this.state.details?.title}
+                description={this.state.details?.description}
+                position={position}
+                isStyled={isStyled}
+                onDialogHide={this.onDialogHide.bind(this)}>
+                {content}
+            </DialogWidget>
+        );
     }
 
     private renderContextMenu(): React.ReactNode {
@@ -96,27 +145,20 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         const commands = this.props.commandService.getCommandsByContext(details.context);
         
         return (
-            <ContextMenu position={details.coords} onContextMenuHide={this.onDialogHide.bind(this)}>
-                {commands.map((command: ICommand, index: number) => {
-                    return (
-                        <ContextMenuCommand
-                            title={command.title}
-                            hotKey={command.hotKey}
-                            handler={this.getCommandHandler(command.execute)}
-                            key={index}
-                        />
-                    );
-                })}
-            </ContextMenu>    
+            <ContextMenu
+                commands={commands}
+                handlerArgs={this.state.handlerArgs}
+                afterCommandHandle={this.onDialogHide.bind(this)}
+            />
         );
     }
 
-    private getCommandHandler(execute?: (...args: any) => void): () => void {
-        return () => {
-            execute?.(this.state.handlerArgs);
+    private renderInput(): React.ReactNode {
+        return <InputDialog closeDialog={this.onDialogHide.bind(this)} sendResponse={(this.state.details as IInputDialogDetails).resolve} />;
+    }
 
-            this.onDialogHide();
-        };
+    private renderQuickInput(): React.ReactNode {
+        return null;
     }
 
     private onDialogHide() {

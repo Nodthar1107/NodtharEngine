@@ -1,20 +1,25 @@
 import { inject, injectable } from 'inversify';
 import { ICommandContribution } from '../core/providers/commandsProvider/ICommandContribution';
 import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
-
-import 'reflect-metadata';
 import { IResourcesManager } from './ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './module-types';
 import { generateFolder } from './ResourcesManager/resourceUtils';
+import { IDialogService } from '../core/services/DialogService/IDialogService';
+import { CORE_TYPES } from '../core/module-types';
+
+import 'reflect-metadata';
 
 @injectable()
 export class FilesExplorerCommandsContribution implements ICommandContribution {
     private resourceManager: IResourcesManager;
+    private dialogService: IDialogService;
     
     public constructor(
-        @inject(FILES_EXPLORER_MODULE.IResourcesManager) resourceManager: IResourcesManager
+        @inject(FILES_EXPLORER_MODULE.IResourcesManager) resourceManager: IResourcesManager,
+        @inject(CORE_TYPES.IDialogService) dialogService: IDialogService
     ) {
         this.resourceManager = resourceManager;
+        this.dialogService = dialogService;
     }
 
     public registerCommands(register: ICommandRegister) {
@@ -61,8 +66,15 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             context: 'tree-view-context',
             title: 'Переименовать',
             category: '1crud-operation@2',
-            execute: (resourceUri: string) => {
-                
+            execute: async (resourceUri: string) => {
+                const label = await this.dialogService.showInputDialog({
+                    title: 'Переименование папки',
+                    description: 'Введите имя папки и нажмите Enter'
+                });
+
+                if (label !== '') {
+                    this.resourceManager.renameElement(resourceUri, label);
+                }
             }
         });
 

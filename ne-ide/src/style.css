@@ -48,6 +48,10 @@ body, html {
     --context-itemBackgroundColorHovered: #5B7073;
     --context-itemTextColor: #9BA1A3;
     --context-ItemTextColorHover: white;
+
+    --dialog-backgroundColor: rgb(54, 67, 70);
+
+    --text-color: #B8B8B8;
 }
 
 .NodtharEngine {
