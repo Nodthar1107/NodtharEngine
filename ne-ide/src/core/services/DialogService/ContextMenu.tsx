@@ -3,17 +3,19 @@ import { ICommand } from '../../providers/commandsProvider/commands';
 
 import './style.scss';
 import { ContextMenuCommand } from './ContextMenuCommand';
+import { withDialogWidget } from './DialogWidget';
 
 export interface IContextMenuPropsProps {
     commands: ICommand[];
 
     handlerArgs?: any;
-    afterCommandHandle?: () => void;
+    onDialogHide?: () => void;
 }
 
-export const ContextMenu: React.FC<IContextMenuPropsProps> = (props: IContextMenuPropsProps) => {
+const ContextMenu: React.FC<IContextMenuPropsProps> = (props: IContextMenuPropsProps) => {
     const getCommand = (execute?: (...args: any) => void) => {
         return () => {
+            props.onDialogHide?.();
             execute?.(props.handlerArgs);
         };
     };
@@ -33,3 +35,5 @@ export const ContextMenu: React.FC<IContextMenuPropsProps> = (props: IContextMen
         </div>
     );
 }
+
+export const ContextMenuWidget = withDialogWidget(ContextMenu);

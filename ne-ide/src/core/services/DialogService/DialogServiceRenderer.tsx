@@ -3,10 +3,9 @@ import * as ReactDom from 'react-dom';
 import { ICommandsProvider } from 'src/core/providers/commandsProvider/ICommandsProvider';
 import { IDialogService, IDialogServiceRenderer } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
-import { ContextMenu } from './ContextMenu';
+import { ContextMenuWidget } from './ContextMenu';
 import { IQuickInputItem } from './QuickInputDialog';
-import { DialogWidget } from './DialogWidget';
-import { InputDialog } from './InputDialog';
+import { InputDialogWidget } from './InputDialog';
 
 import 'reflect-metadata';
 
@@ -106,66 +105,63 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         });
     }
 
-    private renderDialog(): React.ReactNode {
-        let content: React.ReactNode | null = null;
-        let position: { top: string; left: string } = { top: '0', left: 'auto' };
-        let isStyled = true;
-        
+    private renderDialog(): React.ReactNode {    
         switch (this.state.type) {
             case DialogType.Context:
-                const coords = (this.state.details as IContextMenuDialogDetails).coords;
-                position = { top: `${coords.y}`, left: `${coords.x}` }
-                isStyled = false;
-                content = this.renderContextMenu();
-                break;
+                return this.renderContextMenu();
             case DialogType.Input:
-                content = this.renderInput();
-                break;
+                return this.renderInput();
             case DialogType.QuickInput:
-                content = this.renderQuickInput();
-                break;
+                return this.renderQuickInput();
             default:
-                content = null;
+                return null
         }
-
-        return (
-            <DialogWidget
-                title={this.state.details?.title}
-                description={this.state.details?.description}
-                position={position}
-                isStyled={isStyled}
-                onDialogHide={this.onDialogHide.bind(this)}>
-                {content}
-            </DialogWidget>
-        );
     }
 
     private renderContextMenu(): React.ReactNode {
         const details = this.state.details as IContextMenuDialogDetails;
         const commands = this.props.commandService.getCommandsByContext(details.context);
+        const coords = (this.state.details as IContextMenuDialogDetails).coords;
         
         return (
-            <ContextMenu
+            <ContextMenuWidget
                 commands={commands}
+                position={{
+                    top: `${coords.y}`,
+                    left: `${coords.x}`
+                }}
+                isStyled={false}
                 handlerArgs={this.state.handlerArgs}
-                afterCommandHandle={this.onDialogHide.bind(this)}
+                onDialogHide={this.onDialogHide.bind(this, DialogType.Context)}
             />
         );
     }
 
     private renderInput(): React.ReactNode {
-        return <InputDialog closeDialog={this.onDialogHide.bind(this)} sendResponse={(this.state.details as IInputDialogDetails).resolve} />;
+        const details = this.state.details as IInputDialogDetails;
+
+        return (
+            <InputDialogWidget
+                title={details.title}
+                description={details.description}
+                isStyled
+                sendResponse={details.resolve}
+                onDialogHide={this.onDialogHide.bind(this, DialogType.Input)}
+            />
+        );
     }
 
     private renderQuickInput(): React.ReactNode {
         return null;
     }
 
-    private onDialogHide() {
-        this.setState({
-            details: null,
-            type: null,
-            handlerArgs: null
-        });
+    private onDialogHide(senderWidgetType: DialogType) {
+        if (senderWidgetType === this.state.type) {
+            this.setState({
+                details: null,
+                type: null,
+                handlerArgs: null
+            });
+        }
     }
 }

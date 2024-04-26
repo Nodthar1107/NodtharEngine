@@ -113,8 +113,22 @@ export class ResourceManagerMockImpl implements IResourcesManager {
     public renameElement(uri: string, label: string) {
         const node = this.getFileSystemNodeDescriptorByRelativePath(uri);
 
-        if (node !== undefined) {
-            node.label = label;
+        if (node === undefined) {
+            return;
+        }
+
+        node.label = label;
+        node.uri = this.changeNodeUriByName(uri, label);
+
+        const parent = (node as IOwnedDescriptor).parent;
+        if (parent !== null && isFolderDescriptor(parent)) {
+            if (isFolderDescriptor(node as IFileSystemNodeDescriptor)) {
+                parent.folders.sort(this.sortNodesByName);
+            }
+        }
+
+        if (isFolderDescriptor(node)) {
+            this.updateFolderChildrenUris(node);
         }
 
         this.eventEmmiter.fireEvents([
@@ -202,5 +216,23 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.putResourceToFolder(taregtElement as IFolderDescriptor, resource);
         
         return this;
+    }
+
+    private updateFolderChildrenUris(node: IFolderDescriptor) {
+        node.resources.forEach((resource: IResourceDescriptor) => {
+            resource.uri = node.uri + '/' + resource.label;
+        });
+        node.folders.forEach((folder: IFolderDescriptor) => {
+            folder.uri = node.uri + '/' + folder.label;
+            this.updateFolderChildrenUris(folder);
+        })
+    }
+
+    private changeNodeUriByName(uri: string, name: string): string {
+        return uri.replace(/\/(\w|-)+$/, `/${name}`);
+    }
+
+    private sortNodesByName(first: IFileSystemNodeDescriptor, second: IFileSystemNodeDescriptor) {
+        return first.label > second.label ? 1 : -1;
     }
 }

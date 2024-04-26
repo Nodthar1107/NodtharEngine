@@ -1,13 +1,14 @@
 import * as React from 'react';
 
 import './style.scss';
+import { withDialogWidget } from './DialogWidget';
 
 interface IInputDialogProps {
-    closeDialog?: () => void;
+    onDialogHide?: () => void;
     sendResponse?: (value: string) => void;
 }
 
-export const InputDialog: React.FC<IInputDialogProps> = (props: IInputDialogProps): React.ReactElement => {
+const InputDialog: React.FC<IInputDialogProps> = (props: IInputDialogProps): React.ReactElement => {
     const [value, setValue] = React.useState('');
     const inputRef = React.useRef<HTMLInputElement>(null);
     const onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,10 +25,7 @@ export const InputDialog: React.FC<IInputDialogProps> = (props: IInputDialogProp
                 onSubmit={(event) => {
                     event.preventDefault();
 
-                    console.log('Submit')
-                    console.log(props);
-
-                    props.closeDialog?.();
+                    props.onDialogHide?.();
                     props.sendResponse?.(value);
                 }}>
                 <input
@@ -39,3 +37,5 @@ export const InputDialog: React.FC<IInputDialogProps> = (props: IInputDialogProp
         </div>
     );
 }
+
+export const InputDialogWidget = withDialogWidget(InputDialog);
