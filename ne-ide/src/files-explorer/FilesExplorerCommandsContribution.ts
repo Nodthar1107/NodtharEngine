@@ -29,8 +29,8 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
     public registerCommands(register: ICommandRegister) {
         register.registerCommand({
             id: 'filesExplorer.content.openDialog.createNewResource',
-            context: 'files-explorer-context',
-            title: 'Добавить ресурс',
+            context: 'files-explorer-toolbar',
+            title: 'Добавить папку',
             iconId: 'add',
             execute: () => {
                 this.resourceManager.addResourceToCurrentFolder(generateFolder('Новая папка'));
@@ -39,7 +39,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
         register.registerCommand({
             id: 'filesExplorer.TreeView.openTopLevelFolder',
-            context: 'files-explorer-context',
+            context: 'files-explorer-toolbar',
             title: 'Перейти в родительскую папку',
             iconId: 'back',
             isEnable: () => {
@@ -57,7 +57,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
         register.registerCommand({
             id: 'filesExplorer.treeView.element.copy',
-            context: 'tree-view-context',
+            context: 'files-explorer-tree-view-element-context',
             category: '1crud-operation@1',
             title: 'Копировать',
             execute: (resourceUri: string) => {
@@ -67,7 +67,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
         register.registerCommand({
             id: 'filesExplorer.treeView.element.rename',
-            context: 'tree-view-context',
+            context: 'files-explorer-tree-view-element-context',
             title: 'Переименовать',
             category: '1crud-operation@2',
             execute: async (resourceUri: string) => {
@@ -93,7 +93,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
         register.registerCommand({
             id: 'filesExplorer.treeView.element.remove',
-            context: 'tree-view-context',
+            context: 'files-explorer-tree-view-element-context',
             category: '1crud-operation@3',
             title: 'Удалить',
             execute: (resourceUri: string) => {

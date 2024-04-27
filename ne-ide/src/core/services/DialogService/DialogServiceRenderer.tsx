@@ -99,10 +99,6 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
             type: DialogType.Input,
             details: details
         });
-
-        return new Promise<string>((resolve) => {
-            resolve('Aboba');
-        });
     }
 
     private renderDialog(): React.ReactNode {    

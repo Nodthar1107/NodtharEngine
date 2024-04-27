@@ -5,6 +5,10 @@
     background-color: var(--file-explorer-background);
 }
 
+.folders-tree-widget {
+    min-height: 100%;
+}
+
 .resource-viewer-widget {
     min-height: 100%;
     display: flex;

@@ -132,6 +132,7 @@ export class TreeWidget<P extends ITreeWidgetProps> extends React.Component<P, I
 
     protected onNodeRowRightButtonClick(node: ITreeNode, index: number, event: React.MouseEvent) {
         event.preventDefault();
+        event.stopPropagation();
 
         this.onNodeRowSelect(index);
     }

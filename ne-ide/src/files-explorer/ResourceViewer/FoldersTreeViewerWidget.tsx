@@ -8,6 +8,8 @@ import { ISubscriberable } from '../events/ISubscriberable';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
 import { IDialogService } from '../../core/services/DialogService/IDialogService';
 
+import '../style.scss';
+
 interface IFoldersTreeViewerWidgetProps extends ITreeWidgetProps {
     resourceManager: IResourcesManager;
     dialogService: IDialogService
@@ -32,7 +34,15 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
     }
 
     public render(): ReactNode {
-        return super.render();
+        return (
+            <div
+                className='folders-tree-widget'
+                onContextMenu={(event) => {
+                    this.openTreeViewContextMenu(event)
+                }}>
+                {super.render()}
+            </div>
+        );
     }
 
     public fireEvent(event: NotificationEvent) {
@@ -85,7 +95,7 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
         super.onNodeRowRightButtonClick(node, index, event);
 
         this.props.dialogService.showContextMenu({
-            context: 'tree-view-context',
+            context: 'files-explorer-tree-view-element-context',
             coords: {
                 x: event.clientX,
                 y: event.clientY
@@ -126,5 +136,20 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
             hasChildren: hasChildren,
             selected: false
         };
+    }
+
+    private openTreeViewContextMenu(event: React.MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const rootNodeUri = this.state.nodeRows[0]?.node.uri; 
+        this.props.dialogService.showContextMenu({
+            context: 'files-explorer-context',
+            coords: {
+                x: event.clientX,
+                y: event.clientY
+            },
+            handlerArgs: rootNodeUri || undefined
+        });
     }
 }
