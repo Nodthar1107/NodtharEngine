@@ -8,6 +8,7 @@ import { CommandsProviderMockImpl } from './providers/commandsProvider/CommandsP
 import { ICommandRegister } from './providers/commandsProvider/ICommandRegister';
 import { IDialogService } from './services/DialogService/IDialogService';
 import { DialogService } from './services/DialogService/DialogService';
+import { IMessageService, MessageService } from './services/MessageService/MessageService';
 
 export class CoreModule implements IDIModule {
     public registerModule(container: Container) {
@@ -30,6 +31,10 @@ export class CoreModule implements IDIModule {
         container
             .bind<IDialogService>(CORE_TYPES.IDialogService)
             .to(DialogService)
+            .inSingletonScope();
+        container
+            .bind<IMessageService>(CORE_TYPES.IMessageService)
+            .to(MessageService)
             .inSingletonScope();
     };
     

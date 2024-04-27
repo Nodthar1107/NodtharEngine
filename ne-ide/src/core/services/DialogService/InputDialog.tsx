@@ -15,9 +15,10 @@ const InputDialog: React.FC<IInputDialogProps> = (props: IInputDialogProps): Rea
         setValue(event.target.value);
     }
 
+    // TODO: Исправить на установку фокуса при монтировании
     React.useEffect(() => {
         inputRef.current?.focus();
-    }, []);
+    });
 
     return (
         <div className='input-dialog'>

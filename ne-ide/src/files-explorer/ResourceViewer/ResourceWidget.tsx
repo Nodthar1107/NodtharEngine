@@ -22,7 +22,7 @@ interface IResourceWidgetProps {
 export const ResourceWidget: React.FC<IResourceWidgetProps> = (
     props: IResourceWidgetProps
 ): React.ReactElement => {
-    const iconsProvider = React.useContext(ProvidersContext).iconstProvider;
+    const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
 
     const resourceIcon = React.useMemo(() => {
         return React.createElement(iconsProvider.getIconById(props.resourceType), {

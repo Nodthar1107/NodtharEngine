@@ -4,13 +4,15 @@ import { ICommandsProvider } from '../core/providers/commandsProvider/ICommandsP
 import { ITreeViewManager } from '../tree-view/TreeViewManager/ITreeViewManager';
 import { IResourcesManager } from '../files-explorer/ResourcesManager/IResourcesManager';
 import { IDialogService } from 'src/core/services/DialogService/IDialogService';
+import { IMessageService } from 'src/core/services/MessageService/MessageService';
 
 const InitialContex = {
     commandsProvider: {} as ICommandsProvider,
-    iconstProvider: {} as IIconsProvider,
+    iconsProvider: {} as IIconsProvider,
     treeViewManager: {} as ITreeViewManager,
     resourcesManager: {} as IResourcesManager,
-    dialogService: {} as IDialogService
+    dialogService: {} as IDialogService,
+    messageService: {} as IMessageService
 };
 
 export type ProvidersContextType = typeof InitialContex;

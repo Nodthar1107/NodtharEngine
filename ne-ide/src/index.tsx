@@ -19,6 +19,7 @@ import { IResourcesManager } from './files-explorer/ResourcesManager/IResourcesM
 import { FILES_EXPLORER_MODULE } from './files-explorer/module-types';
 import { ActivityBarModule } from './activity-bar/module';
 import { IDialogService } from './core/services/DialogService/IDialogService';
+import { IMessageService } from './core/services/MessageService/MessageService';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -40,10 +41,11 @@ root.render(
         <ProvidersContext.Provider
             value={{
                 commandsProvider: injector.get<ICommandsProvider>(CORE_TYPES.ICommandsProvider),
-                iconstProvider: injector.get<IIconsProvider>(CORE_TYPES.IIconsProvider),
+                iconsProvider: injector.get<IIconsProvider>(CORE_TYPES.IIconsProvider),
                 treeViewManager: injector.get<ITreeViewManager>(TREE_VIEW_MODULE.ITreeViewManager),
                 resourcesManager: injector.get<IResourcesManager>(FILES_EXPLORER_MODULE.IResourcesManager),
-                dialogService: injector.get<IDialogService>(CORE_TYPES.IDialogService)
+                dialogService: injector.get<IDialogService>(CORE_TYPES.IDialogService),
+                messageService: injector.get<IMessageService>(CORE_TYPES.IMessageService)
             }}>
             <App />
         </ProvidersContext.Provider>

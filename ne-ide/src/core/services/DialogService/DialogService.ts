@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { IContextMenuDialogDetails, IInputDialogDetails } from './DialogServiceRenderer';
-import { IDialogService, IDialogServiceRenderer } from './IDialogService';
+import { IDialogService, IDialogServiceRenderer, IInputDialogOptions } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
 
 import 'reflect-metadata';
@@ -19,11 +19,13 @@ export class DialogService implements IDialogService, IDialogRendererRegister {
         }
     }
 
-    public showInputDialog(options: IInputDialogDetails): Promise<string> {
+    public showInputDialog(options: IInputDialogOptions): Promise<string> {
         return new Promise((resolve) => {
             if (this.renderer !== null) {
-                options.resolve = resolve;
-                this.renderer.showInputDialog(options);
+                this.renderer.showInputDialog({
+                    ...options,
+                    resolve: resolve
+                });
             }
         });
     }

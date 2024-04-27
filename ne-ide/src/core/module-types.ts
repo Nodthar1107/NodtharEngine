@@ -3,5 +3,6 @@ export const CORE_TYPES = {
     ICommandsProvider: Symbol('ICommandsProvider'),
     ICommandContribution: Symbol('ICommandContribution'),
     ICommandRegister: Symbol('ICommandRegister'),
-    IDialogService: Symbol('IDialogService')
+    IDialogService: Symbol('IDialogService'),
+    IMessageService: Symbol('IMessageService')
 };

@@ -8,10 +8,14 @@ import { TreeViewPanel } from './tree-view';
 import './style.css';
 import { DialogServiceRenderer } from './core/services/DialogService/DialogServiceRenderer';
 import { ProvidersContext } from './contexts/servicesContext';
+import { MessageService } from './core/services/MessageService/MessageService';
+import { MessageServiceRenderer } from './core/services/MessageService/MessageServiceRenderer';
 
 export const App: React.FC = (): React.ReactElement => {
     const dialogService = React.useContext(ProvidersContext).dialogService;
     const commandsProvider = React.useContext(ProvidersContext).commandsProvider;
+    const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
+    const messageService = React.useContext(ProvidersContext).messageService;
 
     return (
         <div className='NodtharEngine'>
@@ -24,6 +28,7 @@ export const App: React.FC = (): React.ReactElement => {
             </div>
             <PropertyViewPanel title='Свойства' useVerticalAlign />
             <DialogServiceRenderer dialogService={dialogService} commandService={commandsProvider} />
+            <MessageServiceRenderer iconProvider={iconsProvider} messageService={messageService} />
         </div>
     );
 }

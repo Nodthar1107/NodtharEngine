@@ -5,6 +5,7 @@ import { IResourcesManager } from './ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './module-types';
 import { generateFolder } from './ResourcesManager/resourceUtils';
 import { IDialogService } from '../core/services/DialogService/IDialogService';
+import { IMessageService } from '../core/services/MessageService/MessageService';
 import { CORE_TYPES } from '../core/module-types';
 
 import 'reflect-metadata';
@@ -13,13 +14,16 @@ import 'reflect-metadata';
 export class FilesExplorerCommandsContribution implements ICommandContribution {
     private resourceManager: IResourcesManager;
     private dialogService: IDialogService;
+    private messageService: IMessageService;
     
     public constructor(
         @inject(FILES_EXPLORER_MODULE.IResourcesManager) resourceManager: IResourcesManager,
-        @inject(CORE_TYPES.IDialogService) dialogService: IDialogService
+        @inject(CORE_TYPES.IDialogService) dialogService: IDialogService,
+        @inject(CORE_TYPES.IMessageService) messageService: IMessageService
     ) {
         this.resourceManager = resourceManager;
         this.dialogService = dialogService;
+        this.messageService = messageService;
     }
 
     public registerCommands(register: ICommandRegister) {
@@ -67,6 +71,15 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             title: 'Переименовать',
             category: '1crud-operation@2',
             execute: async (resourceUri: string) => {
+                if (resourceUri === '/') {
+                    this.messageService.showInfoMessage({
+                        title: 'Нельзя переименовать',
+                        description: 'Корневая директория не может быть переименована'
+                    });
+
+                    return;
+                }
+
                 const label = await this.dialogService.showInputDialog({
                     title: 'Переименование папки',
                     description: 'Введите имя папки и нажмите Enter'
@@ -84,6 +97,15 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             category: '1crud-operation@3',
             title: 'Удалить',
             execute: (resourceUri: string) => {
+                if (resourceUri === '/') {
+                    this.messageService.showInfoMessage({
+                        title: 'Нельзя удалить',
+                        description: 'Корневая директория не может быть удалена какой-то длинный текст сообщения ради проверки длинных сообщений'
+                    });
+
+                    return;
+                }
+                
                 if (resourceUri) {
                     this.resourceManager.removeResourceByUri(resourceUri);
                 } 
