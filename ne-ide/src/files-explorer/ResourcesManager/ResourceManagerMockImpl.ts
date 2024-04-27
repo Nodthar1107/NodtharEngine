@@ -229,7 +229,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
     }
 
     private changeNodeUriByName(uri: string, name: string): string {
-        return uri.replace(/\/(\w|-)+$/, `/${name}`);
+        return uri.replace(/\/([а-яА-Я\w]|-|\s)+$/, `/${name}`);
     }
 
     private sortNodesByName(first: IFileSystemNodeDescriptor, second: IFileSystemNodeDescriptor) {

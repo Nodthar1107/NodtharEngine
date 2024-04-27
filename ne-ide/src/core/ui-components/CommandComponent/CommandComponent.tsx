@@ -20,8 +20,6 @@ export const CommandComponent: React.FC<ICommandComponentProps> = (props: IComma
         }
     }
 
-    console.log(className);
-
     return (
         <div className={className} onClick={commandHandler}>
             {React.createElement(props.command.iconComponent as React.FC)}

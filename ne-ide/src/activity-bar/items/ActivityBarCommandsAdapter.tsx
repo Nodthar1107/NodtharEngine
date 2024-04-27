@@ -47,9 +47,6 @@ export class ActivityBarCommandsAdapter {
     }
 
     private getActivityBarItemComponent(command: ICommand): React.ReactElement {
-        console.log('Команда');
-        console.log(command.iconComponent);
-
         return (
             <ActivityBarItem
                 command={command}
