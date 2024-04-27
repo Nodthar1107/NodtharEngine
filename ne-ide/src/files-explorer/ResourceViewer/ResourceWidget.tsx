@@ -12,6 +12,7 @@ export enum ResourceDisplayMode {
 
 interface IResourceWidgetProps {
     label: string;
+    resourceUri: string;
     resourceType: ResourceType;
 
     mode: ResourceDisplayMode;
@@ -23,6 +24,8 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = (
     props: IResourceWidgetProps
 ): React.ReactElement => {
     const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
+    const dialogService = React.useContext(ProvidersContext).dialogService;
+    const commandsService = React.useContext(ProvidersContext).commandsProvider;
 
     const resourceIcon = React.useMemo(() => {
         return React.createElement(iconsProvider.getIconById(props.resourceType), {
@@ -31,11 +34,26 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = (
     }, [props.mode])
 
     const iconWidget = (className: string): React.ReactElement => {
+        const onContextMenu = (event: React.MouseEvent) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+                dialogService.showContextMenu({
+                    context: 'files-explorer-resource-widget-context',
+                    coords: {
+                        x: event.clientX,
+                        y: event.clientY
+                    },
+                    handlerArgs: props.resourceUri
+                });
+        }
+
         return (
             <div
                 className={`resource-widget ${className}`}
                 title={props.label}
-                onDoubleClick={props.onDoubleClick}>
+                onDoubleClick={props.onDoubleClick}
+                onContextMenu={onContextMenu}>
                 {resourceIcon}
                 <div className='resource-widget__label'>{props.label}</div>
             </div>

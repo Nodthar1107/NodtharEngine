@@ -5,9 +5,11 @@ import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
 import { ISubscriberable } from '../events/ISubscriberable';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
 import { ResourceType } from '../ResourcesManager/ResourceType';
+import { IDialogService } from '../../core/services/DialogService/IDialogService';
 
 interface IFolderViewerWidgetProps {
     resourceManager: IResourcesManager;
+    dialogService: IDialogService;
     
     displayMode: ResourceDisplayMode;
 }
@@ -53,7 +55,11 @@ export class FolderContentViewerWidget
 
     public render(): React.ReactNode {
         return (
-            <div className='folder-viewer-widget'>
+            <div
+                className='folder-viewer-widget'
+                onContextMenu={(event) => {
+                    this.openContextMenu(event)
+                }}>
                 <div className='folder-viewer-widget__content'>
                     {this.getResourcesWidgets(this.state.folders)}
                     {this.getResourcesWidgets(this.state.resources)}
@@ -67,6 +73,7 @@ export class FolderContentViewerWidget
             return (
                 <ResourceWidget
                     label={descriptor.label}
+                    resourceUri={descriptor.uri}
                     resourceType={descriptor.resourceType}
                     mode={this.props.displayMode}
                     onDoubleClick={this.openResource.bind(this, descriptor)}
@@ -81,5 +88,21 @@ export class FolderContentViewerWidget
             
             return;
         }
+    }
+
+    private openContextMenu(event: React.MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const currentFolderUri = this.props.resourceManager.getCurrentFolder()?.uri;
+
+        this.props.dialogService.showContextMenu({
+            context: 'files-explorer-folders-content-panel',
+            coords: {
+                x: event.clientX,
+                y: event.clientY
+            },
+            handlerArgs: currentFolderUri || undefined
+        });
     }
 }

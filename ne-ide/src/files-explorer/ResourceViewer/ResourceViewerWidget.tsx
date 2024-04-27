@@ -23,6 +23,7 @@ export const ResourceViewerWidget: React.FC = (): React.ReactElement => {
             </ResizablePanel>
             <FolderContentViewerWidget
                 resourceManager={resourceManager}
+                dialogService={dialogService}
                 displayMode={ResourceDisplayMode.LargeIcons}
             />
         </div>

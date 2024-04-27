@@ -27,6 +27,13 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
     }
 
     public registerCommands(register: ICommandRegister) {
+        this.registerToolbarCommands(register);
+        this.registerTreeViewElementCommands(register);
+        this.registerResourceWidgetCommands(register)
+        this.registerFolderContentPanelContext(register);
+    }
+
+    private registerToolbarCommands(register: ICommandRegister) {
         register.registerCommand({
             id: 'filesExplorer.content.openDialog.createNewResource',
             context: 'files-explorer-toolbar',
@@ -54,7 +61,9 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
                 this.resourceManager.setCurrentDirectory(folder.parent.uri);
             }
         });
+    }
 
+    private registerTreeViewElementCommands(register: ICommandRegister) {
         register.registerCommand({
             id: 'filesExplorer.treeView.element.copy',
             context: 'files-explorer-tree-view-element-context',
@@ -110,6 +119,40 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
                     this.resourceManager.removeResourceByUri(resourceUri);
                 } 
             }
+        });
+    }
+
+    private registerResourceWidgetCommands(register: ICommandRegister) {
+        register.registerCommand({
+            id: 'filesExplorer.folderContentPanel.copyElement',
+            context: 'files-explorer-resource-widget-context',
+            title: 'Копировать',
+        });
+
+        register.registerCommand({
+            id: 'filesExplorer.folderContentPanel.renameElement',
+            context: 'files-explorer-resource-widget-context',
+            title: 'Переименовать',
+        });
+
+        register.registerCommand({
+            id: 'filesExplorer.folderContentPanel.removeElement',
+            context: 'files-explorer-resource-widget-context',
+            title: 'Удалить',
+        });
+
+        register.registerCommand({
+            id: 'filesExplorer.folderContentPanel.showElementProperties',
+            context: 'files-explorer-resource-widget-context',
+            title: 'Свойства',
+        });
+    }
+
+    private registerFolderContentPanelContext(register: ICommandRegister) {
+        register.registerCommand({
+            id: 'filesExplorer.folderContentPanel.addElement',
+            context: 'files-explorer-folders-content-panel',
+            title: 'Создать элемент проекта',
         });
     }
 }

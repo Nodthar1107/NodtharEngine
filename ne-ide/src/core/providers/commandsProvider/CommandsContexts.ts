@@ -11,5 +11,7 @@ export enum CommandContext {
 
     FILES_EXPLORER_TREE_VIEW_ELEMENT_CONTEXT = 'files-explorer-tree-view-element-context',
 
+    FILES_EXPLORER_FOLDER_CONTENT_PANEL = 'files-explorer-folders-content-panel',
+
     FILES_EXPLORER_RESOURCE_WIDGET_CONTEXT = 'files-explorer-resource-widget-context'
 }
