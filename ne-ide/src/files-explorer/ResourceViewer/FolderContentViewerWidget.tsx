@@ -73,7 +73,7 @@ export class FolderContentViewerWidget
             return (
                 <ResourceWidget
                     label={descriptor.label}
-                    resourceUri={descriptor.uri}
+                    resourceUri={descriptor.uri.toString()}
                     resourceType={descriptor.resourceType}
                     mode={this.props.displayMode}
                     onDoubleClick={this.openResource.bind(this, descriptor)}

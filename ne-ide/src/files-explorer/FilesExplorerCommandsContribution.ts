@@ -7,6 +7,7 @@ import { generateFolder } from './ResourcesManager/resourceUtils';
 import { IDialogService } from '../core/services/DialogService/IDialogService';
 import { IMessageService } from '../core/services/MessageService/MessageService';
 import { CORE_TYPES } from '../core/module-types';
+import { URI } from '../core/utils/URI';
 
 import 'reflect-metadata';
 
@@ -80,23 +81,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             title: 'Переименовать',
             category: '1crud-operation@2',
             execute: async (resourceUri: string) => {
-                if (resourceUri === '/') {
-                    this.messageService.showInfoMessage({
-                        title: 'Нельзя переименовать',
-                        description: 'Корневая директория не может быть переименована'
-                    });
-
-                    return;
-                }
-
-                const label = await this.dialogService.showInputDialog({
-                    title: 'Переименование папки',
-                    description: 'Введите имя папки и нажмите Enter'
-                });
-
-                if (label !== '') {
-                    this.resourceManager.renameElement(resourceUri, label);
-                }
+                this.renameProjectElement(resourceUri);
             }
         });
 
@@ -116,7 +101,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
                 }
                 
                 if (resourceUri) {
-                    this.resourceManager.removeResourceByUri(resourceUri);
+                    this.resourceManager.removeResourceByUri(URI.createURIFromString(resourceUri));
                 } 
             }
         });
@@ -133,6 +118,9 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             id: 'filesExplorer.folderContentPanel.renameElement',
             context: 'files-explorer-resource-widget-context',
             title: 'Переименовать',
+            execute: (uri: string) => {
+                this.renameProjectElement(uri);
+            },
         });
 
         register.registerCommand({
@@ -154,5 +142,24 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             context: 'files-explorer-folders-content-panel',
             title: 'Создать элемент проекта',
         });
+    }
+
+    private async renameProjectElement(uri: string) {
+        if (uri === '/') {
+            this.messageService.showInfoMessage({
+                title: 'Нельзя переименовать',
+                description: 'Корневая директория не может быть переименована'
+            });
+
+            return;
+        }
+
+        const label = await this.dialogService.showInputDialog({
+            title: 'Переименование элемента проекта'
+        });
+
+        if (label !== '') {
+            this.resourceManager.renameElement(URI.createURIFromString(uri), label);
+        }
     }
 }

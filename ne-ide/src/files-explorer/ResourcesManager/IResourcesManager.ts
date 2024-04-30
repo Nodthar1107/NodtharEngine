@@ -1,3 +1,4 @@
+import { URI } from 'src/core/utils/URI';
 import { IEventEmmiter } from '../events/IEventEmmiter';
 import { IEventEmiterProvider } from '../events/IEventEmmiterProvider';
 import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } from './model';
@@ -5,9 +6,9 @@ import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } fro
 export interface IResourcesManager extends IEventEmiterProvider {
     getRootFolder: () => IFolderDescriptor | undefined; 
 
-    changeCurrentDirectory: (uri: string) => void;
+    changeCurrentDirectory: (uri: URI) => void;
 
-    setCurrentDirectory: (uri: string) => void;
+    setCurrentDirectory: (uri: URI) => void;
 
     getCurrentFolderContent: () => { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } | undefined;
 
@@ -15,7 +16,7 @@ export interface IResourcesManager extends IEventEmiterProvider {
 
     getCurrentFolder: () => Readonly<IFolderDescriptor> | undefined;
 
-    renameElement: (uri: string, label: string) => void;
+    renameElement: (uri: URI, label: string) => void;
 
-    removeResourceByUri: (uri: string) => void;
+    removeResourceByUri: (uri: URI) => void;
 }

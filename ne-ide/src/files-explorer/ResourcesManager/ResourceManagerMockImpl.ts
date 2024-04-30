@@ -4,11 +4,13 @@ import { IFileSystemNodeDescriptor, IFolderDescriptor, IOwnedDescriptor, IResour
 import { IResourcesManager } from './IResourcesManager';
 import { ResourceType } from './ResourceType';
 
-import 'reflect-metadata';
 import { IEventEmmiter } from '../events/IEventEmmiter';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
 import { EventEmmiter } from '../events/EventEmmiter';
 import { generateFolder, generateResource } from './resourceUtils';
+import { URI } from '../../core/utils/URI';
+
+import 'reflect-metadata';
 
 @injectable()
 export class ResourceManagerMockImpl implements IResourcesManager {
@@ -16,7 +18,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         label: '/',
         parent: null,
         resourceType: ResourceType.Folder,
-        uri: '/',
+        uri: URI.createURI('/', ''),
         folders: [],
         resources: []
     }
@@ -25,6 +27,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
 
     public constructor() {
         this.configureModel();
+        console.log('Модель', this.resourcesRoot);
     }
 
     public getEventEmmiter(): IEventEmmiter {
@@ -41,7 +44,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
 
     public addResourceToCurrentFolder(resource: IFileSystemNodeDescriptor) {
         if (isFolderDescriptor(resource)) {
-            this.putResourceToFolder(this.currentFolderDescriptor, resource);
+            this.putNodeToFolder(this.currentFolderDescriptor, resource);
             this.currentFolderDescriptor = resource;
 
             this.eventEmmiter.fireEvents([
@@ -56,8 +59,8 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
     }
 
-    public changeCurrentDirectory(uri: string) {
-        const folder = this.getFolderByRelativePath(uri);
+    public changeCurrentDirectory(uri: URI) {
+        const folder = this.getFolderByRelativePath(uri.toString());
         if (folder === undefined) {
             return;
         }
@@ -66,7 +69,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
     }
 
-    public setCurrentDirectory(uri: string) {
+    public setCurrentDirectory(uri: URI) {
         this.changeCurrentDirectory(uri);
 
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.TREE_VIEW_UPDATED));
@@ -79,8 +82,8 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         };
     }
 
-    public removeResourceByUri(uri: string) {
-        const node = this.getFileSystemNodeDescriptorByRelativePath(uri);
+    public removeResourceByUri(uri: URI) {
+        const node = this.getFileSystemNodeDescriptor(uri);
         if (!node) {
             return;
         }
@@ -110,26 +113,30 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));        
     }
 
-    public renameElement(uri: string, label: string) {
-        const node = this.getFileSystemNodeDescriptorByRelativePath(uri);
+    public renameElement(uri: URI, label: string) {
+        console.log(uri);
+        const node = this.getFileSystemNodeDescriptor(uri);
+        console.log(node);
 
         if (node === undefined) {
             return;
         }
 
         node.label = label;
-        node.uri = this.changeNodeUriByName(uri, label);
-
-        const parent = (node as IOwnedDescriptor).parent;
-        if (parent !== null && isFolderDescriptor(parent)) {
-            if (isFolderDescriptor(node as IFileSystemNodeDescriptor)) {
-                parent.folders.sort(this.sortNodesByName);
-            }
-        }
+        node.uri = URI.createURI(node.uri.path, label, node.uri.extension);
 
         if (isFolderDescriptor(node)) {
             this.updateFolderChildrenUris(node);
+
+            const parent = node.parent as IFolderDescriptor;
+            if (parent !== null) {
+                if (isFolderDescriptor(node as IFileSystemNodeDescriptor)) {
+                    parent.folders.sort(this.sortNodesByName);
+                }
+            }
         }
+
+        console.log('After rename', node)
 
         this.eventEmmiter.fireEvents([
             new NotificationEvent(EventType.TREE_VIEW_UPDATED),
@@ -138,45 +145,45 @@ export class ResourceManagerMockImpl implements IResourcesManager {
     }
 
     private configureModel() {
-        this.putResourceToFolderByPath(
+        this.putNodeToFolderByPath(
             generateFolder('test-folder-1'),
             '/'
-        ).putResourceToFolderByPath(
+        ).putNodeToFolderByPath(
             generateFolder('test-folder-2'),
             '/'
-        ).putResourceToFolderByPath(
-            generateResource('SceneBlueprint.bp', ResourceType.Blueprint),
+        ).putNodeToFolderByPath(
+            generateResource('SceneBlueprint', ResourceType.Blueprint),
             '/'
-        ).putResourceToFolderByPath(
+        ).putNodeToFolderByPath(
             generateFolder('models'),
             '/test-folder-1'
-        ).putResourceToFolderByPath(
-            generateResource('Sphere.obj', ResourceType.Model),
+        ).putNodeToFolderByPath(
+            generateResource('Sphere', ResourceType.Model),
             '/test-folder-1/models'
-        ).putResourceToFolderByPath(
-            generateResource('Box.obj', ResourceType.Model),
+        ).putNodeToFolderByPath(
+            generateResource('Box', ResourceType.Model),
             '/test-folder-1/models'
-        ).putResourceToFolderByPath(
-            generateResource('Cone.obj', ResourceType.Model),
+        ).putNodeToFolderByPath(
+            generateResource('Cone', ResourceType.Model),
             '/test-folder-1/models'
-        ).putResourceToFolderByPath(
-            generateResource('3DObjBlueprint.bp', ResourceType.Blueprint),
+        ).putNodeToFolderByPath(
+            generateResource('3DObjBlueprint', ResourceType.Blueprint),
             '/test-folder-1'
-        ).putResourceToFolderByPath(
-            generateResource('FooBlock.java', ResourceType.SourceJava),
+        ).putNodeToFolderByPath(
+            generateResource('FooBlock', ResourceType.SourceJava),
             '/test-folder-1'
         );
     }
 
-    private getFileSystemNodeDescriptorByRelativePath(relativePath: string): IFileSystemNodeDescriptor | undefined {
+    private  getFolderByRelativePath(relativePath: string): IFolderDescriptor | undefined {
         if (relativePath === '/') {
             return this.resourcesRoot;
         }
 
-        const foldersList = relativePath.split('/').slice(1);
+        const pathFragments = relativePath.split('/').slice(1);
         let taregtElement: IFolderDescriptor | undefined = this.resourcesRoot;
-        for (const folderName of foldersList) {
-            taregtElement = taregtElement?.folders?.find((folder: IResourceDescriptor) => {
+        for (const folderName of pathFragments) {
+            taregtElement = taregtElement?.folders?.find((folder: IFolderDescriptor) => {
                 return folder.label === folderName;
             });
 
@@ -188,48 +195,51 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         return taregtElement;
     }
 
-    private getFolderByRelativePath(relativePath: string): IFolderDescriptor | undefined {
-        const node = this.getFileSystemNodeDescriptorByRelativePath(relativePath);
+    private getFileSystemNodeDescriptor(uri: URI): IFileSystemNodeDescriptor | undefined {
+        if (uri.isResource()) {
+            console.log('Resource');
+            const folder = this.getFolderByRelativePath(uri.path);
+            console.log(folder);
+            if (folder !== undefined) {
+                const targetResource = folder.resources.find((resource: IResourceDescriptor) => {
+                    return resource.uri.equals(uri);
+                });
 
-        if (node === undefined || node.resourceType !== ResourceType.Folder) {
-            return undefined;
+                return targetResource
+            }
         }
 
-        return node as IFolderDescriptor;
+        console.log('Folder');
+
+        return this.getFolderByRelativePath(uri.toString());
     }
 
-    private putResourceToFolder(folder: IFolderDescriptor, resource: IOwnedDescriptor) {
-        resource.resourceType === ResourceType.Folder
-            ? folder.folders?.push(resource as IFolderDescriptor)
-            : folder.resources?.push(resource as IResourceDescriptor);
+    private putNodeToFolder(folder: IFolderDescriptor, node: IOwnedDescriptor) {
+        isFolderDescriptor(node) ? folder.folders.push(node) : folder.resources.push(node)
 
-        resource.parent = folder;
-        resource.uri = (!!folder.parent ? folder.uri + '/' : '/') + resource.label;
+        node.parent = folder;
+        node.uri = URI.createURI((folder.uri.toString()), node.uri.resourceName, node.uri.extension);
     }
 
-    private putResourceToFolderByPath(resource: IOwnedDescriptor, path: string): ResourceManagerMockImpl {
+    private putNodeToFolderByPath(resource: IOwnedDescriptor, path: string): ResourceManagerMockImpl {
         const taregtElement = this.getFolderByRelativePath(path);
         if (taregtElement === undefined) {
             return this;
         }
 
-        this.putResourceToFolder(taregtElement as IFolderDescriptor, resource);
+        this.putNodeToFolder(taregtElement as IFolderDescriptor, resource);
         
         return this;
     }
 
     private updateFolderChildrenUris(node: IFolderDescriptor) {
         node.resources.forEach((resource: IResourceDescriptor) => {
-            resource.uri = node.uri + '/' + resource.label;
+            resource.uri = URI.resolvePath(node.uri.toString(), resource.uri); 
         });
         node.folders.forEach((folder: IFolderDescriptor) => {
-            folder.uri = node.uri + '/' + folder.label;
+            folder.uri = URI.resolvePath(node.uri.toString(), folder.uri);
             this.updateFolderChildrenUris(folder);
         })
-    }
-
-    private changeNodeUriByName(uri: string, name: string): string {
-        return uri.replace(/\/([а-яА-Я\w]|-|\s)+$/, `/${name}`);
     }
 
     private sortNodesByName(first: IFileSystemNodeDescriptor, second: IFileSystemNodeDescriptor) {

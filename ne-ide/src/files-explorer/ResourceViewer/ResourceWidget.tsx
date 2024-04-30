@@ -25,7 +25,6 @@ export const ResourceWidget: React.FC<IResourceWidgetProps> = (
 ): React.ReactElement => {
     const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
     const dialogService = React.useContext(ProvidersContext).dialogService;
-    const commandsService = React.useContext(ProvidersContext).commandsProvider;
 
     const resourceIcon = React.useMemo(() => {
         return React.createElement(iconsProvider.getIconById(props.resourceType), {

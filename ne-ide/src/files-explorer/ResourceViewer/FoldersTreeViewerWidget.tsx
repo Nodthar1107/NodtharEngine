@@ -7,6 +7,7 @@ import { Folder } from '../../core/icons/hierarchy/Folder';
 import { ISubscriberable } from '../events/ISubscriberable';
 import { EventType, NotificationEvent } from '../events/NotificationEvent';
 import { IDialogService } from '../../core/services/DialogService/IDialogService';
+import { URI } from '../../core/utils/URI';
 
 import '../style.scss';
 
@@ -51,7 +52,7 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
             const parentsRowsUris: string[] = [];
             let parent = !!targetFolder ? targetFolder.parent as IFolderDescriptor : null;  
             while (parent) {
-                parentsRowsUris.push(parent.uri);
+                parentsRowsUris.push(parent.uri.toString());
                 parent = parent.parent as IFolderDescriptor;
             }
 
@@ -72,7 +73,7 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
                     row.node.epxanded = parentsRowsUris.indexOf(row.node.uri) !== -1 ? true : oldRow.node.epxanded; 
                 }
 
-                if (row.node.uri === targetFolder?.uri) {
+                if (row.node.uri === targetFolder?.uri.toString()) {
                     row.selected = true;
                     selectedRowIndex = index;
                 }
@@ -88,7 +89,9 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
     protected onNodeRowSelect(index: number): void {
         super.onNodeRowSelect(index);
 
-        this.props.resourceManager.changeCurrentDirectory(this.state.nodeRows[index].node.uri);
+        this.props.resourceManager.changeCurrentDirectory(
+            URI.createURIFromString(this.state.nodeRows[index].node.uri)
+        );
     }
 
     protected onNodeRowRightButtonClick(node: ITreeNode, index: number, event: React.MouseEvent): void {
@@ -128,7 +131,7 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
             node: {
                 label: descriptor.label,
                 epxanded: expanded,
-                uri: descriptor.uri,
+                uri: descriptor.uri.toString(),
                 icon: <Folder />
             },
             indent: indent,
