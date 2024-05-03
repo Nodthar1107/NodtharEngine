@@ -5,15 +5,12 @@ export interface IFileSystemNodeDescriptor {
     label: string;
     uri: URI;
     resourceType: ResourceType;
-}
-
-export interface IOwnedDescriptor extends IFileSystemNodeDescriptor {
     parent: IFileSystemNodeDescriptor | null;
 }
 
-export interface IResourceDescriptor extends IOwnedDescriptor {}
+export interface IResourceDescriptor extends IFileSystemNodeDescriptor {}
 
-export interface IFolderDescriptor extends IOwnedDescriptor {
+export interface IFolderDescriptor extends IFileSystemNodeDescriptor {
     folders: IFolderDescriptor[];
     resources: IResourceDescriptor[];
 }

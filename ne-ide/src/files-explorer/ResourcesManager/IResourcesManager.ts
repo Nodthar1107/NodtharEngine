@@ -1,5 +1,4 @@
 import { URI } from 'src/core/utils/URI';
-import { IEventEmmiter } from '../events/IEventEmmiter';
 import { IEventEmiterProvider } from '../events/IEventEmmiterProvider';
 import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } from './model';
 
@@ -19,4 +18,6 @@ export interface IResourcesManager extends IEventEmiterProvider {
     renameElement: (uri: URI, label: string) => void;
 
     removeResourceByUri: (uri: URI) => void;
+
+    getFileSystemNodeDescriptor: (uri: URI) => IFileSystemNodeDescriptor | undefined;
 }

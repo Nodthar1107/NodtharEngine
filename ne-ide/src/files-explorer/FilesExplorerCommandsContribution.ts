@@ -111,7 +111,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         register.registerCommand({
             id: 'filesExplorer.folderContentPanel.copyElement',
             context: 'files-explorer-resource-widget-context',
-            title: 'Копировать',
+            title: 'Копировать'
         });
 
         register.registerCommand({

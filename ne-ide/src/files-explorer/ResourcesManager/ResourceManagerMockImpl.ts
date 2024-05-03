@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import { IFileSystemNodeDescriptor, IFolderDescriptor, IOwnedDescriptor, IResourceDescriptor, isFolderDescriptor } from './model';
+import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor, isFolderDescriptor } from './model';
 import { IResourcesManager } from './IResourcesManager';
 import { ResourceType } from './ResourceType';
 
@@ -21,7 +21,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         uri: URI.createURI('/', ''),
         folders: [],
         resources: []
-    }
+    };
     private currentFolderDescriptor = this.resourcesRoot;
     private eventEmmiter = new EventEmmiter();
 
@@ -29,7 +29,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         this.configureModel();
         console.log('Модель', this.resourcesRoot);
     }
-
+    
     public getEventEmmiter(): IEventEmmiter {
         return this.eventEmmiter;
     }
@@ -88,8 +88,8 @@ export class ResourceManagerMockImpl implements IResourcesManager {
             return;
         }
 
-        const ownedNode = node as IOwnedDescriptor; 
-        if (!(node as IOwnedDescriptor).parent) {
+        const ownedNode = node as IFileSystemNodeDescriptor; 
+        if (!(node as IFileSystemNodeDescriptor).parent) {
             return;
         }
 
@@ -195,7 +195,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         return taregtElement;
     }
 
-    private getFileSystemNodeDescriptor(uri: URI): IFileSystemNodeDescriptor | undefined {
+    public getFileSystemNodeDescriptor(uri: URI): IFileSystemNodeDescriptor | undefined {
         if (uri.isResource()) {
             console.log('Resource');
             const folder = this.getFolderByRelativePath(uri.path);
@@ -209,19 +209,17 @@ export class ResourceManagerMockImpl implements IResourcesManager {
             }
         }
 
-        console.log('Folder');
-
         return this.getFolderByRelativePath(uri.toString());
     }
 
-    private putNodeToFolder(folder: IFolderDescriptor, node: IOwnedDescriptor) {
+    private putNodeToFolder(folder: IFolderDescriptor, node: IFileSystemNodeDescriptor) {
         isFolderDescriptor(node) ? folder.folders.push(node) : folder.resources.push(node)
 
         node.parent = folder;
         node.uri = URI.createURI((folder.uri.toString()), node.uri.resourceName, node.uri.extension);
     }
 
-    private putNodeToFolderByPath(resource: IOwnedDescriptor, path: string): ResourceManagerMockImpl {
+    private putNodeToFolderByPath(resource: IFileSystemNodeDescriptor, path: string): ResourceManagerMockImpl {
         const taregtElement = this.getFolderByRelativePath(path);
         if (taregtElement === undefined) {
             return this;
