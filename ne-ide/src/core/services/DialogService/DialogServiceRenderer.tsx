@@ -4,7 +4,7 @@ import { ICommandsProvider } from 'src/core/providers/commandsProvider/ICommands
 import { IDialogService, IDialogServiceRenderer } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
 import { ContextMenuWidget } from './ContextMenu';
-import { IQuickInputItem } from './QuickInputDialog';
+import { IQuickInputItem, QuickInputDialog } from './QuickInputDialog';
 import { InputDialogWidget } from './InputDialog';
 
 import 'reflect-metadata';
@@ -48,6 +48,7 @@ export interface IInputDialogDetails extends ICreateDialogDetails {
 export interface IQuickInputDialogDetails extends ICreateDialogDetails {
     items: IQuickInputItem[];
     hideInput?: boolean;
+    resolve?: (item: IQuickInputItem) => void;
 }
 
 export interface IDialogServiceProps {
@@ -101,6 +102,13 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         });
     }
 
+    public showQuickInputDialog(details: IQuickInputDialogDetails) {
+        this.setState({
+            type: DialogType.QuickInput,
+            details: details
+        });
+    }
+
     private renderDialog(): React.ReactNode {    
         switch (this.state.type) {
             case DialogType.Context:
@@ -108,9 +116,10 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
             case DialogType.Input:
                 return this.renderInput();
             case DialogType.QuickInput:
+                console.log('Switch quick input');
                 return this.renderQuickInput();
             default:
-                return null
+                return null;
         }
     }
 
@@ -148,7 +157,20 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
     }
 
     private renderQuickInput(): React.ReactNode {
-        return null;
+        const quickInputDialogDetails = this.state.details as IQuickInputDialogDetails;
+        console.log('Render quick input');
+
+        return (
+            <QuickInputDialog
+                title={quickInputDialogDetails.title}
+                description={quickInputDialogDetails.description}
+                items={quickInputDialogDetails.items}
+                hideInput={quickInputDialogDetails.hideInput as boolean}
+                isStyled
+                sendResponse={quickInputDialogDetails.resolve}
+                onDialogHide={this.onDialogHide.bind(this, DialogType.QuickInput)}
+            />
+        );
     }
 
     private onDialogHide(senderWidgetType: DialogType) {

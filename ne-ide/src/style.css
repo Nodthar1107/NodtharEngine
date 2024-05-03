@@ -28,6 +28,9 @@ body, html {
     --tree-item-selected: rgb(30, 30, 30);
     --tree-item-iconSize: 16px;
 
+    --list-item-color-hover: rgb(134, 134, 134);
+    --list-item-text-color: #B8B8B8;
+
     --panel-header-background: rgb(41, 53, 56);
     --panel-header-color: white;
     --panel-header-font-size: 12px;

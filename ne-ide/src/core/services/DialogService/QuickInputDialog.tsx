@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { IIconProps } from '../../icons/IIconProps';
+import { withDialogWidget } from './withDialogWidget';
+
+import './style.scss';
 
 export interface IQuickInputItem {
     label: string;
@@ -10,15 +13,48 @@ export interface IQuickInputItem {
 
 export interface IQuickInputProps {
     items: IQuickInputItem[];
-    title?: string;
-    description?: string;
-    hideInput?: string;
+    hideInput?: boolean;
+
+    onDialogHide: () => void;
+    sendResponse?: (item: IQuickInputItem) => void;
 }
 
-export const QuickInputDialog: React.FC = (): React.ReactElement => {
+const QuickInput: React.FC<IQuickInputProps> = (props: IQuickInputProps): React.ReactElement => {
+    const [inputValue, setInputValue] = React.useState('');
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    const onItemSelect = (item: IQuickInputItem) => {
+        props.onDialogHide();
+        props.sendResponse?.(item);
+    }
+
+    console.log('Quick input dialog');
+
     return (
         <div className='quick-input-dialog'>
-
+            {!props.hideInput && (
+                <input
+                    className='quick-input-dialog__input'
+                    value={inputValue}
+                    onChange={(event) => {
+                        setInputValue(event.target.value)
+                    }}
+                    ref={inputRef}
+                />
+            )}
+            <div className='quick-input-dialog__list'>
+                {props.items.map((item: IQuickInputItem, index: number) => {
+                    return (
+                        <QuickInputItem 
+                            label={item.label}
+                            description={item.description}
+                            icon={item.icon}
+                            onSelect={() => onItemSelect(item)}
+                            key={index}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 }
@@ -27,11 +63,13 @@ interface QuickInputItemProps {
     label: string;
     description?: string;
     icon?: React.FC<IIconProps>;
+
+    onSelect: () => void;
 }
 
 const QuickInputItem: React.FC<QuickInputItemProps> = (props: QuickInputItemProps): React.ReactElement => {
     return (
-        <div className='quick-input-item'>
+        <div className='quick-input-item' onClick={props.onSelect}>
             <div className='quick-input-item__icon'>
                 {props.icon && React.createElement(props.icon)}
             </div>
@@ -40,3 +78,5 @@ const QuickInputItem: React.FC<QuickInputItemProps> = (props: QuickInputItemProp
         </div>
     );
 }
+
+export const QuickInputDialog = withDialogWidget(QuickInput);

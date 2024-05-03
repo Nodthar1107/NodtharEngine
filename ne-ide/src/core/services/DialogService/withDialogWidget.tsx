@@ -32,6 +32,8 @@ interface IAdditionalProperties {
     description?: string;
     isStyled?: boolean;
     position?: Position;
+
+    sendResponse?: (value: any) => void;
 }
 
 export function withDialogWidget<T extends IBaseProps>(Component: React.ComponentType<T>) {
@@ -44,6 +46,7 @@ export function withDialogWidget<T extends IBaseProps>(Component: React.Componen
         const clickEventHandlerRef = React.useRef((event: MouseEvent) => {
             const clickedElement = (event.target as HTMLElement);
             if (!clickedElement.classList.contains(DIALOG_WIDGET) && !hasParent(clickedElement, contextMenuRef.current)) {
+                props.sendResponse?.(undefined);
                 props.onDialogHide?.();
             }
         });
@@ -68,13 +71,13 @@ export function withDialogWidget<T extends IBaseProps>(Component: React.Componen
         }, [props.position]);
 
         React.useEffect(() => {
-            document.addEventListener('click', clickEventHandlerRef.current);
+            document.addEventListener('click', clickEventHandlerRef.current, true);
 
             setCoords(getPositionAccordinToWindowHeight());
             setShowDialog(true);
 
             return () => {
-                document.removeEventListener('click', clickEventHandlerRef.current);
+                document.removeEventListener('click', clickEventHandlerRef.current, true);
             }
         }, []);
 

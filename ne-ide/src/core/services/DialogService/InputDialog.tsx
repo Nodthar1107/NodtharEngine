@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import './style.scss';
-import { withDialogWidget } from './DialogWidget';
+import { withDialogWidget } from './withDialogWidget';
 
 interface IInputDialogProps {
     onDialogHide?: () => void;

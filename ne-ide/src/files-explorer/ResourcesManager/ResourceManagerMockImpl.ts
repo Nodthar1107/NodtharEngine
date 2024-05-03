@@ -43,8 +43,8 @@ export class ResourceManagerMockImpl implements IResourcesManager {
     }
 
     public addResourceToCurrentFolder(resource: IFileSystemNodeDescriptor) {
+        this.putNodeToFolder(this.currentFolderDescriptor, resource);
         if (isFolderDescriptor(resource)) {
-            this.putNodeToFolder(this.currentFolderDescriptor, resource);
             this.currentFolderDescriptor = resource;
 
             this.eventEmmiter.fireEvents([
@@ -55,7 +55,6 @@ export class ResourceManagerMockImpl implements IResourcesManager {
             return;
         }
 
-        this.currentFolderDescriptor.resources.push(resource as IResourceDescriptor);
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
     }
 
@@ -213,7 +212,13 @@ export class ResourceManagerMockImpl implements IResourcesManager {
     }
 
     private putNodeToFolder(folder: IFolderDescriptor, node: IFileSystemNodeDescriptor) {
-        isFolderDescriptor(node) ? folder.folders.push(node) : folder.resources.push(node)
+        if (isFolderDescriptor(node)) {
+            folder.folders.push(node);
+            folder.folders.sort(this.sortNodesByName);
+        } else {
+            folder.resources.push(node);
+            folder.resources.sort(this.sortNodesByName);
+        }
 
         node.parent = folder;
         node.uri = URI.createURI((folder.uri.toString()), node.uri.resourceName, node.uri.extension);

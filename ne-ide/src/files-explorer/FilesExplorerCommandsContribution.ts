@@ -3,13 +3,17 @@ import { ICommandContribution } from '../core/providers/commandsProvider/IComman
 import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
 import { IResourcesManager } from './ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './module-types';
-import { generateFolder } from './ResourcesManager/resourceUtils';
+import { generateFolder, generateResource } from './ResourcesManager/resourceUtils';
 import { IDialogService } from '../core/services/DialogService/IDialogService';
 import { IMessageService } from '../core/services/MessageService/MessageService';
 import { CORE_TYPES } from '../core/module-types';
 import { URI } from '../core/utils/URI';
 
 import 'reflect-metadata';
+import { IQuickInputItem } from 'src/core/services/DialogService/QuickInputDialog';
+import { ResourceType } from './ResourcesManager/ResourceType';
+
+const DOWNLOAD_FROM_FS = 'download-from-fs';
 
 @injectable()
 export class FilesExplorerCommandsContribution implements ICommandContribution {
@@ -40,9 +44,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             context: 'files-explorer-toolbar',
             title: 'Добавить папку',
             iconId: 'add',
-            execute: () => {
-                this.resourceManager.addResourceToCurrentFolder(generateFolder('Новая папка'));
-            }
+            execute: this.createNewResource.bind(this)
         });
 
         register.registerCommand({
@@ -158,8 +160,66 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             title: 'Переименование элемента проекта'
         });
 
-        if (label !== '') {
+        if (label) {
             this.resourceManager.renameElement(URI.createURIFromString(uri), label);
         }
     }
+
+    private async createNewResource() {
+        const item = await this.dialogService.showQuickInputDialog({
+            items: createNewResourceDialogItems,
+            title: 'Создание ресурса проекта',
+            hideInput: true
+        });
+
+        if (item) {
+            switch (item.meta) {
+                case ResourceType.Folder:
+                    this.createNewFolder();
+
+                    return;
+                case ResourceType. Blueprint:
+                    this.createNewBluePrint();
+
+                    return;
+                case DOWNLOAD_FROM_FS:
+            }
+        }
+    }
+
+    private async createNewFolder() {
+        const label = await this.dialogService.showInputDialog({
+            title: 'Введите имя директории',
+        })
+
+        if (label) {
+            this.resourceManager.addResourceToCurrentFolder(generateFolder(label));
+        }
+    }
+
+    private async createNewBluePrint() {
+        const label = await this.dialogService.showInputDialog({
+            title: 'Введите имя директории',
+        })
+
+        if (label) {
+            this.resourceManager.addResourceToCurrentFolder(generateResource(label, ResourceType.Blueprint));
+        }
+    }
 }
+
+const createNewResourceDialogItems: IQuickInputItem[] = [
+    {
+        label: 'Дирекория',
+        description: 'Тестовое описание',
+        meta: ResourceType.Folder
+    },
+    {
+        label: 'Визуальный сценарий',
+        meta: ResourceType.Blueprint
+    },
+    {
+        label: 'Загрузить из файловой системы',
+        meta: DOWNLOAD_FROM_FS
+    }
+];

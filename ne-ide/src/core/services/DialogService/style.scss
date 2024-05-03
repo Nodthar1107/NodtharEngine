@@ -65,3 +65,53 @@
         line-height: 20px;
     }
 }
+
+.quick-input-dialog {
+    margin: 5px;
+
+    .__input {
+        width: 100%;
+        box-sizing: border-box;
+
+        border-radius: 4px;
+        line-height: 20px;
+
+        margin: 2px;
+    }
+
+    &__list {
+        width: 100%;
+        box-sizing: border-box;
+
+        max-height: 250px;
+        overflow: auto;
+    }
+}
+
+.quick-input-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    height: 24px;
+
+    border-radius: 4px;
+    cursor: pointer;
+
+    color: var(--list-item-text-color);
+
+    &__icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    &__description {
+        font-size: 0.8em;
+    }
+
+    &:hover {
+        color: white;
+
+        background-color: var(--list-item-color-hover);
+    } 
+}

@@ -3,7 +3,7 @@ import { ICommand } from '../../providers/commandsProvider/commands';
 
 import './style.scss';
 import { ContextMenuCommand } from './ContextMenuCommand';
-import { withDialogWidget } from './DialogWidget';
+import { withDialogWidget } from './withDialogWidget';
 
 export interface IContextMenuPropsProps {
     commands: ICommand[];

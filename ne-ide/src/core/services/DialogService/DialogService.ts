@@ -1,9 +1,10 @@
 import { injectable } from 'inversify';
 import { IContextMenuDialogDetails, IInputDialogDetails } from './DialogServiceRenderer';
-import { IDialogService, IDialogServiceRenderer, IInputDialogOptions } from './IDialogService';
+import { IDialogService, IDialogServiceRenderer, IInputDialogOptions, IQuickInputDialogOptions } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
 
 import 'reflect-metadata';
+import { IQuickInputItem } from './QuickInputDialog';
 
 @injectable()
 export class DialogService implements IDialogService, IDialogRendererRegister {
@@ -26,6 +27,17 @@ export class DialogService implements IDialogService, IDialogRendererRegister {
                     ...options,
                     resolve: resolve
                 });
+            }
+        });
+    }
+
+    public showQuickInputDialog(options: IQuickInputDialogOptions): Promise<IQuickInputItem> {
+        return new Promise((resolve) => {
+            if (this.renderer !== null) {
+                this.renderer.showQuickInputDialog({
+                    ...options,
+                    resolve: resolve
+                })
             }
         });
     }
