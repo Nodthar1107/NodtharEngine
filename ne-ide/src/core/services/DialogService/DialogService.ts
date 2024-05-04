@@ -41,4 +41,12 @@ export class DialogService implements IDialogService, IDialogRendererRegister {
             }
         });
     }
+
+    public showUploadFilesDialog() {
+        return new Promise((resolve) => {
+            if (this.renderer !== null) {
+                this.renderer.showUploadFilesDialog();
+            }
+        })
+    }
 }

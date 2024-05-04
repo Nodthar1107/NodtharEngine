@@ -43,6 +43,7 @@ body, html {
     --icon-disabledColor: #8f8f8f;
 
     --text-font-family: 'Times New Roman', Helvetica, sans-serif;
+    --text-color: #B8B8B8;
 
     --toolbarIcon-width: 16px;
     --toolbarIcon-height: 18px;
@@ -54,7 +55,7 @@ body, html {
 
     --dialog-backgroundColor: rgb(54, 67, 70);
 
-    --text-color: #B8B8B8;
+    --button-color: orange;
 }
 
 .NodtharEngine {

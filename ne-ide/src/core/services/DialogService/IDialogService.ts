@@ -17,10 +17,12 @@ export interface IDialogServiceRenderer {
     showContextMenu: (options: IContextMenuDialogDetails) => void;
     showInputDialog: (options: IInputDialogDetails) => void;
     showQuickInputDialog: (options: IQuickInputDialogDetails) => void;
+    showUploadFilesDialog: () => void;
 }
 
 export interface IDialogService {
     showContextMenu: (options: IContextMenuDialogDetails) => void;
     showInputDialog: (options: IInputDialogOptions) => Promise<string | undefined>;
     showQuickInputDialog: (options: IQuickInputDialogOptions) => Promise<IQuickInputItem | undefined>;
+    showUploadFilesDialog: () => void;
 }

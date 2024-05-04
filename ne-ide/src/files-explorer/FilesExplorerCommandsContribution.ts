@@ -183,6 +183,9 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
 
                     return;
                 case DOWNLOAD_FROM_FS:
+                    this.uploadFiles();
+
+                    return;
             }
         }
     }
@@ -205,6 +208,10 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         if (label) {
             this.resourceManager.addResourceToCurrentFolder(generateResource(label, ResourceType.Blueprint));
         }
+    }
+
+    private async uploadFiles() {
+        await this.dialogService.showUploadFilesDialog();
     }
 }
 

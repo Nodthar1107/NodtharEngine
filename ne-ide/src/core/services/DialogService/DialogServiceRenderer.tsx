@@ -10,13 +10,16 @@ import { InputDialogWidget } from './InputDialog';
 import 'reflect-metadata';
 
 import './style.scss';
+import { UploadFilesDialog } from './UploadFileDialog';
 
 export enum DialogType {
     Context = 'context',
 
     Input = 'input',
 
-    QuickInput = 'quick-input'
+    QuickInput = 'quick-input',
+
+    UploadFiles = 'uload-files'
 };
 
 export interface ICreateDialogOptions {
@@ -49,6 +52,10 @@ export interface IQuickInputDialogDetails extends ICreateDialogDetails {
     items: IQuickInputItem[];
     hideInput?: boolean;
     resolve?: (item: IQuickInputItem) => void;
+}
+
+export interface IUploadFilesDialogDetails extends ICreateDialogDetails {
+    resolve?: () => void;
 }
 
 export interface IDialogServiceProps {
@@ -109,6 +116,13 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         });
     }
 
+    public showUploadFilesDialog() {
+        this.setState({
+            type: DialogType.UploadFiles,
+            details: null
+        });
+    }
+
     private renderDialog(): React.ReactNode {    
         switch (this.state.type) {
             case DialogType.Context:
@@ -116,8 +130,9 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
             case DialogType.Input:
                 return this.renderInput();
             case DialogType.QuickInput:
-                console.log('Switch quick input');
                 return this.renderQuickInput();
+            case DialogType.UploadFiles:
+                return this.renderUploadFilesDialog();
             default:
                 return null;
         }
@@ -158,7 +173,6 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
 
     private renderQuickInput(): React.ReactNode {
         const quickInputDialogDetails = this.state.details as IQuickInputDialogDetails;
-        console.log('Render quick input');
 
         return (
             <QuickInputDialog
@@ -171,6 +185,16 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
                 onDialogHide={this.onDialogHide.bind(this, DialogType.QuickInput)}
             />
         );
+    }
+
+    private renderUploadFilesDialog(): React.ReactNode {
+        return (
+            <UploadFilesDialog
+                isStyled
+                onDialogHide={this.onDialogHide.bind(this, DialogType.UploadFiles)}
+                sendResponse={() => {}}
+            />
+        )
     }
 
     private onDialogHide(senderWidgetType: DialogType) {

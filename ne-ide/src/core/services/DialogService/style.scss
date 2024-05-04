@@ -115,3 +115,59 @@
         background-color: var(--list-item-color-hover);
     } 
 }
+
+.upload-files-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    flex-direction: column;
+
+    background-image: url('./upload-background.svg');
+    background-position: top;
+    background-repeat: no-repeat;
+    background-size: 15%;
+
+    margin: 5px;
+
+    height: 300px;
+
+    &__view-button {
+        cursor: pointer;
+        min-width: 100px;
+        padding: 10px 5px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+
+        text-align: center;
+
+        background-color: orange;
+        color: black;
+
+        input[type="file"] {
+            display: none;
+        }
+    }
+
+    &__drop-area {
+        margin: 10px;
+
+        width: 100%;
+        height: 100px;
+        box-sizing: border-box;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        border: 6px dashed #e2e2e2;
+
+        color: var(--text-color);
+        font-family: var(--text-font-famiy);
+
+        font-size: 1.2em;
+
+        &_dragable {
+            border: 6px solid rgb(58, 160, 255);
+        }
+    }
+}

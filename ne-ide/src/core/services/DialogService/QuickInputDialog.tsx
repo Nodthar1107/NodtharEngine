@@ -28,8 +28,6 @@ const QuickInput: React.FC<IQuickInputProps> = (props: IQuickInputProps): React.
         props.sendResponse?.(item);
     }
 
-    console.log('Quick input dialog');
-
     return (
         <div className='quick-input-dialog'>
             {!props.hideInput && (
