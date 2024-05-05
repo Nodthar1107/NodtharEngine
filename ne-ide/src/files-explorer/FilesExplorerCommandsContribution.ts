@@ -3,15 +3,17 @@ import { ICommandContribution } from '../core/providers/commandsProvider/IComman
 import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
 import { IResourcesManager } from './ResourcesManager/IResourcesManager';
 import { FILES_EXPLORER_MODULE } from './module-types';
-import { generateFolder, generateResource } from './ResourcesManager/resourceUtils';
+import { generateFolder, generateResource, getResourceTypeFromUri } from './ResourcesManager/resourceUtils';
 import { IDialogService } from '../core/services/DialogService/IDialogService';
 import { IMessageService } from '../core/services/MessageService/MessageService';
 import { CORE_TYPES } from '../core/module-types';
 import { URI } from '../core/utils/URI';
-
-import 'reflect-metadata';
 import { IQuickInputItem } from 'src/core/services/DialogService/QuickInputDialog';
 import { ResourceType } from './ResourcesManager/ResourceType';
+import { IUploadedFileDescriptor } from '../core/services/DialogService/UploadFileDialog';
+import { IFileSystemNodeDescriptor } from './ResourcesManager/model';
+
+import 'reflect-metadata';
 
 const DOWNLOAD_FROM_FS = 'download-from-fs';
 
@@ -129,6 +131,20 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
             id: 'filesExplorer.folderContentPanel.removeElement',
             context: 'files-explorer-resource-widget-context',
             title: 'Удалить',
+            execute: (resourceUri: string) => {
+                if (resourceUri === '/') {
+                    this.messageService.showInfoMessage({
+                        title: 'Нельзя удалить',
+                        description: 'Корневая директория не может быть удалена какой-то длинный текст сообщения ради проверки длинных сообщений'
+                    });
+
+                    return;
+                }
+                
+                if (resourceUri) {
+                    this.resourceManager.removeResourceByUri(URI.createURIFromString(resourceUri));
+                }
+            }
         });
 
         register.registerCommand({
@@ -161,6 +177,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         });
 
         if (label) {
+            console.log()
             this.resourceManager.renameElement(URI.createURIFromString(uri), label);
         }
     }
@@ -196,7 +213,7 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         })
 
         if (label) {
-            this.resourceManager.addResourceToCurrentFolder(generateFolder(label));
+            this.resourceManager.addResourcesToCurrentFolder(generateFolder(label));
         }
     }
 
@@ -206,12 +223,26 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         })
 
         if (label) {
-            this.resourceManager.addResourceToCurrentFolder(generateResource(label, ResourceType.Blueprint));
+            this.resourceManager.addResourcesToCurrentFolder(generateResource(label, ResourceType.Blueprint));
         }
     }
 
     private async uploadFiles() {
-        await this.dialogService.showUploadFilesDialog();
+        const files = await this.dialogService.showUploadFilesDialog();
+        if (files) {
+            this.resourceManager.addResourcesToCurrentFolder(
+                ...files.map<IFileSystemNodeDescriptor>((file: IUploadedFileDescriptor) => {
+                    const uri = URI.createURIFromString(file.label); 
+                    
+                    return {
+                        label: uri.resourceName,
+                        parent: null,
+                        resourceType: getResourceTypeFromUri(uri),
+                        uri: uri
+                    }
+                })
+            );
+        }
     }
 }
 

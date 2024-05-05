@@ -9,5 +9,7 @@ export enum ResourceType {
 
     SourceJava = 'SourceJava',
 
-    JsonFile = 'JsonFile'
+    Json = 'JsonFile',
+
+    File = 'File'
 }

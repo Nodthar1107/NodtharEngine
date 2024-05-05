@@ -27,7 +27,6 @@ export class ResourceManagerMockImpl implements IResourcesManager {
 
     public constructor() {
         this.configureModel();
-        console.log('Модель', this.resourcesRoot);
     }
     
     public getEventEmmiter(): IEventEmmiter {
@@ -42,18 +41,20 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         return this.currentFolderDescriptor;
     }
 
-    public addResourceToCurrentFolder(resource: IFileSystemNodeDescriptor) {
-        this.putNodeToFolder(this.currentFolderDescriptor, resource);
-        if (isFolderDescriptor(resource)) {
-            this.currentFolderDescriptor = resource;
+    public addResourcesToCurrentFolder(...resources: IFileSystemNodeDescriptor[]) {
+        resources.forEach((resource: IResourceDescriptor) => {
+            this.putNodeToFolder(this.currentFolderDescriptor, resource);
+            if (isFolderDescriptor(resource)) {
+                this.currentFolderDescriptor = resource;
 
-            this.eventEmmiter.fireEvents([
-                new NotificationEvent(EventType.TREE_VIEW_UPDATED),
-                new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
-            );
+                this.eventEmmiter.fireEvents([
+                    new NotificationEvent(EventType.TREE_VIEW_UPDATED),
+                    new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
+                );
 
-            return;
-        }
+                return;
+            }
+        });
 
         this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
     }
@@ -113,9 +114,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
     }
 
     public renameElement(uri: URI, label: string) {
-        console.log(uri);
         const node = this.getFileSystemNodeDescriptor(uri);
-        console.log(node);
 
         if (node === undefined) {
             return;
@@ -134,8 +133,6 @@ export class ResourceManagerMockImpl implements IResourcesManager {
                 }
             }
         }
-
-        console.log('After rename', node)
 
         this.eventEmmiter.fireEvents([
             new NotificationEvent(EventType.TREE_VIEW_UPDATED),
@@ -196,9 +193,7 @@ export class ResourceManagerMockImpl implements IResourcesManager {
 
     public getFileSystemNodeDescriptor(uri: URI): IFileSystemNodeDescriptor | undefined {
         if (uri.isResource()) {
-            console.log('Resource');
             const folder = this.getFolderByRelativePath(uri.path);
-            console.log(folder);
             if (folder !== undefined) {
                 const targetResource = folder.resources.find((resource: IResourceDescriptor) => {
                     return resource.uri.equals(uri);

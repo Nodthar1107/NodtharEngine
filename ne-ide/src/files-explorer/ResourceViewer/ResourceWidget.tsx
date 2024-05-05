@@ -23,6 +23,8 @@ interface IResourceWidgetProps {
 export const ResourceWidget: React.FC<IResourceWidgetProps> = (
     props: IResourceWidgetProps
 ): React.ReactElement => {
+    console.log(props.label);
+
     const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
     const dialogService = React.useContext(ProvidersContext).dialogService;
 

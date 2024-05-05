@@ -44,7 +44,8 @@ export class FolderContentViewerWidget
 
     public fireEvent(event: NotificationEvent) {
         if (event.type === EventType.FOLDER_CONTENT_UPDATED) {
-            const content = this.props.resourceManager.getCurrentFolderContent(); 
+            const content = this.props.resourceManager.getCurrentFolderContent();
+            console.log('folder content', content);
             if (content) {
                 this.setState({
                     ...content

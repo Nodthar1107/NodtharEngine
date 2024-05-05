@@ -8,12 +8,11 @@ export class URI {
     }
 
     public static createURIFromString(uri: string): URI {
-        console.log(uri);
         const path = URI.getResourcePath(uri);
         const resourceName = URI.getResourceLabel(uri);
         const extension = URI.getResourceExtension(uri);
 
-        console.log('Create URI from path', path, resourceName, extension);
+        console.log('Create uri from string', path, resourceName, extension);
 
         return new URI(path, resourceName, extension);
     }
@@ -26,13 +25,17 @@ export class URI {
         const label = uri.split('/').reverse()[0];
         const extension = this.getResourceExtension(uri);
         
-        return extension ? label.replace(extension, '') : label
+        return extension ? label.replace(`.${extension}`, '') : label
     }
 
     public static getResourcePath(uri: string): string {
+        if (!uri.includes('/')) {
+            return '';
+        }
+
         let path = '';
         if (URI.isResourceUri(uri)) {
-            path = uri.replace(/\/[\wа-яА-Я]+\.\w+$/, '');
+            path = uri.replace(/\/?[\wа-яА-Я ]+\.\w+$/, '');
         } else {
             path = uri.split('/').slice(0, -1).join('/');
         }
@@ -41,7 +44,7 @@ export class URI {
     }
 
     public static getResourceExtension(uri: string): string | undefined {
-        return new RegExp(/\.\w+$/).exec(uri)?.[0] || undefined;
+        return new RegExp(/\.\w+$/).exec(uri)?.[0].replace('.', '') || undefined;
     }
 
     public static resolvePath(path: string, uri: URI) {

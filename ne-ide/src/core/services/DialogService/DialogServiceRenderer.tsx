@@ -10,7 +10,7 @@ import { InputDialogWidget } from './InputDialog';
 import 'reflect-metadata';
 
 import './style.scss';
-import { UploadFilesDialog } from './UploadFileDialog';
+import { IUploadedFileDescriptor, UploadFilesDialog } from './UploadFileDialog';
 
 export enum DialogType {
     Context = 'context',
@@ -55,7 +55,7 @@ export interface IQuickInputDialogDetails extends ICreateDialogDetails {
 }
 
 export interface IUploadFilesDialogDetails extends ICreateDialogDetails {
-    resolve?: () => void;
+    resolve?: (files: IUploadedFileDescriptor[]) => void;
 }
 
 export interface IDialogServiceProps {
@@ -116,10 +116,10 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         });
     }
 
-    public showUploadFilesDialog() {
+    public showUploadFilesDialog(details: IUploadFilesDialogDetails) {
         this.setState({
             type: DialogType.UploadFiles,
-            details: null
+            details: details
         });
     }
 
@@ -188,11 +188,13 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
     }
 
     private renderUploadFilesDialog(): React.ReactNode {
+        const uploadFilesDialogDetails = this.state.details as IUploadFilesDialogDetails;
+        
         return (
             <UploadFilesDialog
                 isStyled
                 onDialogHide={this.onDialogHide.bind(this, DialogType.UploadFiles)}
-                sendResponse={() => {}}
+                sendResponse={uploadFilesDialogDetails.resolve}
             />
         )
     }

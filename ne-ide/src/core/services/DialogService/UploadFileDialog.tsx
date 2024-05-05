@@ -5,10 +5,11 @@ import './style.scss';
 
 export interface IUploadedFileDescriptor {
     label: string;
+
 }
 
 interface IUploadFilesProps {
-    resolve?: (value: any) => void;
+    sendResponse?: (value: any) => void;
     onDialogHide?: () => void;
 }
 
@@ -28,16 +29,16 @@ const UploadFiles: React.FC<IUploadFilesProps> = (props: IUploadFilesProps): Rea
     const downloadFiles = (files: FileList | null) => {
         props.onDialogHide?.();
         if (files !== null) {
-            const filesDescriptors = Array.from(files).map<IUploadedFileDescriptor>((file: File) => {
+            props.sendResponse?.(Array.from(files).map<IUploadedFileDescriptor>((file: File) => {
                 return {
                     label: file.name
                 }
-            })
+            }));
 
-            return
+            return;
         }
 
-        props.resolve?.(undefined);
+        props.sendResponse?.(undefined);
     }
 
     const onDropHandler = (event: React.DragEvent) => {

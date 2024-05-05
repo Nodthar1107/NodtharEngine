@@ -5,6 +5,7 @@ import { IDialogRendererRegister } from './ISubscribeRegister';
 
 import 'reflect-metadata';
 import { IQuickInputItem } from './QuickInputDialog';
+import { IUploadedFileDescriptor } from './UploadFileDialog';
 
 @injectable()
 export class DialogService implements IDialogService, IDialogRendererRegister {
@@ -42,10 +43,12 @@ export class DialogService implements IDialogService, IDialogRendererRegister {
         });
     }
 
-    public showUploadFilesDialog() {
+    public showUploadFilesDialog(): Promise<IUploadedFileDescriptor[] | undefined> {
         return new Promise((resolve) => {
             if (this.renderer !== null) {
-                this.renderer.showUploadFilesDialog();
+                this.renderer.showUploadFilesDialog({
+                    resolve: resolve
+                });
             }
         })
     }

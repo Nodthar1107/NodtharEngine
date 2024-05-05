@@ -10,6 +10,7 @@ import { DialogServiceRenderer } from './core/services/DialogService/DialogServi
 import { ProvidersContext } from './contexts/servicesContext';
 import { MessageService } from './core/services/MessageService/MessageService';
 import { MessageServiceRenderer } from './core/services/MessageService/MessageServiceRenderer';
+import { EditorViewer } from './editor-viewer';
 
 export const App: React.FC = (): React.ReactElement => {
     const dialogService = React.useContext(ProvidersContext).dialogService;
@@ -22,8 +23,7 @@ export const App: React.FC = (): React.ReactElement => {
             <ActivityBarPanel />
             <TreeViewPanel title='Иерархия' useVerticalAlign />
             <div className='main-section' style={{ minWidth: '10%' }}>
-                <div className='viewport' style={{ flex: '1 1 auto', minHeight: '10%' }}>
-                </div>
+                <EditorViewer />
                 <FilesExplorerPanel title='Проводник' />
             </div>
             <PropertyViewPanel title='Свойства' useVerticalAlign />

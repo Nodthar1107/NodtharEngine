@@ -1,5 +1,6 @@
-import { IContextMenuDialogDetails, IInputDialogDetails, IQuickInputDialogDetails } from './DialogServiceRenderer';
+import { IContextMenuDialogDetails, IInputDialogDetails, IQuickInputDialogDetails, IUploadFilesDialogDetails } from './DialogServiceRenderer';
 import { IQuickInputItem } from './QuickInputDialog';
+import { IUploadedFileDescriptor } from './UploadFileDialog';
 
 export interface IDialogOptions {
     title?: string;
@@ -17,12 +18,12 @@ export interface IDialogServiceRenderer {
     showContextMenu: (options: IContextMenuDialogDetails) => void;
     showInputDialog: (options: IInputDialogDetails) => void;
     showQuickInputDialog: (options: IQuickInputDialogDetails) => void;
-    showUploadFilesDialog: () => void;
+    showUploadFilesDialog: (options: IUploadFilesDialogDetails) => void;
 }
 
 export interface IDialogService {
     showContextMenu: (options: IContextMenuDialogDetails) => void;
     showInputDialog: (options: IInputDialogOptions) => Promise<string | undefined>;
     showQuickInputDialog: (options: IQuickInputDialogOptions) => Promise<IQuickInputItem | undefined>;
-    showUploadFilesDialog: () => void;
+    showUploadFilesDialog: () => Promise<IUploadedFileDescriptor[] | undefined>;
 }

@@ -11,7 +11,7 @@ export interface IResourcesManager extends IEventEmiterProvider {
 
     getCurrentFolderContent: () => { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } | undefined;
 
-    addResourceToCurrentFolder: (resource: IFileSystemNodeDescriptor) => void;
+    addResourcesToCurrentFolder: (...resources: IFileSystemNodeDescriptor[]) => void;
 
     getCurrentFolder: () => Readonly<IFolderDescriptor> | undefined;
 
