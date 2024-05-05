@@ -7,9 +7,11 @@ import { NotificationEvent } from '../../core/utils/events/NotificationEvent';
 import { ResourceType } from '../ResourcesManager/ResourceType';
 import { IDialogService } from '../../core/services/DialogService/IDialogService';
 import { FileSystemEvents } from '../ResourcesManager/events';
+import { IEditorsManager } from '../../editor-viewer/EditorManager/IEditorsManager';
 
 interface IFolderViewerWidgetProps {
     resourceManager: IResourcesManager;
+    editorsManager: IEditorsManager;
     dialogService: IDialogService;
     
     displayMode: ResourceDisplayMode;
@@ -88,6 +90,8 @@ export class FolderContentViewerWidget
             
             return;
         }
+
+        this.props.editorsManager.openEditor(descriptor.uri.toString());
     }
 
     private openContextMenu(event: React.MouseEvent) {

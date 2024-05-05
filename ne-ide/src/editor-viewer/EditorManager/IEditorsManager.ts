@@ -11,4 +11,6 @@ export interface IEditorsManager extends IEventEmitterProvider<EditorViewerEvent
     closeTab: (uri: string) => void;
 
     setActiveEditor: (uri: string) => void;
+
+    openEditor: (uri: string) => void;
 }

@@ -8,6 +8,7 @@ import { FoldersTreeViewerWidget } from './FoldersTreeViewerWidget';
 export const ResourceViewerWidget: React.FC = (): React.ReactElement => {
     const resourceManager = React.useContext(ProvidersContext).resourcesManager;
     const dialogService = React.useContext(ProvidersContext).dialogService;
+    const editorsManager = React.useContext(ProvidersContext).editorsManager;
 
     return (
         <div className='resource-viewer-widget'>
@@ -23,6 +24,7 @@ export const ResourceViewerWidget: React.FC = (): React.ReactElement => {
             </ResizablePanel>
             <FolderContentViewerWidget
                 resourceManager={resourceManager}
+                editorsManager={editorsManager}
                 dialogService={dialogService}
                 displayMode={ResourceDisplayMode.LargeIcons}
             />

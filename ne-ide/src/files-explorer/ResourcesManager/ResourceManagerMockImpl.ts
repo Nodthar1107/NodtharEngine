@@ -9,9 +9,9 @@ import { NotificationEvent } from '../../core/utils/events/NotificationEvent';
 import { EventEmitter } from '../../core/utils/events/EventEmitter';
 import { generateFolder, generateResource } from './resourceUtils';
 import { URI } from '../../core/utils/URI';
+import { FileSystemEvents } from './events';
 
 import 'reflect-metadata';
-import { FileSystemEvents } from './events';
 
 @injectable()
 export class ResourceManagerMockImpl implements IResourcesManager {
@@ -137,8 +137,9 @@ export class ResourceManagerMockImpl implements IResourcesManager {
 
         this.eventEmmiter.fireEvents([
             new NotificationEvent(FileSystemEvents.TREE_VIEW_UPDATED),
-            new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED)]
-        );
+            new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED),
+            !isFolderDescriptor(node) && new NotificationEvent(FileSystemEvents.RESOURCES_UPDATED, new Map([[uri.toString(), node]]))
+        ].filter(Boolean) as NotificationEvent<FileSystemEvents>[]);
     }
 
     private configureModel() {
