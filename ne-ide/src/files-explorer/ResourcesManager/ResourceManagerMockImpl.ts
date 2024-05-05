@@ -4,13 +4,14 @@ import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor, isFo
 import { IResourcesManager } from './IResourcesManager';
 import { ResourceType } from './ResourceType';
 
-import { IEventEmmiter } from '../events/IEventEmmiter';
-import { EventType, NotificationEvent } from '../events/NotificationEvent';
-import { EventEmmiter } from '../events/EventEmmiter';
+import { IEventEmitter } from '../../core/utils/events/IEventEmitter';
+import { NotificationEvent } from '../../core/utils/events/NotificationEvent';
+import { EventEmitter } from '../../core/utils/events/EventEmitter';
 import { generateFolder, generateResource } from './resourceUtils';
 import { URI } from '../../core/utils/URI';
 
 import 'reflect-metadata';
+import { FileSystemEvents } from './events';
 
 @injectable()
 export class ResourceManagerMockImpl implements IResourcesManager {
@@ -23,13 +24,13 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         resources: []
     };
     private currentFolderDescriptor = this.resourcesRoot;
-    private eventEmmiter = new EventEmmiter();
+    private eventEmmiter = new EventEmitter<FileSystemEvents>();
 
     public constructor() {
         this.configureModel();
     }
     
-    public getEventEmmiter(): IEventEmmiter {
+    public getEventEmitter(): IEventEmitter<FileSystemEvents> {
         return this.eventEmmiter;
     }
     
@@ -48,15 +49,15 @@ export class ResourceManagerMockImpl implements IResourcesManager {
                 this.currentFolderDescriptor = resource;
 
                 this.eventEmmiter.fireEvents([
-                    new NotificationEvent(EventType.TREE_VIEW_UPDATED),
-                    new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
+                    new NotificationEvent(FileSystemEvents.TREE_VIEW_UPDATED),
+                    new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED)]
                 );
 
                 return;
             }
         });
 
-        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
+        this.eventEmmiter.fireEvent(new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED));
     }
 
     public changeCurrentDirectory(uri: URI) {
@@ -66,13 +67,13 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         }
 
         this.currentFolderDescriptor = folder;
-        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));
+        this.eventEmmiter.fireEvent(new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED));
     }
 
     public setCurrentDirectory(uri: URI) {
         this.changeCurrentDirectory(uri);
 
-        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.TREE_VIEW_UPDATED));
+        this.eventEmmiter.fireEvent(new NotificationEvent(FileSystemEvents.TREE_VIEW_UPDATED));
     }
 
     public getCurrentFolderContent(): { folders: IFolderDescriptor[]; resources: IResourceDescriptor[] } | undefined {
@@ -109,8 +110,8 @@ export class ResourceManagerMockImpl implements IResourcesManager {
             );
         }
 
-        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.TREE_VIEW_UPDATED));
-        this.eventEmmiter.fireEvent(new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED));        
+        this.eventEmmiter.fireEvent(new NotificationEvent(FileSystemEvents.TREE_VIEW_UPDATED));
+        this.eventEmmiter.fireEvent(new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED));        
     }
 
     public renameElement(uri: URI, label: string) {
@@ -135,8 +136,8 @@ export class ResourceManagerMockImpl implements IResourcesManager {
         }
 
         this.eventEmmiter.fireEvents([
-            new NotificationEvent(EventType.TREE_VIEW_UPDATED),
-            new NotificationEvent(EventType.FOLDER_CONTENT_UPDATED)]
+            new NotificationEvent(FileSystemEvents.TREE_VIEW_UPDATED),
+            new NotificationEvent(FileSystemEvents.FOLDER_CONTENT_UPDATED)]
         );
     }
 

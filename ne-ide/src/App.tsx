@@ -17,13 +17,14 @@ export const App: React.FC = (): React.ReactElement => {
     const commandsProvider = React.useContext(ProvidersContext).commandsProvider;
     const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
     const messageService = React.useContext(ProvidersContext).messageService;
+    const editorsManager = React.useContext(ProvidersContext).editorsManager;
 
     return (
         <div className='NodtharEngine'>
             <ActivityBarPanel />
             <TreeViewPanel title='Иерархия' useVerticalAlign />
             <div className='main-section' style={{ minWidth: '10%' }}>
-                <EditorViewer />
+                <EditorViewer editorManager={editorsManager} />
                 <FilesExplorerPanel title='Проводник' />
             </div>
             <PropertyViewPanel title='Свойства' useVerticalAlign />

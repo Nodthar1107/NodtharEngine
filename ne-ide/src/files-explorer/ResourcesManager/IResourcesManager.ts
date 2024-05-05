@@ -1,8 +1,9 @@
 import { URI } from 'src/core/utils/URI';
-import { IEventEmiterProvider } from '../events/IEventEmmiterProvider';
+import { IEventEmitterProvider } from '../../core/utils/events/IEventEmitterProvider';
 import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } from './model';
+import { FileSystemEvents } from './events';
 
-export interface IResourcesManager extends IEventEmiterProvider {
+export interface IResourcesManager extends IEventEmitterProvider<FileSystemEvents> {
     getRootFolder: () => IFolderDescriptor | undefined; 
 
     changeCurrentDirectory: (uri: URI) => void;

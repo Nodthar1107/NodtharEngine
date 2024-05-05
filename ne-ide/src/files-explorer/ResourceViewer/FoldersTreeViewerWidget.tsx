@@ -4,19 +4,23 @@ import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
 import { ITreeNode, ITreeNodeRow } from 'src/core/ne-widgets/tree/model';
 import { IFileSystemNodeDescriptor, IFolderDescriptor } from '../ResourcesManager/model';
 import { Folder } from '../../core/icons/hierarchy/Folder';
-import { ISubscriberable } from '../events/ISubscriberable';
-import { EventType, NotificationEvent } from '../events/NotificationEvent';
+import { ISubscriber } from '../../core/utils/events/ISubscriber';
+import { NotificationEvent } from '../../core/utils/events/NotificationEvent';
 import { IDialogService } from '../../core/services/DialogService/IDialogService';
 import { URI } from '../../core/utils/URI';
 
 import '../style.scss';
+import { FileSystemEvents } from '../ResourcesManager/events';
 
 interface IFoldersTreeViewerWidgetProps extends ITreeWidgetProps {
     resourceManager: IResourcesManager;
     dialogService: IDialogService
 }
 
-export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidgetProps> implements ISubscriberable {
+export class FoldersTreeViewerWidget
+    extends TreeWidget<IFoldersTreeViewerWidgetProps>
+    implements ISubscriber<FileSystemEvents>
+{
     constructor(props: IFoldersTreeViewerWidgetProps) {
         super(props);
 
@@ -27,11 +31,11 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
     }
 
     public componentDidMount(): void {
-        this.props.resourceManager.getEventEmmiter().subscribe(this);
+        this.props.resourceManager.getEventEmitter().subscribe(this);
     }
 
     public componentWillUnmount(): void {
-        this.props.resourceManager.getEventEmmiter().dispose(this);
+        this.props.resourceManager.getEventEmitter().dispose(this);
     }
 
     public render(): ReactNode {
@@ -46,8 +50,8 @@ export class FoldersTreeViewerWidget extends TreeWidget<IFoldersTreeViewerWidget
         );
     }
 
-    public fireEvent(event: NotificationEvent) {
-        if (event.type === EventType.TREE_VIEW_UPDATED) {
+    public fireEvent(event: NotificationEvent<FileSystemEvents>) {
+        if (event.type === FileSystemEvents.TREE_VIEW_UPDATED) {
             const targetFolder = this.props.resourceManager.getCurrentFolder();
             const parentsRowsUris: string[] = [];
             let parent = !!targetFolder ? targetFolder.parent as IFolderDescriptor : null;  

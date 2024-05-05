@@ -2,10 +2,11 @@ import * as React from 'react';
 import { IFileSystemNodeDescriptor, IFolderDescriptor, IResourceDescriptor } from '../ResourcesManager/model';
 import { ResourceWidget, ResourceDisplayMode } from './ResourceWidget';
 import { IResourcesManager } from '../ResourcesManager/IResourcesManager';
-import { ISubscriberable } from '../events/ISubscriberable';
-import { EventType, NotificationEvent } from '../events/NotificationEvent';
+import { ISubscriber } from '../../core/utils/events/ISubscriber';
+import { NotificationEvent } from '../../core/utils/events/NotificationEvent';
 import { ResourceType } from '../ResourcesManager/ResourceType';
 import { IDialogService } from '../../core/services/DialogService/IDialogService';
+import { FileSystemEvents } from '../ResourcesManager/events';
 
 interface IFolderViewerWidgetProps {
     resourceManager: IResourcesManager;
@@ -21,31 +22,29 @@ interface IFolderViewerState {
 
 export class FolderContentViewerWidget
     extends React.Component<IFolderViewerWidgetProps, IFolderViewerState>
-    implements ISubscriberable
+    implements ISubscriber<FileSystemEvents>
 {
     constructor(props: IFolderViewerWidgetProps) {
         super(props);
 
         const content = this.props.resourceManager.getCurrentFolderContent(); 
-            if (content) {
-                this.state = {
-                    ...content
-                };
-            }
+        this.state = {
+            folders: content?.folders || [],
+            resources: content?.resources || []
+        };
     }
 
     public componentDidMount(): void {
-        this.props.resourceManager.getEventEmmiter().subscribe(this);
+        this.props.resourceManager.getEventEmitter().subscribe(this);
     }
 
     public componentWillUnmount(): void {
-        this.props.resourceManager.getEventEmmiter().dispose(this);
+        this.props.resourceManager.getEventEmitter().dispose(this);
     }
 
-    public fireEvent(event: NotificationEvent) {
-        if (event.type === EventType.FOLDER_CONTENT_UPDATED) {
+    public fireEvent(event: NotificationEvent<FileSystemEvents>) {
+        if (event.type === FileSystemEvents.FOLDER_CONTENT_UPDATED) {
             const content = this.props.resourceManager.getCurrentFolderContent();
-            console.log('folder content', content);
             if (content) {
                 this.setState({
                     ...content
