@@ -21,8 +21,9 @@ import { ActivityBarModule } from './activity-bar/module';
 import { IDialogService } from './core/services/DialogService/IDialogService';
 import { IMessageService } from './core/services/MessageService/MessageService';
 import { EditorViewerModule } from './editor-viewer/module';
-import { IEditorsManager } from './editor-viewer/EditorManager/IEditorsManager';
+import { IEditorsManager } from './editor-viewer/managers/IEditorsManager';
 import { EDITOR_VIEWER_MODULE } from './editor-viewer/module-types';
+import { IEditorRendererProvider } from './editor-viewer/EditorRenderers/EditorRendererProvider';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -50,7 +51,8 @@ root.render(
                 resourcesManager: injector.get<IResourcesManager>(FILES_EXPLORER_MODULE.IResourcesManager),
                 dialogService: injector.get<IDialogService>(CORE_TYPES.IDialogService),
                 messageService: injector.get<IMessageService>(CORE_TYPES.IMessageService),
-                editorsManager: injector.get<IEditorsManager>(EDITOR_VIEWER_MODULE.IEditorManager)
+                editorsManager: injector.get<IEditorsManager>(EDITOR_VIEWER_MODULE.IEditorManager),
+                editorRendererProvider: injector.get<IEditorRendererProvider>(EDITOR_VIEWER_MODULE.IEditorRendererProvider)
             }}>
             <App />
         </ProvidersContext.Provider>

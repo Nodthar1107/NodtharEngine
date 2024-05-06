@@ -50,7 +50,8 @@ module.exports = {
     mode: 'development',
 
     plugins: [new HtmlWebpackPlugin({
-        template: './public/index.html'
+        template: './public/index.html',
+        favicon: './public/favicon.ico'
     })],
 
     devServer: {

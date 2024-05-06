@@ -1,7 +1,7 @@
 .editor-viewer {
     flex: 1 1 auto;
 
-    background-color: blue;
+    background-color: var(--editorViewer-defaultEditorBackground);
 }
 
 .tabbar-panel {

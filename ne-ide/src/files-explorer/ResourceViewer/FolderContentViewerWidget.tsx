@@ -7,7 +7,7 @@ import { NotificationEvent } from '../../core/utils/events/NotificationEvent';
 import { ResourceType } from '../ResourcesManager/ResourceType';
 import { IDialogService } from '../../core/services/DialogService/IDialogService';
 import { FileSystemEvents } from '../ResourcesManager/events';
-import { IEditorsManager } from '../../editor-viewer/EditorManager/IEditorsManager';
+import { IEditorsManager } from '../../editor-viewer/managers/IEditorsManager';
 
 interface IFolderViewerWidgetProps {
     resourceManager: IResourcesManager;

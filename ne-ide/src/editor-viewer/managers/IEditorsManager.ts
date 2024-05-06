@@ -13,4 +13,6 @@ export interface IEditorsManager extends IEventEmitterProvider<EditorViewerEvent
     setActiveEditor: (uri: string) => void;
 
     openEditor: (uri: string) => void;
+
+    getActiveEditorDescriptor: () => IEditorDescriptor;
 }

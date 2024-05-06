@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IEditorsManager } from './EditorManager/IEditorsManager';
+import { IEditorsManager } from './managers/IEditorsManager';
 import { ISubscriber } from '../core/utils/events/ISubscriber';
 import { NotificationEvent } from 'src/core/utils/events/NotificationEvent';
 import { EditorViewerEvents } from './events';
@@ -8,6 +8,9 @@ import { TabbarPanel } from './TabbarPanel';
 import { IEditorDescriptor } from './model';
 
 import './style.scss';
+import { EditorRenderer } from './EditorRenderers/EditorRenderer';
+import { IEditorRendererProvider } from './EditorRenderers/EditorRendererProvider';
+import { URI } from 'src/core/utils/URI';
 
 export interface ITabbarItem {
     label: string;
@@ -17,12 +20,13 @@ export interface ITabbarItem {
 
 interface IEditorViewerProps {
     editorManager: IEditorsManager;
+    editorRenderer: IEditorRendererProvider;
 }
 
 interface IEditorViewerState {
     tabs: ITabbarItem[];
 
-    activeEditorUri: string | undefined;
+    activeEditorUri: string;
 }
 
 export class EditorViewer extends React.Component<
@@ -54,6 +58,8 @@ export class EditorViewer extends React.Component<
 
     /** @override */
     public render(): React.ReactNode {
+        const activeEditorDescriptor = this.props.editorManager.getActiveEditorDescriptor();
+
         return (
             <div className='editor-viewer'>
                 <TabbarPanel
@@ -61,6 +67,10 @@ export class EditorViewer extends React.Component<
                     activeTabUri={this.state.activeEditorUri}
                     onTabItemClick={this.onTabItemClick.bind(this)}
                     onTabItemClose={this.onTabItemClose.bind(this)}
+                />
+                <EditorRenderer
+                    editorRendererProvider={this.props.editorRenderer}
+                    editorDescriptor={activeEditorDescriptor}
                 />
             </div>
         );

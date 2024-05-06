@@ -24,6 +24,7 @@ body, html {
     --editorViewer-tabbarPanel-color: rgb(54, 67, 70);
     --editorViewer-tabbarItemActive-color: rgb(62, 75, 78);
     --editorViewer-tabbarItem-color: rgb(93, 104, 106);
+    --editorViewer-defaultEditorBackground: #1D292C;
 
     --file-explorer-background: rgb(41, 53, 56 );
 

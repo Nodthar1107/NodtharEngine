@@ -63,6 +63,10 @@ export class EditorsManagerMockImplementation implements IEditorsManager, ISubsc
         return this.activeEditor.uri;
     }
 
+    public getActiveEditorDescriptor(): IEditorDescriptor {
+        return this.activeEditor;
+    }
+
     public closeTab(uri: string) {
         const targetUri = URI.createURIFromString(uri);
         const openEditors = this.openEditors.filter((descriptor: IEditorDescriptor) => {
@@ -88,9 +92,18 @@ export class EditorsManagerMockImplementation implements IEditorsManager, ISubsc
     }
 
     public openEditor(uri: string) {
-        const newEditor = this.createEditorDescriptor(uri)
-        this.openEditors.push(newEditor);
-        this.activeEditor = newEditor;
+        const targetUri = URI.createURIFromString(uri);
+        const targetEditor = this.openEditors.find((editor: IEditorDescriptor) => {
+            return editor.uri.equals(targetUri); 
+        })
+        
+        let activeEditor = targetEditor;
+        if (!targetEditor) {
+            activeEditor = this.createEditorDescriptor(uri);
+            this.openEditors.push(activeEditor);
+        }
+
+        this.activeEditor = activeEditor as IEditorDescriptor;
 
         this.eventEmitter.fireEvent(
             new NotificationEvent<EditorViewerEvents>(EditorViewerEvents.OPEN_EDITORS_LIST_UPDATED)
