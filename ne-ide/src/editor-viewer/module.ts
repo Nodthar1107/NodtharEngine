@@ -11,7 +11,7 @@ export class EditorViewerModule implements IDIModule {
             .to(EditorsManagerMockImplementation);
 
         container
-            .bind(EDITOR_VIEWER_MODULE.IEditorRendererProvider)
+            .bind(EDITOR_VIEWER_MODULE.IEditorRendererProviderService)
             .to(EditorRendererProvider);
     }
 }

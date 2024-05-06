@@ -18,7 +18,7 @@ export const App: React.FC = (): React.ReactElement => {
     const iconsProvider = React.useContext(ProvidersContext).iconsProvider;
     const messageService = React.useContext(ProvidersContext).messageService;
     const editorsManager = React.useContext(ProvidersContext).editorsManager;
-    const editorRendererProvider = React.useContext(ProvidersContext).editorRendererProvider;
+    const editorRendererProvider = React.useContext(ProvidersContext).editorRendererProviderService;
 
     return (
         <div className='NodtharEngine'>

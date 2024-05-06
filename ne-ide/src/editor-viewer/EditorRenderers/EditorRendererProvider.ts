@@ -2,16 +2,21 @@ import * as React from 'react';
 
 import { ResourceType } from '../../files-explorer/ResourcesManager/ResourceType';
 import { IEditorDescriptor } from '../model';
-import { IAbstratcEditorProps, IEditor } from './AbstractEditor';
+import { IAbstratcEditorProps } from './AbstractEditor';
 import { getResourceTypeFromUri } from '../../files-explorer/ResourcesManager/resourceUtils';
 import { TextEditor } from './TextEditor';
-import { injectable } from 'inversify';
+import { EDITOR_VIEWER_MODULE } from '../module-types';
+import { injectable, multiInject } from 'inversify';
 
 import 'reflect-metadata';
+import { render } from 'react-dom';
 
 export interface IEditorRendererProvider {
-    registerEditor: (type: ResourceType, editor: IEditor) => void;
+    getRenderer: (props?: IAbstratcEditorProps) => React.ReactElement;
+    getEditorType: () => ResourceType;
+}
 
+export interface IEditorRendererProviderService {
     provideRenderer: (
         editorDescriptor: IEditorDescriptor,
         props?: IAbstratcEditorProps
@@ -19,11 +24,13 @@ export interface IEditorRendererProvider {
 }
 
 @injectable()
-export class EditorRendererProvider implements IEditorRendererProvider {
-    private editorRendererMapper: Map<ResourceType, IEditor> = new Map();
+export class EditorRendererProvider implements IEditorRendererProviderService {
+    private editorRendererMapper: Map<ResourceType, IEditorRendererProvider> = new Map();
 
-    public registerEditor(type: ResourceType, editor: IEditor) {
-        this.editorRendererMapper.set(type, editor);
+    constructor(@multiInject(EDITOR_VIEWER_MODULE.IEditorRendererProvider) providers: IEditorRendererProvider[]) {
+        providers.forEach((provider: IEditorRendererProvider) => {
+            this.editorRendererMapper.set(provider.getEditorType(), provider);
+        });
     }
 
     public provideRenderer(
@@ -31,10 +38,10 @@ export class EditorRendererProvider implements IEditorRendererProvider {
         props?: IAbstratcEditorProps
     ): React.ReactElement<IAbstratcEditorProps> {
         const type = getResourceTypeFromUri(editorDescriptor.uri);
-        const editor = this.editorRendererMapper.get(type);
+        const renderer = this.editorRendererMapper.get(type);
 
-        return editor
-            ? React.createElement(editor as React.ComponentClass, props)
+        return renderer
+            ? renderer.getRenderer(props)
             : React.createElement(TextEditor, props);
     }  
 }

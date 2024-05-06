@@ -5,9 +5,8 @@ import { ITreeViewManager } from '../tree-view/TreeViewManager/ITreeViewManager'
 import { IResourcesManager } from '../files-explorer/ResourcesManager/IResourcesManager';
 import { IDialogService } from '../core/services/DialogService/IDialogService';
 import { IMessageService } from '../core/services/MessageService/MessageService';
-import { IEditorDescriptor } from '../editor-viewer/model';
 import { IEditorsManager } from '../editor-viewer/managers/IEditorsManager';
-import { IEditorRendererProvider } from '../editor-viewer/EditorRenderers/EditorRendererProvider';
+import { IEditorRendererProviderService } from '../editor-viewer/EditorRenderers/EditorRendererProvider';
 
 const InitialContex = {
     commandsProvider: {} as ICommandsProvider,
@@ -17,7 +16,7 @@ const InitialContex = {
     dialogService: {} as IDialogService,
     messageService: {} as IMessageService,
     editorsManager: {} as IEditorsManager,
-    editorRendererProvider: {} as IEditorRendererProvider
+    editorRendererProviderService: {} as IEditorRendererProviderService
 };
 
 export type ProvidersContextType = typeof InitialContex;

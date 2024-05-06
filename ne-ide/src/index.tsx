@@ -1,16 +1,14 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { Container } from 'inversify';
 
 import { App } from './App';
-import { Container } from 'inversify';
 import { CoreModule } from './core/module';
 import { IDIModule } from './core/dependencies/IDIModule';
 import { CORE_TYPES } from './core/module-types';
 import { ProvidersContext } from './contexts/servicesContext';
 import { ICommandsProvider } from './core/providers/commandsProvider/ICommandsProvider';
 import { IIconsProvider } from './core/providers/IIconsProvider';
-
-import 'reflect-metadata';
 import { ITreeViewManager } from './tree-view/TreeViewManager/ITreeViewManager';
 import { TREE_VIEW_MODULE } from './tree-view/module-types';
 import { TreeViewModule } from './tree-view/module';
@@ -23,7 +21,10 @@ import { IMessageService } from './core/services/MessageService/MessageService';
 import { EditorViewerModule } from './editor-viewer/module';
 import { IEditorsManager } from './editor-viewer/managers/IEditorsManager';
 import { EDITOR_VIEWER_MODULE } from './editor-viewer/module-types';
-import { IEditorRendererProvider } from './editor-viewer/EditorRenderers/EditorRendererProvider';
+import { IEditorRendererProviderService } from './editor-viewer/EditorRenderers/EditorRendererProvider';
+import { BlueprintModule } from './blueprint-editor/module';
+
+import 'reflect-metadata';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -36,7 +37,8 @@ const injector = new Container();
     new TreeViewModule(),
     new FilesExplorerModule(),
     new ActivityBarModule(),
-    new EditorViewerModule()
+    new EditorViewerModule(),
+    new BlueprintModule()
 ].forEach((module: IDIModule) => {
     module.registerModule(injector);
 });
@@ -52,7 +54,7 @@ root.render(
                 dialogService: injector.get<IDialogService>(CORE_TYPES.IDialogService),
                 messageService: injector.get<IMessageService>(CORE_TYPES.IMessageService),
                 editorsManager: injector.get<IEditorsManager>(EDITOR_VIEWER_MODULE.IEditorManager),
-                editorRendererProvider: injector.get<IEditorRendererProvider>(EDITOR_VIEWER_MODULE.IEditorRendererProvider)
+                editorRendererProviderService: injector.get<IEditorRendererProviderService>(EDITOR_VIEWER_MODULE.IEditorRendererProviderService)
             }}>
             <App />
         </ProvidersContext.Provider>

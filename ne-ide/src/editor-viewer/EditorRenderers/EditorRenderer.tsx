@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import { IEditorDescriptor } from '../model';
-import { IEditorRendererProvider } from './EditorRendererProvider';
+import { IEditorRendererProviderService } from './EditorRendererProvider';
 
 interface IEditorRendererProps {
-    editorRendererProvider: IEditorRendererProvider;
+    editorRendererProvider: IEditorRendererProviderService;
     editorDescriptor: IEditorDescriptor;
 }
 

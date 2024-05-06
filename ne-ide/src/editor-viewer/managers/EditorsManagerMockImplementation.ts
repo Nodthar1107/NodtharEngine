@@ -89,6 +89,10 @@ export class EditorsManagerMockImplementation implements IEditorsManager, ISubsc
         if (editor) {
             this.activeEditor = editor;
         }
+
+        this.eventEmitter.fireEvent(
+            new NotificationEvent<EditorViewerEvents>(EditorViewerEvents.OPEN_EDITORS_LIST_UPDATED)
+        );
     }
 
     public openEditor(uri: string) {

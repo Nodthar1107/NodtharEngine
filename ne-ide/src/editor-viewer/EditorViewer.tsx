@@ -9,7 +9,7 @@ import { IEditorDescriptor } from './model';
 
 import './style.scss';
 import { EditorRenderer } from './EditorRenderers/EditorRenderer';
-import { IEditorRendererProvider } from './EditorRenderers/EditorRendererProvider';
+import { IEditorRendererProvider, IEditorRendererProviderService } from './EditorRenderers/EditorRendererProvider';
 import { URI } from 'src/core/utils/URI';
 
 export interface ITabbarItem {
@@ -20,7 +20,7 @@ export interface ITabbarItem {
 
 interface IEditorViewerProps {
     editorManager: IEditorsManager;
-    editorRenderer: IEditorRendererProvider;
+    editorRenderer: IEditorRendererProviderService;
 }
 
 interface IEditorViewerState {
