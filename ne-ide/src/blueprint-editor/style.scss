@@ -1,7 +1,14 @@
 .blueprint-editor {
     position: relative;
-
     min-height: 100%;
+
+    &_place-node {
+        cursor: copy;
+    }
+
+    &_draggable {
+        cursor: grab;
+    }
 }
 
 .blueprints-list-view {
@@ -50,6 +57,27 @@
 
     &:hover {
         background-color: var(--tree-item-hover);
+    }
+}
+
+.blueprint-node {
+    position: absolute;
+
+    min-width: 150px;
+    border-radius: 6px;
+
+    background-color: #171816;
+
+    &__header {
+        padding: 5px 5px;
+        color: white;
+
+        border-radius: 6px 6px 0px 0px;
+        background-color: rgb(211, 22, 22);
+    }
+
+    &__body {
+        height: 60px;
     }
 }
 

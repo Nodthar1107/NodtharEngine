@@ -1,5 +1,7 @@
-import { IBlueprintDescriptor } from "./model";
+import { IBlueprintDescriptor, IBlueprintNode } from './model';
 
 export interface IBlueprintsInfoProvider {
-    getBlueprintsDescriptors: () => IBlueprintDescriptor[];
+    getBlueprintsLibrary: () => IBlueprintDescriptor[];
+    getBlueprintsNodes: (uri: string) => IBlueprintNode[];
+    createNodeById: (id: string) => IBlueprintNode;
 }

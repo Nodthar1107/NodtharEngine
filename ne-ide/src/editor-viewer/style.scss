@@ -10,6 +10,9 @@
 
     height: 36px;
     background-color: var(--editorViewer-tabbarPanel-color);
+
+    position: relative;
+    z-index: 2;
 }
 
 .tabbar-item {

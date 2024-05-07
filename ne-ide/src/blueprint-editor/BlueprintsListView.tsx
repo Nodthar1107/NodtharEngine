@@ -5,8 +5,9 @@ import { Accordion } from '../core/ui-components/Accordion/Accordion';
 import { AccordionSummary } from '../core/ui-components/Accordion/AccordionSummary';
 import { AccordionDetails } from '../core/ui-components/Accordion/AccordionDetails';
 
-interface IBlueprintsListViewProps extends ICustomDialogBaseProps {
+export interface IBlueprintsListViewProps extends ICustomDialogBaseProps {
     descriptors: IBlueprintDescriptor[];
+    onNodeSelect: (nodeId: string) => void;
 }
 
 export const BlueprintsListView: React.FC<IBlueprintsListViewProps> = (props: IBlueprintsListViewProps): React.ReactElement => {
@@ -18,9 +19,11 @@ export const BlueprintsListView: React.FC<IBlueprintsListViewProps> = (props: IB
             }
 
             groupsMap.get(descriptor.group)?.push(descriptor);
-        })
+        });
 
-        return groupsMap;
+        return Array.from(groupsMap.entries()).sort((first: BlueprintsGroup, second: BlueprintsGroup) => {
+            return first[0] > second[0] ? 1 : -1;
+        });;
     }, [props.descriptors]);
 
     return (
@@ -28,12 +31,17 @@ export const BlueprintsListView: React.FC<IBlueprintsListViewProps> = (props: IB
             <div className='blueprints-list-view__header'>
                 Доступные блоки
             </div>
-            {Array.from(groups.entries())
-                .sort(BlueprintsGroupsComparator)
-                .map((group: BlueprintsGroup, index: number) => {
-                    return <BlueprintsGroup label={group[0]} descriptors={group[1]} key={index} />;
-                }
-            )}
+            {groups.map((group: BlueprintsGroup, index: number) => {
+                return (
+                    <BlueprintsGroup
+                        label={group[0]}
+                        descriptors={group[1]}
+                        onNodeSelect={props.onNodeSelect}
+                        onDialogHide={props.onDialogHide}
+                        key={index}
+                    />
+                );
+            })}
         </div>
     );
 }
@@ -46,19 +54,24 @@ function BlueprintsGroupsComparator(first: BlueprintsGroup, second: BlueprintsGr
 
 interface IBlueprintsGroupProps {
     label: string;
-    descriptors: IBlueprintDescriptor[]
+    descriptors: IBlueprintDescriptor[];
+
+    onNodeSelect: (nodeId: string) => void;
+    onDialogHide?: () => void;
 }
 
 const BlueprintsGroup: React.FC<IBlueprintsGroupProps> = (props: IBlueprintsGroupProps): React.ReactElement => {
     const summary = <AccordionSummary className='blueprints-list-view-group__label'>{props.label}</AccordionSummary>;
     const details = (
         <AccordionDetails className='blueprints-list-view-group__content'>
-                {props.descriptors.map((descriptor: IBlueprintGroupItem, index: number) => {
+                {props.descriptors.map((descriptor: IBlueprintDescriptor, index: number) => {
                     return (
                         <BlueprintGroupItem
                             label={descriptor.label}
                             description={descriptor.description}
                             icon={descriptor.icon}
+                            onNodeSelect={() => props.onNodeSelect(descriptor.nodeId)}
+                            onDialogHide={props.onDialogHide}
                             key={index}    
                         />
                     );
@@ -75,11 +88,22 @@ interface IBlueprintGroupItem {
     label: string;
     description: string;
     icon?: React.ReactElement;
+
+    onNodeSelect: () => void;
+    onDialogHide?: () => void;
 }
 
 const BlueprintGroupItem: React.FC<IBlueprintGroupItem> = (props: IBlueprintGroupItem): React.ReactElement => {
+    const onNodeSelect = () => {
+        props.onDialogHide?.();
+        props.onNodeSelect();
+    };
+    
     return (
-        <div className='blueprint-group-item' title={props.description}>
+        <div
+            className='blueprint-group-item'
+            title={props.description}
+            onClick={onNodeSelect}>
             <div className='blueprint-group-item__icon'>{props.icon}</div>
             <div className='blueprint-group-item__label'>{props.label}</div>
         </div>

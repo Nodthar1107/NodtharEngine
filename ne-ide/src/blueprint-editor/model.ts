@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export enum BlueprintNodeType {
-    EntryPoint,
+    Event,
 
     FunctionalNode,
 
@@ -27,7 +27,9 @@ export interface IBlueprintDescriptor {
 }
 
 export enum BlueprintEditorOperationType {
-    PlaceElement
+    PlaceElement,
+
+    DragEditor
 }
 
 export interface IEditorOperation {
@@ -37,3 +39,5 @@ export interface IEditorOperation {
 export interface IPlaceElementOperation extends IEditorOperation {
     nodeId: string;
 }
+
+export interface IDragEditorOperation extends IEditorOperation {}

@@ -6,20 +6,21 @@ import { IAbstratcEditorProps } from './AbstractEditor';
 import { getResourceTypeFromUri } from '../../files-explorer/ResourcesManager/resourceUtils';
 import { TextEditor } from './TextEditor';
 import { EDITOR_VIEWER_MODULE } from '../module-types';
-import { injectable, multiInject } from 'inversify';
+import { inject, injectable, multiInject } from 'inversify';
 
 import 'reflect-metadata';
 import { render } from 'react-dom';
+import { IEditorsManager } from '../managers/IEditorsManager';
 
 export interface IEditorRendererProvider {
-    getRenderer: (props?: IAbstratcEditorProps) => React.ReactElement;
+    getRenderer: (props: IAbstratcEditorProps) => React.ReactElement;
     getEditorType: () => ResourceType;
 }
 
 export interface IEditorRendererProviderService {
     provideRenderer: (
         editorDescriptor: IEditorDescriptor,
-        props?: IAbstratcEditorProps
+        props: IAbstratcEditorProps
     ) => React.ReactElement<IAbstratcEditorProps>;
 }
 
@@ -27,7 +28,9 @@ export interface IEditorRendererProviderService {
 export class EditorRendererProvider implements IEditorRendererProviderService {
     private editorRendererMapper: Map<ResourceType, IEditorRendererProvider> = new Map();
 
-    constructor(@multiInject(EDITOR_VIEWER_MODULE.IEditorRendererProvider) providers: IEditorRendererProvider[]) {
+    constructor(
+        @multiInject(EDITOR_VIEWER_MODULE.IEditorRendererProvider) providers: IEditorRendererProvider[]
+    ) {
         providers.forEach((provider: IEditorRendererProvider) => {
             this.editorRendererMapper.set(provider.getEditorType(), provider);
         });
@@ -35,7 +38,7 @@ export class EditorRendererProvider implements IEditorRendererProviderService {
 
     public provideRenderer(
         editorDescriptor: IEditorDescriptor,
-        props?: IAbstratcEditorProps
+        props: IAbstratcEditorProps
     ): React.ReactElement<IAbstratcEditorProps> {
         const type = getResourceTypeFromUri(editorDescriptor.uri);
         const renderer = this.editorRendererMapper.get(type);

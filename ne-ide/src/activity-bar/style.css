@@ -4,4 +4,6 @@
 
     background-color: var(--activity-bar-background);
     border-right: 2px solid var(--activity-bar-border-color);
+
+    z-index: 1;
 }

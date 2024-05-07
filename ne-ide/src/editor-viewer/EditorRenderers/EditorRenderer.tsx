@@ -14,6 +14,9 @@ export class EditorRenderer extends React.Component<IEditorRendererProps> {
     }
 
     public render(): React.ReactNode {
-        return this.props.editorRendererProvider.provideRenderer(this.props.editorDescriptor);
+        return this.props.editorRendererProvider.provideRenderer(
+            this.props.editorDescriptor, {
+                uri: this.props.editorDescriptor.uri.toString()
+        });
     }    
 }
