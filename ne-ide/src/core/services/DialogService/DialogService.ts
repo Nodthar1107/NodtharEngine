@@ -1,11 +1,12 @@
+import * as React from 'react';
 import { injectable } from 'inversify';
-import { IContextMenuDialogDetails, IInputDialogDetails } from './DialogServiceRenderer';
+import { IContextMenuDialogDetails, ICustomDialogBaseProps } from './DialogServiceRenderer';
 import { IDialogService, IDialogServiceRenderer, IInputDialogOptions, IQuickInputDialogOptions } from './IDialogService';
 import { IDialogRendererRegister } from './ISubscribeRegister';
-
-import 'reflect-metadata';
 import { IQuickInputItem } from './QuickInputDialog';
 import { IUploadedFileDescriptor } from './UploadFileDialog';
+
+import 'reflect-metadata';
 
 @injectable()
 export class DialogService implements IDialogService, IDialogRendererRegister {
@@ -51,5 +52,22 @@ export class DialogService implements IDialogService, IDialogRendererRegister {
                 });
             }
         })
+    }
+
+    public showCustomDialog(
+        dialogComponent: React.ComponentType<ICustomDialogBaseProps>,
+        event: React.MouseEvent<Element, MouseEvent>,
+        props?: any
+    ) {
+        if (this.renderer !== null) {
+            this.renderer.showCustomDialog({
+                component: dialogComponent,
+                coords: {
+                    x: event.clientX,
+                    y: event.clientY,
+                },
+                props: props
+            });
+        }
     }
 }

@@ -23,11 +23,11 @@ const DEFAULT_POSITION = {
     left: '0'
 };
 
-interface IBaseProps {
+export interface IWithDialogWidgetBaseProps {
     onDialogHide?: () => void;
 }
 
-interface IAdditionalProperties {
+export interface IWithDialogAdditionalProperties {
     title?: string;
     description?: string;
     isStyled?: boolean;
@@ -36,8 +36,8 @@ interface IAdditionalProperties {
     sendResponse?: (value: any) => void;
 }
 
-export function withDialogWidget<T extends IBaseProps>(Component: React.ComponentType<T>) {
-    const NewComponent = (props: T & IAdditionalProperties) => {
+export function withDialogWidget<T extends IWithDialogWidgetBaseProps>(Component: React.ComponentType<T>) {
+    const NewComponent = (props: T & IWithDialogAdditionalProperties) => {
         const contextMenuRef = React.useRef<HTMLDivElement>(null);
         const [showDialog, setShowDialog] = React.useState(false);
         const [coords, setCoords] = React.useState<Position>(props.position || DEFAULT_POSITION);

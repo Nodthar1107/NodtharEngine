@@ -25,6 +25,8 @@ import { IEditorRendererProviderService } from './editor-viewer/EditorRenderers/
 import { BlueprintModule } from './blueprint-editor/module';
 
 import 'reflect-metadata';
+import { IBlueprintsInfoProvider } from './blueprint-editor/IBlueprintInfoProvider';
+import { BLUEPRINT_EDITOR_MODULE } from './blueprint-editor/module-types';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -54,7 +56,8 @@ root.render(
                 dialogService: injector.get<IDialogService>(CORE_TYPES.IDialogService),
                 messageService: injector.get<IMessageService>(CORE_TYPES.IMessageService),
                 editorsManager: injector.get<IEditorsManager>(EDITOR_VIEWER_MODULE.IEditorManager),
-                editorRendererProviderService: injector.get<IEditorRendererProviderService>(EDITOR_VIEWER_MODULE.IEditorRendererProviderService)
+                editorRendererProviderService: injector.get<IEditorRendererProviderService>(EDITOR_VIEWER_MODULE.IEditorRendererProviderService),
+                blueprintsInfoProvider: injector.get<IBlueprintsInfoProvider>(BLUEPRINT_EDITOR_MODULE.IBlueprintsInfoProvider)
             }}>
             <App />
         </ProvidersContext.Provider>

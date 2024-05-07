@@ -1,3 +1,67 @@
 .blueprint-editor {
+    position: relative;
+
+    min-height: 100%;
+}
+
+.blueprints-list-view {
+    width: 250px;
     
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 2px;
+
+    background-color: #1D1C1D;
+
+    color: var(--text-color);
+    font-family: var(--text-font-family);
+
+    &__header {
+        padding: 4px 5px;
+        font-weight: bold;
+
+        border-bottom: 1px solid black;
+    }
+}
+
+.blueprints-list-view-group {
+    &__label {
+        @extend %context-menu-item;
+    }
+
+    &__content {
+        margin-left: 16px;
+    }
+}
+
+.blueprint-group-item {
+    @extend %context-menu-item;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    &__icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    &:hover {
+        background-color: var(--tree-item-hover);
+    }
+}
+
+%context-menu-item {
+    padding: 2px 5px;
+    border-radius: 2px;
+
+    font-size: 0.9em;
+
+    cursor: pointer;
+
+    &:hover {
+        background-color: var(--tree-item-hover);
+    }
 }

@@ -11,6 +11,7 @@ import 'reflect-metadata';
 
 import './style.scss';
 import { IUploadedFileDescriptor, UploadFilesDialog } from './UploadFileDialog';
+import { IWithDialogAdditionalProperties, IWithDialogWidgetBaseProps, withDialogWidget } from './withDialogWidget';
 
 export enum DialogType {
     Context = 'context',
@@ -19,7 +20,9 @@ export enum DialogType {
 
     QuickInput = 'quick-input',
 
-    UploadFiles = 'uload-files'
+    UploadFiles = 'uload-files',
+
+    CustomDialog = 'custom-dialog'
 };
 
 export interface ICreateDialogOptions {
@@ -54,6 +57,12 @@ export interface IQuickInputDialogDetails extends ICreateDialogDetails {
     resolve?: (item: IQuickInputItem) => void;
 }
 
+export interface ICustomDialogDetails extends ICreateDialogDetails {
+    component: React.ComponentType<ICustomDialogBaseProps>;
+    coords: ICoords;
+    props?: any;
+}
+
 export interface IUploadFilesDialogDetails extends ICreateDialogDetails {
     resolve?: (files: IUploadedFileDescriptor[]) => void;
 }
@@ -68,6 +77,8 @@ export interface IDialogServiceRendererState {
     details: ICreateDialogDetails | null;
     handlerArgs?: any;
 }
+
+export interface ICustomDialogBaseProps extends IWithDialogWidgetBaseProps {}
 
 export class DialogServiceRenderer extends React.Component<IDialogServiceProps, IDialogServiceRendererState> implements IDialogServiceRenderer {
     private dialogMountPoint = document.getElementById('overlay') as HTMLElement;
@@ -123,6 +134,16 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
         });
     }
 
+    public showCustomDialog(details: ICustomDialogDetails) {
+        this.setState({
+            type: DialogType.CustomDialog,
+            details: {
+                ...details,
+                component: withDialogWidget(details.component)
+            } as ICreateDialogDetails
+        })
+    }
+
     private renderDialog(): React.ReactNode {    
         switch (this.state.type) {
             case DialogType.Context:
@@ -133,6 +154,8 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
                 return this.renderQuickInput();
             case DialogType.UploadFiles:
                 return this.renderUploadFilesDialog();
+            case DialogType.CustomDialog:
+                return this.renderCustomDialog();
             default:
                 return null;
         }
@@ -197,6 +220,19 @@ export class DialogServiceRenderer extends React.Component<IDialogServiceProps, 
                 sendResponse={uploadFilesDialogDetails.resolve}
             />
         )
+    }
+
+    private renderCustomDialog(): React.ReactNode {
+        const customDialogDetails = this.state.details as ICustomDialogDetails;
+
+        return React.createElement<IWithDialogWidgetBaseProps & IWithDialogAdditionalProperties>(customDialogDetails.component, {
+            ...customDialogDetails.props,
+            onDialogHide: this.onDialogHide.bind(this, DialogType.CustomDialog),
+            position: {
+                left: customDialogDetails.coords.x,
+                top: customDialogDetails.coords.y
+            }
+        });
     }
 
     private onDialogHide(senderWidgetType: DialogType) {

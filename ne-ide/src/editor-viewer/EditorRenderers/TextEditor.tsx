@@ -1,5 +1,7 @@
-import { ReactNode } from "react";
-import { AbstractEditor, IAbstratcEditorProps } from "./AbstractEditor";
+import { ReactNode } from 'react';
+import { AbstractEditor, IAbstratcEditorProps } from './AbstractEditor';
+
+import '../style.scss';
 
 interface ITextEditorProps extends IAbstratcEditorProps {
 
@@ -11,6 +13,6 @@ export class TextEditor extends AbstractEditor<ITextEditorProps, {}> {
     }
 
     public render(): ReactNode {
-        return <div className="text-editor"></div>;
+        return <div className='text-editor'></div>;
     }
 }

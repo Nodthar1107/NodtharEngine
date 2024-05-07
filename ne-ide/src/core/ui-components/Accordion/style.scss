@@ -1,0 +1,15 @@
+.accordion {
+    &-summary {
+        display: flex;
+        align-items: center;
+
+        &__content {
+            flex: 1 1 auto
+        }
+
+        &__expand-icon {
+            width: 16px;
+            height: 16px;
+        }
+    }
+}
