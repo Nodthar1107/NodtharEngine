@@ -68,6 +68,12 @@
 
     background-color: #171816;
 
+    cursor: pointer;
+
+    &_draggable {
+        cursor: grab;
+    }
+
     &__header {
         padding: 5px 5px;
         color: white;

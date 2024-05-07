@@ -29,7 +29,9 @@ export interface IBlueprintDescriptor {
 export enum BlueprintEditorOperationType {
     PlaceElement,
 
-    DragEditor
+    DragEditor,
+
+    DragElement
 }
 
 export interface IEditorOperation {
@@ -41,3 +43,7 @@ export interface IPlaceElementOperation extends IEditorOperation {
 }
 
 export interface IDragEditorOperation extends IEditorOperation {}
+
+export interface IDragNodeOperation extends IEditorOperation {
+    nodeIndex: number;
+}

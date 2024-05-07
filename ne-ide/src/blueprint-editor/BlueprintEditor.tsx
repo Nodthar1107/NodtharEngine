@@ -12,7 +12,7 @@ import 'reflect-metadata';
 import './style.scss';
 import { BLUEPRINT_EDITOR_MODULE } from './module-types';
 import { ICustomDialogBaseProps } from 'src/core/services/DialogService/DialogServiceRenderer';
-import { BlueprintEditorOperationType, IBlueprintNode, IDragEditorOperation, IEditorOperation, IPlaceElementOperation } from './model';
+import { BlueprintEditorOperationType, IBlueprintNode, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
 import { BlueprintNode } from './BluprintNode';
 
 interface ICoords {
@@ -29,7 +29,6 @@ interface IBlueprintEditorState {
     operation: IEditorOperation | null;
     nodes: IBlueprintNode[];
     centerOffset: ICoords;
-    isDrugging: boolean;
 }
 
 export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlueprintEditorState> {
@@ -42,8 +41,7 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
             centerOffset: {
                 x: 0,
                 y: 0
-            },
-            isDrugging: false
+            }
         }
     }
 
@@ -58,16 +56,23 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
             <div
                 onContextMenu={(event: React.MouseEvent) => { this.onContext(event) }}
                 {...this.getSpecialProps()}>
+                {this.renderCommands()}
                 {this.renderNodes()}
             </div>
         );
     }
 
     private renderCommands(): React.ReactNode {
-        return <></>;
+        return (
+            <div className='blueprint-editor__command-panel'>
+
+            </div>
+        );
     }
 
     private renderNodes(): React.ReactNode {
+        const isDraggable = this.state.operation?.type === BlueprintEditorOperationType.DragElement;
+
         return this.state.nodes.map((node: IBlueprintNode, index: number) => {
             return (
                 <BlueprintNode
@@ -78,7 +83,10 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
                     posY={node.posY + this.state.centerOffset.y}
                     schema={node.schema}
                     type={node.type}
+                    isDraggable={isDraggable}
                     key={index}
+                    onNodeMouseDown={(event: React.MouseEvent) => { this.onNodeMouseDown(event, index) }}
+                    onContextMenu={this.onNodeContextMenu.bind(this)}
                 />
             );
         });
@@ -94,15 +102,22 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
             switch (this.state.operation.type) {
                 case BlueprintEditorOperationType.PlaceElement:
                     return {
-                        onClick: (event: React.MouseEvent) => this.onBlueprintNodePlace(event),
+                        onClick: (event: React.MouseEvent<HTMLDivElement>) => this.onBlueprintNodePlace(event),
                         className: `${baseProps.className} ${baseProps.className}_place-node`
                     };
                 case BlueprintEditorOperationType.DragEditor:
                     return {
                         className: `${baseProps.className} ${baseProps.className}_draggable`,
-                        onMouseUp: () => { this.setState({ isDrugging: false, operation: null }) },
-                        onMouseLeave: () => { this.setState({ isDrugging: false, operation: null }) },
+                        onMouseUp: () => { this.setState({ operation: null }) },
+                        onMouseLeave: () => { this.setState({ operation: null }) },
                         onMouseMove: (event: React.MouseEvent) => { this.onMouseMove(event) }
+                    };
+                case BlueprintEditorOperationType.DragElement:
+                    return {
+                        className: `${baseProps.className} ${baseProps.className}_draggable`,
+                        onMouseUp: () => { this.setState({ operation: null }) },
+                        onMouseLeave: () => { this.setState({ operation: null }) },
+                        onMouseMove: (event: React.MouseEvent) => { this.onNodeDrag(event) }
                     }
             }
         }
@@ -135,11 +150,13 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
         });
     }
 
-    private onBlueprintNodePlace(event: React.MouseEvent) {
+    private onBlueprintNodePlace(event: React.MouseEvent<HTMLDivElement>) {
         const placeElementOperation = this.state.operation as IPlaceElementOperation;
         const node = this.props.blueprintsInfoProvider.createNodeById(placeElementOperation.nodeId);
-        node.posX = event.clientX;
-        node.posY = event.clientY;
+        const editorRect = event.currentTarget.getBoundingClientRect() as DOMRect;
+
+        node.posX = event.clientX - editorRect.left;
+        node.posY = event.clientY - editorRect.top;
 
         const nodes = this.state.nodes.slice();
         nodes.push(node);
@@ -150,25 +167,56 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
         });
     }
 
-    private onDrugStart() {
-        this.setState({
-            isDrugging: true,
-            operation: {
-                type: BlueprintEditorOperationType.DragEditor
-            } as IDragEditorOperation
-        })
+    private onDrugStart(event: React.MouseEvent) {
+        if (event.button === 0) {
+            this.setState({
+                operation: {
+                    type: BlueprintEditorOperationType.DragEditor
+                } as IDragEditorOperation
+            });
+        }
     }
 
     private onMouseMove(event: React.MouseEvent) {
-        if (this.state.isDrugging) {
-            const currentoffset = this.state.centerOffset;
-            this.setState({
-                centerOffset: {
-                    x: currentoffset.x + event.movementX,
-                    y: currentoffset.y + event.movementY
-                }
-            });
-        }
+        const currentoffset = this.state.centerOffset;
+        this.setState({
+            centerOffset: {
+                x: currentoffset.x + event.movementX,
+                y: currentoffset.y + event.movementY
+            }
+        });
+    }
+
+    private onNodeMouseDown(event: React.MouseEvent, index: number) {
+        event.stopPropagation();
+        
+        this.setState({
+            operation: {
+                type: BlueprintEditorOperationType.DragElement,
+                nodeIndex: index
+            } as IDragNodeOperation
+        })
+    }
+
+    private onNodeDrag(event: React.MouseEvent) {
+        const operation = this.state.operation as IDragNodeOperation;
+        const updatedNodes = this.state.nodes.slice();
+        const targetNode = updatedNodes[operation.nodeIndex];
+        const updatedNode: IBlueprintNode = {
+            ...targetNode,
+            posX: targetNode.posX + event.movementX,
+            posY: targetNode.posY + event.movementY
+        };
+        updatedNodes[operation.nodeIndex] = updatedNode;
+
+        this.setState({
+            nodes: updatedNodes
+        });
+    }
+
+    private onNodeContextMenu(event: React.MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 }
 
