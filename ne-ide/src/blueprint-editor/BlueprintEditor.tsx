@@ -18,6 +18,7 @@ import { NotificationEvent } from 'src/core/utils/events/NotificationEvent';
 import { INodeId } from './BlueprintsEditorCommandsContribution';
 
 import './style.scss';
+import { IIconsProvider } from 'src/core/providers/IIconsProvider';
 
 interface ICoords {
     x: number,
@@ -27,9 +28,11 @@ interface ICoords {
 interface IBlueprintEditorProps extends IAbstratcEditorProps {
     dialogService: IDialogService;
     blueprintsInfoProvider: IBlueprintsInfoProvider;
+    iconProvider: IIconsProvider;
 }
 
 interface IBlueprintEditorState {
+    previousUri: string;
     operation: IEditorOperation | null;
     nodes: IBlueprintNode[];
     centerOffset: ICoords;
@@ -43,6 +46,7 @@ export class BlueprintEditor
         super(props);
 
         this.state = {
+            previousUri: this.props.uri,
             operation: null,
             nodes: this.props.blueprintsInfoProvider.getBlueprintsNodesByUri(this.props.uri),
             centerOffset: {
@@ -52,6 +56,26 @@ export class BlueprintEditor
         }
     }
 
+    public static getDerivedStateFromProps(
+        props: IBlueprintEditorProps,
+        state: IBlueprintEditorState
+    ): IBlueprintEditorState | null {
+        if (props.uri !== state.previousUri) {
+            return {
+                nodes: props.blueprintsInfoProvider.getBlueprintsNodesByUri(props.uri),
+                centerOffset: {
+                    x: 0,
+                    y: 0
+                },
+                operation: null,
+                previousUri: props.uri
+            }
+        }
+
+        return null;
+    }
+
+    /** @override */
     public fireEvent(event: NotificationEvent<BlueprintEditorEvents>) {
         if (event.type === BlueprintEditorEvents.BluprintUpdated) {
             this.setState({
@@ -87,9 +111,15 @@ export class BlueprintEditor
     }
 
     private renderCommands(): React.ReactNode {
+        const centeringCommandIcon = this.props.iconProvider.getIconById('centering');
+
         return (
             <div className='blueprint-editor__command-panel'>
-
+                <div className='blueprint-editor__command' onClick={this.resetEditorOffset.bind(this)}>
+                    {React.createElement(centeringCommandIcon, {
+                        className: 'blueprint-editor__command_centering'
+                    })}
+                </div>
             </div>
         );
     }
@@ -265,19 +295,31 @@ export class BlueprintEditor
             }
         });
     }
+
+    private resetEditorOffset() {
+        this.setState({
+            centerOffset: {
+                x: 0,
+                y: 0
+            }
+        });
+    }
 }
 
 @injectable()
 export class BlueprintEditorProvider implements IEditorRendererProvider {
     private dialogService: IDialogService;
     private blueprintsInfoProvider: IBlueprintsInfoProvider;
+    private iconsProvider: IIconsProvider;
 
     constructor(
         @inject(CORE_TYPES.IDialogService) dialogService: IDialogService,
-        @inject(BLUEPRINT_EDITOR_MODULE.IBlueprintsInfoProvider) blueprintsInfoProvider: IBlueprintsInfoProvider
+        @inject(BLUEPRINT_EDITOR_MODULE.IBlueprintsInfoProvider) blueprintsInfoProvider: IBlueprintsInfoProvider,
+        @inject(CORE_TYPES.IIconsProvider) iconsProvider: IIconsProvider
     ) {
         this.dialogService = dialogService;
         this.blueprintsInfoProvider = blueprintsInfoProvider;
+        this.iconsProvider = iconsProvider;
     }
 
     public getRenderer(props: IAbstratcEditorProps): React.ReactElement {
@@ -286,6 +328,7 @@ export class BlueprintEditorProvider implements IEditorRendererProvider {
                 uri={props.uri}
                 blueprintsInfoProvider={this.blueprintsInfoProvider}
                 dialogService={this.dialogService}
+                iconProvider={this.iconsProvider}
             />
         );
     }

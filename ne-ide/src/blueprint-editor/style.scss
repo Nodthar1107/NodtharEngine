@@ -9,6 +9,29 @@
     &_draggable {
         cursor: grab;
     }
+
+    &__command-panel {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        top: 10px;
+        right: 10px;
+        
+        width: fit-content;
+    }
+
+    &__command {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &_centering {
+            width: 26px;
+            height: 26px;
+        }
+    }
 }
 
 .blueprints-list-view {

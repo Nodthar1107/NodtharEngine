@@ -43,10 +43,9 @@ export class EditorViewer extends React.Component<
 
     public fireEvent(event: NotificationEvent<EditorViewerEvents>) {
         if (event.type === EditorViewerEvents.OPEN_EDITORS_LIST_UPDATED) {
-            const uri = this.props.editorManager.getActiveTabUri().toString();
             this.setState({
                 tabs: this.getTabItemsFromDescriptors(this.props.editorManager.getTabbarsList()),
-                activeEditorUri: uri
+                activeEditorUri: this.props.editorManager.getActiveTabUri().toString()
             });
         }
     }
@@ -87,9 +86,6 @@ export class EditorViewer extends React.Component<
 
     private onTabItemClick(index: number) {
         const activeEditorUri = this.state.tabs[index].uri; 
-        this.setState({
-            activeEditorUri: activeEditorUri
-        });
 
         this.props.editorManager.setActiveEditor(activeEditorUri);
     }

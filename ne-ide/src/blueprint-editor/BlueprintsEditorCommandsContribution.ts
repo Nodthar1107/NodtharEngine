@@ -44,8 +44,8 @@ export class BlueprintsEditorCommandsContribution implements ICommandContributio
         
         register.registerCommand({
             context: 'blueprints-editor-node-context',
-            id: 'blueprintsEditor.node.rename',
-            title: 'Переименовать'
+            id: 'blueprintsEditor.node.copy',
+            title: 'Копировать'
         });
 
         register.registerCommand({
