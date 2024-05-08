@@ -106,10 +106,6 @@ export class BlueprintEditor
         );
     }
 
-    public registerCommands(register: ICommandRegister) {
-        this.registerNodeContextCommands(register);
-    }
-
     private renderCommands(): React.ReactNode {
         const centeringCommandIcon = this.props.iconProvider.getIconById('centering');
 
@@ -276,23 +272,6 @@ export class BlueprintEditor
                 editorUri: this.props.uri,
                 nodeUUID: uuid
             } as INodeId
-        });
-    }
-
-    private registerNodeContextCommands(register: ICommandRegister) {
-        register.registerCommand({
-            context: 'blueprints-editor-node-context',
-            id: 'blueprintsEditor.node.rename',
-            title: 'Переименовать'
-        });
-
-        register.registerCommand({
-            context: 'blueprints-editor-node-context',
-            id: 'blueprintsEditor.node.remove',
-            title: 'Удалить',
-            execute: () => {
-
-            }
         });
     }
 
