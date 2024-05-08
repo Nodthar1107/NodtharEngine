@@ -13,5 +13,7 @@ export enum CommandContext {
 
     FILES_EXPLORER_FOLDER_CONTENT_PANEL = 'files-explorer-folders-content-panel',
 
-    FILES_EXPLORER_RESOURCE_WIDGET_CONTEXT = 'files-explorer-resource-widget-context'
+    FILES_EXPLORER_RESOURCE_WIDGET_CONTEXT = 'files-explorer-resource-widget-context',
+
+    BLUEPRINTS_EDITOR_NODE_CONTEXT = 'blueprints-editor-node-context'
 }

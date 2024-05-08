@@ -7,13 +7,17 @@ import { IDialogService } from '../core/services/DialogService/IDialogService';
 import { BlueprintsListView, IBlueprintsListViewProps } from './BlueprintsListView';
 import { CORE_TYPES } from '../core/module-types';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
-
-import 'reflect-metadata';
-import './style.scss';
 import { BLUEPRINT_EDITOR_MODULE } from './module-types';
-import { ICustomDialogBaseProps } from 'src/core/services/DialogService/DialogServiceRenderer';
+import { ICustomDialogBaseProps } from '../core/services/DialogService/DialogServiceRenderer';
 import { BlueprintEditorOperationType, IBlueprintNode, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
 import { BlueprintNode } from './BluprintNode';
+import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
+import { ISubscriber } from '../core/utils/events/ISubscriber';
+import { BlueprintEditorEvents } from './events';
+import { NotificationEvent } from 'src/core/utils/events/NotificationEvent';
+import { INodeId } from './BlueprintsEditorCommandsContribution';
+
+import './style.scss';
 
 interface ICoords {
     x: number,
@@ -31,13 +35,16 @@ interface IBlueprintEditorState {
     centerOffset: ICoords;
 }
 
-export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlueprintEditorState> {
+export class BlueprintEditor
+    extends AbstractEditor<IBlueprintEditorProps, IBlueprintEditorState>
+    implements ISubscriber<BlueprintEditorEvents>
+{
     constructor(props: IBlueprintEditorProps) {
         super(props);
 
         this.state = {
             operation: null,
-            nodes: this.props.blueprintsInfoProvider.getBlueprintsNodes(this.props.uri),
+            nodes: this.props.blueprintsInfoProvider.getBlueprintsNodesByUri(this.props.uri),
             centerOffset: {
                 x: 0,
                 y: 0
@@ -45,9 +52,22 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
         }
     }
 
+    public fireEvent(event: NotificationEvent<BlueprintEditorEvents>) {
+        if (event.type === BlueprintEditorEvents.BluprintUpdated) {
+            this.setState({
+                nodes: this.props.blueprintsInfoProvider.getBlueprintsNodesByUri(this.props.uri)
+            });
+        }
+    }
+
     /** @override */
     public getEditableResourceType(): ResourceType {
         return ResourceType.Blueprint;
+    }
+
+    /** @override */
+    public componentDidMount(): void {
+        this.props.blueprintsInfoProvider.getEventEmitter().subscribe(this);
     }
 
     /** @override */
@@ -60,6 +80,10 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
                 {this.renderNodes()}
             </div>
         );
+    }
+
+    public registerCommands(register: ICommandRegister) {
+        this.registerNodeContextCommands(register);
     }
 
     private renderCommands(): React.ReactNode {
@@ -79,6 +103,7 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
                     label={node.label}
                     description={node.description}
                     nodeId={node.nodeId}
+                    uuid={node.uuid}
                     posX={node.posX + this.state.centerOffset.x}
                     posY={node.posY + this.state.centerOffset.y}
                     schema={node.schema}
@@ -152,18 +177,16 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
 
     private onBlueprintNodePlace(event: React.MouseEvent<HTMLDivElement>) {
         const placeElementOperation = this.state.operation as IPlaceElementOperation;
-        const node = this.props.blueprintsInfoProvider.createNodeById(placeElementOperation.nodeId);
         const editorRect = event.currentTarget.getBoundingClientRect() as DOMRect;
-
-        node.posX = event.clientX - editorRect.left;
-        node.posY = event.clientY - editorRect.top;
-
-        const nodes = this.state.nodes.slice();
-        nodes.push(node);
+        this.props.blueprintsInfoProvider.createNodeById(
+            this.props.uri,
+            placeElementOperation.nodeId,
+            event.clientX - editorRect.left - this.state.centerOffset.x,
+            event.clientY - editorRect.top - this.state.centerOffset.y
+        );
 
         this.setState({
-            operation: null,
-            nodes: nodes
+            operation: null
         });
     }
 
@@ -200,23 +223,47 @@ export class BlueprintEditor extends AbstractEditor<IBlueprintEditorProps, IBlue
 
     private onNodeDrag(event: React.MouseEvent) {
         const operation = this.state.operation as IDragNodeOperation;
-        const updatedNodes = this.state.nodes.slice();
-        const targetNode = updatedNodes[operation.nodeIndex];
-        const updatedNode: IBlueprintNode = {
-            ...targetNode,
-            posX: targetNode.posX + event.movementX,
-            posY: targetNode.posY + event.movementY
-        };
-        updatedNodes[operation.nodeIndex] = updatedNode;
+        const targetNode = this.state.nodes[operation.nodeIndex];
+        this.props.blueprintsInfoProvider.updatedNodePosition(
+            this.props.uri,
+            targetNode.uuid,
+            targetNode.posX + event.movementX,
+            targetNode.posY + event.movementY
+        );
+    }
 
-        this.setState({
-            nodes: updatedNodes
+    private onNodeContextMenu(event: React.MouseEvent, uuid: string) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.props.dialogService.showContextMenu({
+            context: 'blueprints-editor-node-context',
+            coords: {
+                x: event.clientX,
+                y: event.clientY
+            },
+            handlerArgs: {
+                editorUri: this.props.uri,
+                nodeUUID: uuid
+            } as INodeId
         });
     }
 
-    private onNodeContextMenu(event: React.MouseEvent) {
-        event.preventDefault();
-        event.stopPropagation();
+    private registerNodeContextCommands(register: ICommandRegister) {
+        register.registerCommand({
+            context: 'blueprints-editor-node-context',
+            id: 'blueprintsEditor.node.rename',
+            title: 'Переименовать'
+        });
+
+        register.registerCommand({
+            context: 'blueprints-editor-node-context',
+            id: 'blueprintsEditor.node.remove',
+            title: 'Удалить',
+            execute: () => {
+
+            }
+        });
     }
 }
 

@@ -9,8 +9,7 @@ import { IEditorDescriptor } from './model';
 
 import './style.scss';
 import { EditorRenderer } from './EditorRenderers/EditorRenderer';
-import { IEditorRendererProvider, IEditorRendererProviderService } from './EditorRenderers/EditorRendererProvider';
-import { URI } from 'src/core/utils/URI';
+import { IEditorRendererProviderService } from './EditorRenderers/EditorRendererProvider';
 
 export interface ITabbarItem {
     label: string;

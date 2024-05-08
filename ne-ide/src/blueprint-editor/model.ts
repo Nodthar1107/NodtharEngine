@@ -12,6 +12,7 @@ export interface IBlueprintNode {
     posX: number;
     posY: number;
     nodeId: string;
+    uuid: string;
     label: string;
     type: BlueprintNodeType;
     description: string;
