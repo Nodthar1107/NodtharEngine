@@ -1,5 +1,5 @@
 import { IEventEmitterProvider } from '../core/utils/events/IEventEmitterProvider';
-import { IBlueprintBlockDescriptor, IBlueprintDescriptor } from './model';
+import { IBlueprintBlockDescriptor, IBlueprintDescriptor, IBlueprintPipelineLink } from './model';
 import { BlueprintEditorEvents } from './events';
 
 export interface IBlueprintsInfoProvider extends IEventEmitterProvider<BlueprintEditorEvents> {
@@ -10,4 +10,5 @@ export interface IBlueprintsInfoProvider extends IEventEmitterProvider<Blueprint
     removeNode: (uri: string, uuid: string) => void;
     moveNodeToFront: (uri: string, uuid: string) => void;
     moveNodeToBack: (uri: string, uuid: string) => void;
+    createLink: (uri: string, pipelineLink: IBlueprintPipelineLink) => void;
 }

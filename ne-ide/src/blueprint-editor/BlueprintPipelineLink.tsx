@@ -14,6 +14,12 @@ export const BlueprintPipelineLink: React.FC<IBlueprintPipelineLinkProps> = (
         Math.pow(props.endPointPosX - props.startPointPosX, 2) +
         Math.pow(props.endPointPosY - props.startPointPosY, 2)
     );
+    const degNegate = !(props.endPointPosY >= props.startPointPosY);
+    const countedDeg = (Math.atan(
+        (props.endPointPosX - props.startPointPosX) /
+        (props.endPointPosY - props.startPointPosY)
+    ) * 57.29578) * (degNegate ? 1 : -1) + 90;
+    const deg = props.endPointPosY > props.startPointPosY ? countedDeg : -countedDeg;
 
     return (
         <div
@@ -23,7 +29,8 @@ export const BlueprintPipelineLink: React.FC<IBlueprintPipelineLinkProps> = (
                 top: props.startPointPosY,
 
                 width: linkLength,
-                transform: `rotate(${0}deg)`
+                transformOrigin: '8px 8px',
+                transform: `rotate(${deg}deg)`
             }}    
         />
     );

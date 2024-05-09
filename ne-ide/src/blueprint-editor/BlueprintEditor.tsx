@@ -9,7 +9,7 @@ import { CORE_TYPES } from '../core/module-types';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
 import { BLUEPRINT_EDITOR_MODULE } from './module-types';
 import { ICustomDialogBaseProps } from '../core/services/DialogService/DialogServiceRenderer';
-import { BlueprintEditorOperationType, IBlueprintNode, ICreateLinkOperation, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
+import { BlueprintEditorOperationType, IBlueprintNode, IBlueprintPipelineLink, ICreateLinkOperation, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
 import { BlueprintNode } from './BluprintNode';
 import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
 import { ISubscriber } from '../core/utils/events/ISubscriber';
@@ -20,6 +20,7 @@ import { INodeId } from './BlueprintsEditorCommandsContribution';
 import './style.scss';
 import { IIconsProvider } from 'src/core/providers/IIconsProvider';
 import { createPipelineLink } from './utils';
+import { BlueprintPipelineLink } from './BlueprintPipelineLink';
 
 interface ICoords {
     x: number,
@@ -43,6 +44,8 @@ export class BlueprintEditor
     extends AbstractEditor<IBlueprintEditorProps, IBlueprintEditorState>
     implements ISubscriber<BlueprintEditorEvents>
 {
+    private editorRef = React.createRef<HTMLDivElement>();
+
     constructor(props: IBlueprintEditorProps) {
         super(props);
 
@@ -104,9 +107,11 @@ export class BlueprintEditor
         return (
             <div
                 onContextMenu={(event: React.MouseEvent) => { this.onContext(event) }}
-                {...this.getSpecialProps()}>
+                {...this.getSpecialProps()}
+                ref={this.editorRef}>
                 {this.renderCommands()}
                 {this.renderNodes()}
+                {this.renderLinks()}
             </div>
         );
     }
@@ -135,16 +140,15 @@ export class BlueprintEditor
                     label={node.label}
                     description={node.description}
                     nodeId={node.nodeId}
-                    uuid={node.uuid}
                     posX={node.posX + this.state.centerOffset.x}
                     posY={node.posY + this.state.centerOffset.y}
                     schema={node.schema}
                     type={node.type}
                     isDraggable={isDraggable}
                     pipelinePointIcon={React.createElement(pipelineIcon, { className: 'pipeline-icon' })}
-                    onOutputPipelinePointClick={this.onOutputPipelinePointClick.bind(this)}
+                    onOutputPipelinePointClick={this.onOutputPipelinePointClick.bind(this, node.uuid)}
                     onNodeMouseDown={(event: React.MouseEvent) => { this.onNodeMouseDown(event, index) }}
-                    onContextMenu={this.onNodeContextMenu.bind(this)}
+                    onContextMenu={this.onNodeContextMenu.bind(this, node.uuid)}
                     key={index}
                 />
             );
@@ -152,7 +156,27 @@ export class BlueprintEditor
     }
 
     private renderLinks(): React.ReactNode {
-        return <></>;
+        let newLink: React.ReactNode | undefined;
+        if (this.state.operation?.type === BlueprintEditorOperationType.CreatePipelineLink) {
+            newLink = this.renderLink((this.state.operation as ICreateLinkOperation).link);
+        }
+
+        return (
+            <>
+                {newLink}
+            </>
+        );
+    }
+
+    private renderLink(link: IBlueprintPipelineLink): React.ReactNode {
+        return (
+            <BlueprintPipelineLink
+                startPointPosX={link.startPointPosX}
+                startPointPosY={link.startPointPosY}
+                endPointPosX={link.endPointPosX}
+                endPointPosY={link.endPointPosY}
+            />
+        );
     }
 
     private getSpecialProps() {
@@ -173,14 +197,20 @@ export class BlueprintEditor
                         className: `${baseProps.className} ${baseProps.className}_draggable`,
                         onMouseUp: () => { this.setState({ operation: null }) },
                         onMouseLeave: () => { this.setState({ operation: null }) },
-                        onMouseMove: (event: React.MouseEvent) => { this.onMouseMove(event) }
+                        onMouseMove: (event: React.MouseEvent) => { this.onMouseMoveWhenDragEditor(event) }
                     };
                 case BlueprintEditorOperationType.DragElement:
                     return {
                         className: `${baseProps.className} ${baseProps.className}_draggable`,
                         onMouseUp: () => { this.setState({ operation: null }) },
                         onMouseLeave: () => { this.setState({ operation: null }) },
-                        onMouseMove: (event: React.MouseEvent) => { this.onNodeDrag(event) }
+                        onMouseMove: (event: React.MouseEvent) => { this.onMouseMoveWhenDragNode(event) }
+                    };
+                case BlueprintEditorOperationType.CreatePipelineLink:
+                    return {
+                        className: `${baseProps.className} ${baseProps.className}_create-link`,
+                        onClick: () => { this.setState({ operation: null }) },
+                        onMouseMove: (event: React.MouseEvent) => { this.onMouseMoveWhenCreateLink(event) }
                     }
             }
         }
@@ -215,7 +245,7 @@ export class BlueprintEditor
 
     private onBlueprintNodePlace(event: React.MouseEvent<HTMLDivElement>) {
         const placeElementOperation = this.state.operation as IPlaceElementOperation;
-        const editorRect = event.currentTarget.getBoundingClientRect() as DOMRect;
+        const editorRect = this.editorRef.current?.getBoundingClientRect() as DOMRect;
         this.props.blueprintsInfoProvider.createNodeById(
             this.props.uri,
             placeElementOperation.nodeId,
@@ -238,7 +268,7 @@ export class BlueprintEditor
         }
     }
 
-    private onMouseMove(event: React.MouseEvent) {
+    private onMouseMoveWhenDragEditor(event: React.MouseEvent) {
         const currentoffset = this.state.centerOffset;
         this.setState({
             centerOffset: {
@@ -259,7 +289,7 @@ export class BlueprintEditor
         })
     }
 
-    private onNodeDrag(event: React.MouseEvent) {
+    private onMouseMoveWhenDragNode(event: React.MouseEvent) {
         const operation = this.state.operation as IDragNodeOperation;
         const targetNode = this.state.nodes[operation.nodeIndex];
         this.props.blueprintsInfoProvider.updatedNodePosition(
@@ -270,7 +300,7 @@ export class BlueprintEditor
         );
     }
 
-    private onNodeContextMenu(event: React.MouseEvent, uuid: string) {
+    private onNodeContextMenu(uuid: string, event: React.MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -296,11 +326,36 @@ export class BlueprintEditor
         });
     }
 
-    private onOutputPipelinePointClick(nodeUUID: string, posX: number, posY: number) {
+    private onOutputPipelinePointClick(startNodeUUID: string, posX: number, posY: number) {
+        if (this.state.operation?.type === BlueprintEditorOperationType.CreatePipelineLink) {
+            return;
+        }
+        const editorRect = this.editorRef.current?.getBoundingClientRect() as DOMRect;
+        
         this.setState({
             operation: {
                 type: BlueprintEditorOperationType.CreatePipelineLink,
-                link: createPipelineLink(posX, posY, nodeUUID)
+                link: createPipelineLink(posX - editorRect.left, posY - editorRect.top, startNodeUUID)
+            } as ICreateLinkOperation
+        });
+    }
+
+    private onInputPipeLinePointClick(endNodeUUID: string, posX: number, posY: number) {
+
+    }
+
+    private onMouseMoveWhenCreateLink(event: React.MouseEvent) {
+        const link = (this.state.operation as ICreateLinkOperation).link;
+        const editorRect = this.editorRef.current?.getBoundingClientRect() as DOMRect;
+        
+        this.setState({
+            operation: {
+                ...this.state.operation,
+                link: {
+                    ...link,
+                    endPointPosX: event.clientX - editorRect.left,
+                    endPointPosY: event.clientY - editorRect.top
+                }
             } as ICreateLinkOperation
         });
     }

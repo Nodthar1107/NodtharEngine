@@ -110,6 +110,10 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         this.changeNodeOrder(uri, uuid, false);
     }
 
+    public createLink(uri: string, pipelineLink: IBlueprintPipelineLink) {
+        
+    }
+
     private changeNodeOrder(uri: string, uuid: string, toFront: boolean = true) {
         const editor = this.editorsDataCache.get(uri); 
         if (!editor) {

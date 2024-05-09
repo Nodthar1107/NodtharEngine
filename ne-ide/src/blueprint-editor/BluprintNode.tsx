@@ -7,7 +7,6 @@ interface IBlueprintNodeProps {
     posX: number;
     posY: number;
     nodeId: string;
-    uuid: string;
     label: string;
     type: BlueprintNodeType;
     description: string;
@@ -18,10 +17,10 @@ interface IBlueprintNodeProps {
     isDraggable?: boolean;
 
     onInputPipelinePointClick?: () => void;
-    onOutputPipelinePointClick?: (nodeUUID: string, posX: number, posY: number) => void;
+    onOutputPipelinePointClick?: (posX: number, posY: number) => void;
 
     onNodeMouseDown: (event: React.MouseEvent) => void;
-    onContextMenu: (event: React.MouseEvent, uuid: string) => void;
+    onContextMenu: (event: React.MouseEvent) => void;
 }
 
 export const BlueprintNode: React.FC<IBlueprintNodeProps> = (props: IBlueprintNodeProps): React.ReactElement => {
@@ -39,9 +38,13 @@ export const BlueprintNode: React.FC<IBlueprintNodeProps> = (props: IBlueprintNo
                 top: props.posY
             }}
             onMouseDown={props.onNodeMouseDown}
-            onContextMenu={(event) => props.onContextMenu(event, props.uuid)}>
+            onContextMenu={(event) => props.onContextMenu(event)}>
             <NodeHeader label={props.label} description={props.description} nodeType={props.type} />
-            <PipelinePoints type={props.type} pipelineIcon={props.pipelinePointIcon} />
+            <PipelinePoints
+                type={props.type}
+                pipelineIcon={props.pipelinePointIcon}
+                onOutputPipelinePointClick={props.onOutputPipelinePointClick}
+            />
             <div className='blueprint-node__body'></div>
         </div>
     )
@@ -78,11 +81,20 @@ const NodeHeader: React.FC<INodeHeaderProps> = (props: INodeHeaderProps): React.
 interface IPipelinePoints {
     type: BlueprintNodeType;
     pipelineIcon: React.ReactElement;
+
+    onOutputPipelinePointClick?: (posX: number, posY: number) => void;
 }
 
 const PipelinePoints: React.FC<IPipelinePoints> = (props: IPipelinePoints): React.ReactElement => {
     const usePipelineInput = props.type !== BlueprintNodeType.Event;
+    const outputPipelineRef = React.useRef<HTMLDivElement>(null);
     
+    const outputPipelineClick = () => {
+        const rect = outputPipelineRef.current?.getBoundingClientRect() as DOMRect;
+
+        props.onOutputPipelinePointClick?.(rect.left, rect.top);
+    }
+
     return (
         <div className='blueprint-node-pipeline-points'>
             <div
@@ -92,7 +104,10 @@ const PipelinePoints: React.FC<IPipelinePoints> = (props: IPipelinePoints): Reac
                 }}>
                 {props.pipelineIcon}
             </div>
-            <div className='blueprint-node-pipeline-points__pipeline-output'>
+            <div
+                className='blueprint-node-pipeline-points__pipeline-output'
+                onClick={outputPipelineClick}
+                ref={outputPipelineRef}>
                 {props.pipelineIcon}
             </div>
         </div>

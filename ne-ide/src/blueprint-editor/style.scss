@@ -10,6 +10,18 @@
         cursor: grab;
     }
 
+    &_create-link {
+        cursor: no-drop;
+
+        .blueprint-node {
+            cursor: no-drop !important;
+        }
+
+        .blueprint-node-pipeline-points__pipeline-input {
+            cursor: pointer;
+        }
+    }
+
     &__command-panel {
         position: absolute;
         display: flex;
@@ -145,7 +157,9 @@
     position: absolute;
 
     height: 16px;
-    background-color: var(--pipeline-linkColor);
+    border-radius: 8px;
+
+    background-color: white;
 }
 
 .pipeline-icon {
