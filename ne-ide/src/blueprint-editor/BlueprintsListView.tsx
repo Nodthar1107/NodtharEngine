@@ -1,19 +1,19 @@
 import * as React from 'react';
-import { IBlueprintDescriptor } from './model';
+import { IBlueprintBlockDescriptor } from './model';
 import { ICustomDialogBaseProps } from '../core/services/DialogService/DialogServiceRenderer';
 import { Accordion } from '../core/ui-components/Accordion/Accordion';
 import { AccordionSummary } from '../core/ui-components/Accordion/AccordionSummary';
 import { AccordionDetails } from '../core/ui-components/Accordion/AccordionDetails';
 
 export interface IBlueprintsListViewProps extends ICustomDialogBaseProps {
-    descriptors: IBlueprintDescriptor[];
+    descriptors: IBlueprintBlockDescriptor[];
     onNodeSelect: (nodeId: string) => void;
 }
 
 export const BlueprintsListView: React.FC<IBlueprintsListViewProps> = (props: IBlueprintsListViewProps): React.ReactElement => {
     const groups = React.useMemo(() => {
-        const groupsMap = new Map<string, IBlueprintDescriptor[]>();
-        props.descriptors.forEach((descriptor: IBlueprintDescriptor) => {
+        const groupsMap = new Map<string, IBlueprintBlockDescriptor[]>();
+        props.descriptors.forEach((descriptor: IBlueprintBlockDescriptor) => {
             if (!groupsMap.has(descriptor.group)) {
                 groupsMap.set(descriptor.group, []);
             }
@@ -46,7 +46,7 @@ export const BlueprintsListView: React.FC<IBlueprintsListViewProps> = (props: IB
     );
 }
 
-type BlueprintsGroup = [string, IBlueprintDescriptor[]];
+type BlueprintsGroup = [string, IBlueprintBlockDescriptor[]];
 
 function BlueprintsGroupsComparator(first: BlueprintsGroup, second: BlueprintsGroup): number {
     return first[0] < second[0] ? 1 : -1; 
@@ -54,7 +54,7 @@ function BlueprintsGroupsComparator(first: BlueprintsGroup, second: BlueprintsGr
 
 interface IBlueprintsGroupProps {
     label: string;
-    descriptors: IBlueprintDescriptor[];
+    descriptors: IBlueprintBlockDescriptor[];
 
     onNodeSelect: (nodeId: string) => void;
     onDialogHide?: () => void;
@@ -64,7 +64,7 @@ const BlueprintsGroup: React.FC<IBlueprintsGroupProps> = (props: IBlueprintsGrou
     const summary = <AccordionSummary className='blueprints-list-view-group__label'>{props.label}</AccordionSummary>;
     const details = (
         <AccordionDetails className='blueprints-list-view-group__content'>
-                {props.descriptors.map((descriptor: IBlueprintDescriptor, index: number) => {
+                {props.descriptors.map((descriptor: IBlueprintBlockDescriptor, index: number) => {
                     return (
                         <BlueprintGroupItem
                             label={descriptor.label}

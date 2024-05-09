@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { Guid } from 'guid-typescript';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
-import { BlueprintNodeType, IBlueprintDescriptor, IBlueprintNode } from './model';
+import { BlueprintNodeType, IBlueprintBlockDescriptor, IBlueprintDescriptor, IBlueprintNode, IBlueprintPipelineLink } from './model';
 import { EventEmitter } from '../core/utils/events/EventEmitter';
 import { BlueprintEditorEvents } from './events';
 import { IEventEmitter } from '../core/utils/events/IEventEmitter';
@@ -11,8 +11,8 @@ import 'reflect-metadata';
 
 @injectable()
 export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
-    private blueprintsLibrary: IBlueprintDescriptor[] = [];
-    private editorsDataCache: Map<string, IBlueprintNode[]> = new Map(); 
+    private blueprintsLibrary: IBlueprintBlockDescriptor[] = [];
+    private editorsDataCache: Map<string, IBlueprintDescriptor> = new Map(); 
     private nodesMapper: Map<string, IBlueprintNode> = new Map();
 
     private eventEmitter = new EventEmitter<BlueprintEditorEvents>();
@@ -26,25 +26,29 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         return this.eventEmitter;
     }
 
-    public getBlueprintsLibrary(): IBlueprintDescriptor[] {
+    public getBlueprintsLibrary(): IBlueprintBlockDescriptor[] {
         return this.blueprintsLibrary;
     }
 
-    public getBlueprintsNodesByUri(uri: string): IBlueprintNode[] {
+    public getBlueprintsDataByUri(uri: string): IBlueprintDescriptor {
         if (!this.editorsDataCache.has(uri)) {
-            this.editorsDataCache.set(uri, []);
+            this.editorsDataCache.set(
+                uri, {
+                    links: [],
+                    nodes: []
+                });
         }
 
-        return this.editorsDataCache.get(uri) as IBlueprintNode[];
+        return this.editorsDataCache.get(uri) as IBlueprintDescriptor;
     }
 
     public createNodeById(uri: string, id: string, posX: number, posY: number) {
-        const nodes = this.editorsDataCache.get(uri);
-        if (!nodes) {
+        const blueprint = this.editorsDataCache.get(uri);
+        if (!blueprint) {
             return;
         }
 
-        nodes.push({
+        blueprint.nodes.push({
             ...this.nodesMapper.get(id) as IBlueprintNode,
             uuid: Guid.create().toString(),
             posX: posX,
@@ -59,7 +63,8 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             return;
         }
 
-        const updatedNodes = (this.editorsDataCache.get(uri) as IBlueprintNode[]).slice();
+        const editor = (this.editorsDataCache.get(uri) as IBlueprintDescriptor);
+        const updatedNodes = editor.nodes.slice(); 
         let nodeIndex = -1;
         const target = updatedNodes.find((node: IBlueprintNode, index: number) => {
             nodeIndex = index;
@@ -73,22 +78,26 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             posY: posY
         } as IBlueprintNode;
 
-        this.editorsDataCache.set(uri, updatedNodes);
+        this.editorsDataCache.set(uri, {
+            ...editor,
+            nodes: updatedNodes
+        });
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
 
     public removeNode(uri: string, uuid: string) {
-        const nodes = this.editorsDataCache.get(uri);
-        if (!nodes) {
+        const editor = this.editorsDataCache.get(uri);
+        if (!editor) {
             return;
         }
 
         this.editorsDataCache.set(
-            uri,
-            nodes.filter((node: IBlueprintNode) => {
+            uri, {
+            ...editor,
+            nodes: editor.nodes.slice().filter((node: IBlueprintNode) => {
                 return node.uuid !== uuid;
             })
-        );
+        });
 
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
@@ -102,12 +111,13 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
     }
 
     private changeNodeOrder(uri: string, uuid: string, toFront: boolean = true) {
-        if (!this.editorsDataCache.has(uri)) {
+        const editor = this.editorsDataCache.get(uri); 
+        if (!editor) {
             return;
         }
 
         let targetNode: IBlueprintNode | undefined;
-        const updatedNodes = (this.editorsDataCache.get(uri) as IBlueprintNode[]).slice()
+        const updatedNodes = editor.nodes.slice()
             .filter((node: IBlueprintNode) => {
                 if (node.uuid === uuid) {
                     targetNode = node;
@@ -120,7 +130,11 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         );
 
         toFront ? updatedNodes.push(targetNode as IBlueprintNode) : updatedNodes.unshift(targetNode as IBlueprintNode);
-        this.editorsDataCache.set(uri, updatedNodes);
+        this.editorsDataCache.set(
+            uri, {
+                ...editor,
+                nodes: updatedNodes
+        });
 
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
@@ -143,19 +157,19 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
                 label: 'SetAbsoluteCoordinates',
                 description: 'Устанавливает относительное значение координатного вектора',
                 group: 'Actor',
-                nodeId: 'set-relative-coordinates'
+                nodeId: 'set-absolute-coordinates'
             },
             {
                 label: 'SetRelativeRotation',
                 description: 'Устанавливает относительное значение вектора вращения',
                 group: 'Actor',
-                nodeId: 'set-relative-coordinates'
+                nodeId: 'set-relative-rotation'
             },
             {
                 label: 'SetAbsoluteRotation',
                 description: 'Устанавливает абсолютное значение вектора вращения',
                 group: 'Actor',
-                nodeId: 'set-absolute-coordinates'
+                nodeId: 'set-absolute-rotation'
             },
             {
                 label: 'Tick',
@@ -169,7 +183,8 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
     private configureNodesMap() {
         this.nodesMapper = new Map([
             ['events:tick', this.createNode('Tick', 'events:tick', BlueprintNodeType.Event)],
-            ['print-string', this.createNode('PrintString', 'print-string', BlueprintNodeType.FunctionalNode)]
+            ['print-string', this.createNode('PrintString', 'print-string', BlueprintNodeType.FunctionalNode)],
+            ['set-absolute-coordinates', this.createNode('SetAbsolueCoordinates', 'set-absolute-coordinates', BlueprintNodeType.TransformationNode)]
         ]);
     }
 
@@ -178,7 +193,7 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             label: label,
             nodeId: nodeId,
             uuid: '',
-            description: '',
+            description: 'Some description',
             posX: 0,
             posY: 0,
             schema: '',

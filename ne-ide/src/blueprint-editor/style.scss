@@ -87,6 +87,7 @@
     position: absolute;
 
     min-width: 150px;
+    max-width: 250px;
     border-radius: 6px;
 
     background-color: #171816;
@@ -99,14 +100,71 @@
 
     &__header {
         padding: 5px 5px;
-        color: white;
 
         border-radius: 6px 6px 0px 0px;
-        background-color: rgb(211, 22, 22);
+
+        &_event {
+            background-color: rgb(211, 22, 22);
+        }
+
+        &_functional-node {
+            background-color: #477498;
+        }
+
+        &_transformation-node {
+            background-color: #D2A309;
+        }
+    }
+
+    &__title {
+        color: white;
+    }
+
+    &__description {
+        font-size: 0.7em;
+        color: var(--text-color);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .blueprint-node-pipeline-points {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 10px 10px;
     }
 
     &__body {
         height: 60px;
+    }
+}
+
+.blueprint-pipeline-link {
+    position: absolute;
+
+    height: 16px;
+    background-color: var(--pipeline-linkColor);
+}
+
+.pipeline-icon {
+    fill: none;
+    stroke: var(--icon-fill-color);
+
+    &:hover {
+        fill: unset;
+        stroke: var(--icon-hovered-fill-color);
+    }
+
+    &_linked {
+        fill: var(--icon-fill-color);
+        stroke: var(--icon-fill-color);
+
+        &:hover {
+            fill: var(--icon-hovered-fill-color);
+            stroke: var(--icon-hovered-fill-color);
+        } 
     }
 }
 

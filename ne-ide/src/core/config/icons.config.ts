@@ -11,6 +11,7 @@ import { Back } from '../icons/Commons/Back';
 import { SeverityIcon } from '../icons/SeverityIcons';
 import { Close } from '../icons/Commons/Close';
 import { Centering } from '../icons/Commons/Centering';
+import { PipelineIcon } from '../icons/Commons/PipelineIcon';
 
 export const ICONS_MAP: Map<string, React.FC<IIconProps>> = new Map([
     ['move-object', MoveObject],
@@ -25,5 +26,6 @@ export const ICONS_MAP: Map<string, React.FC<IIconProps>> = new Map([
     ['info-icon', SeverityIcon],
     ['error-icon', SeverityIcon],
     ['close-button', Close],
-    ['centering', Centering]
+    ['centering', Centering],
+    ['pipeline-point', PipelineIcon]
 ]);

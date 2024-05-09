@@ -9,7 +9,7 @@ import { CORE_TYPES } from '../core/module-types';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
 import { BLUEPRINT_EDITOR_MODULE } from './module-types';
 import { ICustomDialogBaseProps } from '../core/services/DialogService/DialogServiceRenderer';
-import { BlueprintEditorOperationType, IBlueprintNode, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
+import { BlueprintEditorOperationType, IBlueprintNode, ICreateLinkOperation, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
 import { BlueprintNode } from './BluprintNode';
 import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
 import { ISubscriber } from '../core/utils/events/ISubscriber';
@@ -19,6 +19,7 @@ import { INodeId } from './BlueprintsEditorCommandsContribution';
 
 import './style.scss';
 import { IIconsProvider } from 'src/core/providers/IIconsProvider';
+import { createPipelineLink } from './utils';
 
 interface ICoords {
     x: number,
@@ -45,10 +46,11 @@ export class BlueprintEditor
     constructor(props: IBlueprintEditorProps) {
         super(props);
 
+        const blueprintDescriptor = this.props.blueprintsInfoProvider.getBlueprintsDataByUri(props.uri);
         this.state = {
             previousUri: this.props.uri,
             operation: null,
-            nodes: this.props.blueprintsInfoProvider.getBlueprintsNodesByUri(this.props.uri),
+            nodes: blueprintDescriptor.nodes,
             centerOffset: {
                 x: 0,
                 y: 0
@@ -61,8 +63,10 @@ export class BlueprintEditor
         state: IBlueprintEditorState
     ): IBlueprintEditorState | null {
         if (props.uri !== state.previousUri) {
+            const blueprintDescriptor = props.blueprintsInfoProvider.getBlueprintsDataByUri(props.uri);
+
             return {
-                nodes: props.blueprintsInfoProvider.getBlueprintsNodesByUri(props.uri),
+                nodes: blueprintDescriptor.nodes,
                 centerOffset: {
                     x: 0,
                     y: 0
@@ -78,8 +82,9 @@ export class BlueprintEditor
     /** @override */
     public fireEvent(event: NotificationEvent<BlueprintEditorEvents>) {
         if (event.type === BlueprintEditorEvents.BluprintUpdated) {
+            const blueprintDescriptor = this.props.blueprintsInfoProvider.getBlueprintsDataByUri(this.props.uri);
             this.setState({
-                nodes: this.props.blueprintsInfoProvider.getBlueprintsNodesByUri(this.props.uri)
+                nodes: blueprintDescriptor.nodes
             });
         }
     }
@@ -122,6 +127,7 @@ export class BlueprintEditor
 
     private renderNodes(): React.ReactNode {
         const isDraggable = this.state.operation?.type === BlueprintEditorOperationType.DragElement;
+        const pipelineIcon = this.props.iconProvider.getIconById('pipeline-point');
 
         return this.state.nodes.map((node: IBlueprintNode, index: number) => {
             return (
@@ -135,12 +141,18 @@ export class BlueprintEditor
                     schema={node.schema}
                     type={node.type}
                     isDraggable={isDraggable}
-                    key={index}
+                    pipelinePointIcon={React.createElement(pipelineIcon, { className: 'pipeline-icon' })}
+                    onOutputPipelinePointClick={this.onOutputPipelinePointClick.bind(this)}
                     onNodeMouseDown={(event: React.MouseEvent) => { this.onNodeMouseDown(event, index) }}
                     onContextMenu={this.onNodeContextMenu.bind(this)}
+                    key={index}
                 />
             );
         });
+    }
+
+    private renderLinks(): React.ReactNode {
+        return <></>;
     }
 
     private getSpecialProps() {
@@ -281,6 +293,15 @@ export class BlueprintEditor
                 x: 0,
                 y: 0
             }
+        });
+    }
+
+    private onOutputPipelinePointClick(nodeUUID: string, posX: number, posY: number) {
+        this.setState({
+            operation: {
+                type: BlueprintEditorOperationType.CreatePipelineLink,
+                link: createPipelineLink(posX, posY, nodeUUID)
+            } as ICreateLinkOperation
         });
     }
 }

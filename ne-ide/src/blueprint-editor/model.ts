@@ -19,7 +19,7 @@ export interface IBlueprintNode {
     schema: string;
 }
 
-export interface IBlueprintDescriptor {
+export interface IBlueprintBlockDescriptor {
     nodeId: string;
     label: string;
     description: string;
@@ -27,12 +27,29 @@ export interface IBlueprintDescriptor {
     icon?: React.ReactElement;
 }
 
+export interface IBlueprintPipelineLink {
+    uuid: string;
+    leftNodeUUID: string;
+    rightNodeUUID?: string;
+    startPointPosX: number;
+    startPointPosY: number;
+    endPointPosX: number;
+    endPointPosY: number;
+}
+
+export interface IBlueprintDescriptor {
+    nodes: IBlueprintNode[];
+    links: IBlueprintPipelineLink[];
+}
+
 export enum BlueprintEditorOperationType {
     PlaceElement,
 
     DragEditor,
 
-    DragElement
+    DragElement,
+
+    CreatePipelineLink
 }
 
 export interface IEditorOperation {
@@ -47,4 +64,8 @@ export interface IDragEditorOperation extends IEditorOperation {}
 
 export interface IDragNodeOperation extends IEditorOperation {
     nodeIndex: number;
+}
+
+export interface ICreateLinkOperation extends IEditorOperation {
+    link: IBlueprintPipelineLink;
 }

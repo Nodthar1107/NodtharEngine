@@ -63,6 +63,8 @@ body, html {
     --dialog-backgroundColor: rgb(54, 67, 70);
 
     --button-color: orange;
+
+    --pipeline-linkColor: #D9D9D9;
 }
 
 .NodtharEngine {

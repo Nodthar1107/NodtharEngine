@@ -1,10 +1,10 @@
 import { IEventEmitterProvider } from '../core/utils/events/IEventEmitterProvider';
-import { IBlueprintDescriptor, IBlueprintNode } from './model';
+import { IBlueprintBlockDescriptor, IBlueprintDescriptor } from './model';
 import { BlueprintEditorEvents } from './events';
 
 export interface IBlueprintsInfoProvider extends IEventEmitterProvider<BlueprintEditorEvents> {
-    getBlueprintsLibrary: () => IBlueprintDescriptor[];
-    getBlueprintsNodesByUri: (uri: string) => IBlueprintNode[];
+    getBlueprintsLibrary: () => IBlueprintBlockDescriptor[];
+    getBlueprintsDataByUri: (uri: string) => IBlueprintDescriptor;
     createNodeById: (uri: string, id: string, posX: number, posY: number) => void;
     updatedNodePosition: (uri: string, uuid: string, posX: number, posY: number) => void;
     removeNode: (uri: string, uuid: string) => void;
