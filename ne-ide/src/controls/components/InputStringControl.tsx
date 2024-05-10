@@ -12,10 +12,21 @@ export const InputStringTester = rankWith(
 const InputString: React.FC<ControlProps> = (
     props: ControlProps
 ): React.ReactElement => {
+    const [value, setValue] = React.useState<string>(props.data);
+
+    React.useEffect(() => {
+        setValue(props.data as string)
+    }, [props.data]);
+
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValue(event.target.value);
+        props.handleChange(props.path, event.target.value);
+    }
+
     return (
         <div className='input-string-control'>
-            <span className='input-string-control__label'>{props.label}</span>
-            <input className='input-string-control__input' value={props.data} />
+            <label className='input-string-control__label'>{props.label}</label>
+            <input className='input-string-control__input' value={value} onChange={onChange} />
         </div>
     );
 }

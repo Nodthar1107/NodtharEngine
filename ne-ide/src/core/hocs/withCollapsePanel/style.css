@@ -8,6 +8,8 @@
     
     width: 100%;
     min-height: 40px;
+
+    z-index: 2;
     
     background-color: var(--side-bar-panel-collapsed-background);
 }

@@ -5,6 +5,7 @@ import { BlueprintNodeType } from './model';
 import { blueprintRenderers } from '../controls';
 
 import './style.scss';
+import { JsonFormsCore } from '@jsonforms/core';
 
 interface IBlueprintNodeProps {
     posX: number;
@@ -15,6 +16,7 @@ interface IBlueprintNodeProps {
     description: string;
     schema: string;
     uischema: string;
+    data: any;
 
     pipelinePointIcon: React.ReactElement;
 
@@ -23,6 +25,8 @@ interface IBlueprintNodeProps {
     onInputPipelinePointClick?: (posX: number, posY: number) => void;
     onOutputPipelinePointClick?: (posX: number, posY: number) => void;
     onNodeMouseDown?: (event: React.MouseEvent) => void;
+
+    onNodeValuesChange: (state: Pick<JsonFormsCore, 'data' | 'errors'>) => void;
 
     onContextMenu: (event: React.MouseEvent) => void;
 }
@@ -50,7 +54,7 @@ export const BlueprintNode: React.FC<IBlueprintNodeProps> = (props: IBlueprintNo
                 onOutputPipelinePointClick={props.onOutputPipelinePointClick}
                 onInputPipelinePointClick={props.onInputPipelinePointClick}
             />
-            <BlueprintBody data='' shcema={props.schema} uischema={props.uischema} />
+            <BlueprintBody data={props.data} shcema={props.schema} uischema={props.uischema} onChange={props.onNodeValuesChange} />
         </div>
     )
 }
@@ -132,19 +136,33 @@ const PipelinePoints: React.FC<IPipelinePoints> = (props: IPipelinePoints): Reac
 interface IBlueprintBody {
     shcema: string;
     uischema: string;
-    data: string;
+    data: any;
+
+    onChange: (state: Pick<JsonFormsCore, 'data' | 'errors'>) => void;
 }
 
 const BlueprintBody: React.FC<IBlueprintBody> = (props: IBlueprintBody): React.ReactElement => {
-    return (
-        <div className='blueprint-node__body'>
-            <JsonForms
-                schema={JSON.parse(props.shcema)}
-                uischema={JSON.parse(props.uischema)}
-                data={props.data}
-                renderers={blueprintRenderers} 
-                cells={materialCells}               
-            />
-        </div>
-    )
+    if (props.shcema) {
+        const a = (state: Pick<JsonFormsCore, 'data' | 'errors'>) => {
+            // TODO: исправить костыль
+            if (JSON.stringify(props.data) !== JSON.stringify(state.data)) {
+                props.onChange(state);
+            }
+        }
+
+        return (
+            <div className='blueprint-node__body'>
+                <JsonForms
+                    schema={JSON.parse(props.shcema)}
+                    uischema={JSON.parse(props.uischema)}
+                    data={props.data}
+                    renderers={blueprintRenderers} 
+                    cells={materialCells}
+                    onChange={a}
+                />
+            </div>
+        );
+    }
+
+    return <></>;
 }

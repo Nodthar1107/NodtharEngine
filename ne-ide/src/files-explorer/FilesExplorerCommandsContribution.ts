@@ -177,7 +177,6 @@ export class FilesExplorerCommandsContribution implements ICommandContribution {
         });
 
         if (label) {
-            console.log()
             this.resourceManager.renameElement(URI.createURIFromString(uri), label);
         }
     }

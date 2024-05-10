@@ -12,8 +12,6 @@ export class URI {
         const resourceName = URI.getResourceLabel(uri);
         const extension = URI.getResourceExtension(uri);
 
-        console.log('Create uri from string', path, resourceName, extension);
-
         return new URI(path, resourceName, extension);
     }
 

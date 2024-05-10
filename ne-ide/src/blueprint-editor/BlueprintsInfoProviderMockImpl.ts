@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Guid } from 'guid-typescript';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
-import { BlueprintNodeType, IBlueprintBlockDescriptor, IBlueprintDescriptor, IBlueprintNode, IBlueprintPipelineLink } from './model';
+import { BlueprintNodeType, BlueprintType, IBlueprintBlockDescriptor, IBlueprintDescriptor, IBlueprintNode, IBlueprintPipelineLink } from './model';
 import { EventEmitter } from '../core/utils/events/EventEmitter';
 import { BlueprintEditorEvents } from './events';
 import { IEventEmitter } from '../core/utils/events/IEventEmitter';
@@ -42,12 +42,27 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         if (!this.editorsDataCache.has(uri)) {
             this.editorsDataCache.set(
                 uri, {
+                    type: BlueprintType.Scene,
                     links: [],
                     nodes: []
                 });
         }
 
         return this.editorsDataCache.get(uri) as IBlueprintDescriptor;
+    }
+
+    public changeBlueprintType(uri: string, type: BlueprintType) {
+        const editor = this.editorsDataCache.get(uri);
+        if (!editor) {
+            return;
+        }
+
+        this.editorsDataCache.set(uri, {
+            ...editor,
+            type: type
+        });
+
+        this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));        
     }
 
     public createNodeById(uri: string, id: string, posX: number, posY: number) {
@@ -169,6 +184,31 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
 
+    public updateNodeData(uri: string, uuid: string, data: any) {
+        const editor = this.editorsDataCache.get(uri);
+        if (!editor) {
+            return;
+        }
+
+        const updatedNodes = editor.nodes.slice().map((node: IBlueprintNode) =>  {
+            if (node.uuid === uuid) {
+                return {
+                    ...node,
+                    data: data
+                };
+            }
+
+            return node;
+        });
+
+        this.editorsDataCache.set(uri, {
+            ...editor,
+            nodes: updatedNodes
+        });
+
+        this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
+    }
+
     private changeNodeOrder(uri: string, uuid: string, toFront: boolean = true) {
         const editor = this.editorsDataCache.get(uri); 
         if (!editor) {
@@ -268,12 +308,21 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
     private configureNodesMap() {
         this.nodesMapper = new Map([
             ['events:tick', this.createNode('Tick', 'events:tick', BlueprintNodeType.Event)],
-            ['print-string', this.createNode('PrintString', 'print-string', BlueprintNodeType.FunctionalNode)],
+            [
+                'print-string',
+                this.createNode(
+                    'PrintString',
+                    'print-string',
+                    BlueprintNodeType.FunctionalNode,
+                    '{"type": "object", "properties": { "InputString": { "type": "string" }, "Aboba": { "type": "string" }}}',
+                    '{"type": "VerticalLayout", "elements": [{ "type": "StringControl", "scope": "#/properties/InputString" }, { "type": "StringControl", "scope": "#/properties/Aboba" }]}'
+                )
+            ],
             ['set-absolute-coordinates', this.createNode('SetAbsolueCoordinates', 'set-absolute-coordinates', BlueprintNodeType.TransformationNode)]
         ]);
     }
 
-    private createNode(label: string, nodeId: string, type: BlueprintNodeType): IBlueprintNode {
+    private createNode(label: string, nodeId: string, type: BlueprintNodeType, schema: string = '', uischema: string = ''): IBlueprintNode {
         return {
             label: label,
             nodeId: nodeId,
@@ -281,9 +330,9 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             description: 'Some description',
             posX: 0,
             posY: 0,
-            schema: '{"type": "object", "properties": { "InputString": { "type": "string" }}}',
-            data: '',
-            uischema: '{"type": "VerticalLayout", "elements": [{ "type": "StringControl", "scope": "#/properties/InputString" }]}',
+            schema: schema,
+            data: {},
+            uischema: uischema,
             type: type
         }
     }

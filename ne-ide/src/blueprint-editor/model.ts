@@ -18,7 +18,7 @@ export interface IBlueprintNode {
     description: string;
     schema: string;
     uischema: string;
-    data: string;
+    data: any;
 }
 
 export interface IBlueprintBlockDescriptor {
@@ -39,7 +39,14 @@ export interface IBlueprintPipelineLink {
     endPointPosY: number;
 }
 
+export enum BlueprintType {
+    Scene = 'Scene',
+    Actor = 'Actor',
+    Pawn = 'Pawn'
+}
+
 export interface IBlueprintDescriptor {
+    type: BlueprintType
     nodes: IBlueprintNode[];
     links: IBlueprintPipelineLink[];
 }

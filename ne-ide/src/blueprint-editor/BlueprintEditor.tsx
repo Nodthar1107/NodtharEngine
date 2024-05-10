@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { inject, injectable } from 'inversify';
+import { JsonFormsCore } from '@jsonforms/core';
 import { AbstractEditor, IAbstratcEditorProps } from '../editor-viewer/EditorRenderers/AbstractEditor';
 import { ResourceType } from '../files-explorer/ResourcesManager/ResourceType';
 import { IEditorRendererProvider } from '../editor-viewer/EditorRenderers/EditorRendererProvider';
@@ -9,18 +10,28 @@ import { CORE_TYPES } from '../core/module-types';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
 import { BLUEPRINT_EDITOR_MODULE } from './module-types';
 import { ICustomDialogBaseProps } from '../core/services/DialogService/DialogServiceRenderer';
-import { BlueprintEditorOperationType, IBlueprintNode, IBlueprintPipelineLink, ICreateLinkOperation, IDragEditorOperation, IDragNodeOperation, IEditorOperation, IPlaceElementOperation } from './model';
+import {
+    BlueprintEditorOperationType,
+    BlueprintType,
+    IBlueprintNode,
+    IBlueprintPipelineLink,
+    ICreateLinkOperation,
+    IDragEditorOperation,
+    IDragNodeOperation,
+    IEditorOperation,
+    IPlaceElementOperation
+} from './model';
 import { BlueprintNode } from './BluprintNode';
-import { ICommandRegister } from '../core/providers/commandsProvider/ICommandRegister';
 import { ISubscriber } from '../core/utils/events/ISubscriber';
 import { BlueprintEditorEvents } from './events';
 import { NotificationEvent } from 'src/core/utils/events/NotificationEvent';
 import { ILinkInfo, INodeId } from './BlueprintsEditorCommandsContribution';
-
-import './style.scss';
-import { IIconsProvider } from 'src/core/providers/IIconsProvider';
+import { IIconsProvider } from '../core/providers/IIconsProvider';
 import { createPipelineLink } from './utils';
 import { BlueprintPipelineLink } from './BlueprintPipelineLink';
+import { Debouncer } from '../core/utils/Debouncer';
+
+import './style.scss';
 
 interface ICoords {
     x: number,
@@ -36,6 +47,7 @@ interface IBlueprintEditorProps extends IAbstratcEditorProps {
 interface IBlueprintEditorState {
     previousUri: string;
     operation: IEditorOperation | null;
+    type: BlueprintType;
     nodes: IBlueprintNode[];
     links: IBlueprintPipelineLink[];
     centerOffset: ICoords;
@@ -46,6 +58,7 @@ export class BlueprintEditor
     implements ISubscriber<BlueprintEditorEvents>
 {
     private editorRef = React.createRef<HTMLDivElement>();
+    private debouncer = new Debouncer();
 
     constructor(props: IBlueprintEditorProps) {
         super(props);
@@ -54,6 +67,7 @@ export class BlueprintEditor
         this.state = {
             previousUri: this.props.uri,
             operation: null,
+            type: blueprintDescriptor.type,
             nodes: blueprintDescriptor.nodes,
             links: blueprintDescriptor.links,
             centerOffset: {
@@ -71,6 +85,7 @@ export class BlueprintEditor
             const blueprintDescriptor = props.blueprintsInfoProvider.getBlueprintsDataByUri(props.uri);
 
             return {
+                type: blueprintDescriptor.type,
                 nodes: blueprintDescriptor.nodes,
                 links: blueprintDescriptor.links,
                 centerOffset: {
@@ -90,8 +105,9 @@ export class BlueprintEditor
         if (event.type === BlueprintEditorEvents.BluprintUpdated) {
             const blueprintDescriptor = this.props.blueprintsInfoProvider.getBlueprintsDataByUri(this.props.uri);
             this.setState({
+                type: blueprintDescriptor.type,
                 nodes: blueprintDescriptor.nodes,
-                links: blueprintDescriptor.links
+                links: blueprintDescriptor.links,
             });
         }
     }
@@ -113,9 +129,27 @@ export class BlueprintEditor
                 onContextMenu={(event: React.MouseEvent) => { this.onContext(event) }}
                 {...this.getSpecialProps()}
                 ref={this.editorRef}>
+                {this.renderInformationPanel()}
                 {this.renderCommands()}
                 {this.renderNodes()}
                 {this.renderLinks()}
+            </div>
+        );
+    }
+
+    private renderInformationPanel(): React.ReactNode {
+        return (
+            <div className='blueprint-editor__info-panel'>
+                <div className='blueprint-editor__blueprint-type'>
+                    <select value={this.state.type} onChange={this.onBlueprintTypeChange.bind(this)}>
+                        {Object.keys(BlueprintType).map((type: string, index: number) => {
+                            return <option value={type} key={index}>{type}</option>
+                        })}
+                    </select>
+                </div>
+                <div className='blueprint-editor__assigned-model'>
+
+                </div>
             </div>
         );
     }
@@ -148,6 +182,7 @@ export class BlueprintEditor
                     posY={node.posY + this.state.centerOffset.y}
                     schema={node.schema}
                     uischema={node.uischema}
+                    data={node.data}
                     type={node.type}
                     isDraggable={isDraggable}
                     pipelinePointIcon={React.createElement(pipelineIcon, { className: 'pipeline-icon' })}
@@ -159,6 +194,7 @@ export class BlueprintEditor
                         onNodeMouseDown: (event: React.MouseEvent) => { this.onNodeMouseDown(event, index) }
                     }}
                     onContextMenu={this.onNodeContextMenu.bind(this, node.uuid)}
+                    onNodeValuesChange={this.onBlueprintNodeValuesChange.bind(this, node.uuid)}
                     key={index}
                 />
             );
@@ -166,8 +202,6 @@ export class BlueprintEditor
     }
 
     private renderLinks(): React.ReactNode {
-        console.log(this.state.links);
-
         let newLink: React.ReactNode | undefined;
         if (this.state.operation?.type === BlueprintEditorOperationType.CreatePipelineLink) {
             newLink = this.renderLink((this.state.operation as ICreateLinkOperation).link);
@@ -225,7 +259,7 @@ export class BlueprintEditor
                 case BlueprintEditorOperationType.CreatePipelineLink:
                     return {
                         className: `${baseProps.className} ${baseProps.className}_create-link`,
-                        onClick: () => { this.setState({ operation: null }); console.log('Отмена создания') },
+                        onClick: () => { this.setState({ operation: null }); },
                         onMouseMove: (event: React.MouseEvent) => { this.onMouseMoveWhenCreateLink(event) }
                     }
             }
@@ -405,6 +439,20 @@ export class BlueprintEditor
                 }
             } as ICreateLinkOperation
         });
+    }
+
+    private onBlueprintTypeChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        this.props.blueprintsInfoProvider.changeBlueprintType(
+            this.props.uri,
+            BlueprintType[event.target.value as keyof typeof BlueprintType]
+        );
+    }
+
+    private onBlueprintNodeValuesChange(uuid: string, state: Pick<JsonFormsCore, 'data' | 'errors'>) {
+        this.debouncer.execute(() => {
+            console.log(uuid, state.data);
+            this.props.blueprintsInfoProvider.updateNodeData(this.props.uri, uuid, state.data);
+        }, 300);
     }
 }
 
