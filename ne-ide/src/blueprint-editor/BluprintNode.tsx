@@ -1,5 +1,8 @@
 import * as React from 'react';
+import { JsonForms } from '@jsonforms/react';
+import { materialCells, materialRenderers } from '@jsonforms/material-renderers'
 import { BlueprintNodeType } from './model';
+import { blueprintRenderers } from '../controls';
 
 import './style.scss';
 
@@ -11,15 +14,16 @@ interface IBlueprintNodeProps {
     type: BlueprintNodeType;
     description: string;
     schema: string;
+    uischema: string;
 
     pipelinePointIcon: React.ReactElement;
 
     isDraggable?: boolean;
 
-    onInputPipelinePointClick?: () => void;
+    onInputPipelinePointClick?: (posX: number, posY: number) => void;
     onOutputPipelinePointClick?: (posX: number, posY: number) => void;
+    onNodeMouseDown?: (event: React.MouseEvent) => void;
 
-    onNodeMouseDown: (event: React.MouseEvent) => void;
     onContextMenu: (event: React.MouseEvent) => void;
 }
 
@@ -44,8 +48,9 @@ export const BlueprintNode: React.FC<IBlueprintNodeProps> = (props: IBlueprintNo
                 type={props.type}
                 pipelineIcon={props.pipelinePointIcon}
                 onOutputPipelinePointClick={props.onOutputPipelinePointClick}
+                onInputPipelinePointClick={props.onInputPipelinePointClick}
             />
-            <div className='blueprint-node__body'></div>
+            <BlueprintBody data='' shcema={props.schema} uischema={props.uischema} />
         </div>
     )
 }
@@ -83,25 +88,35 @@ interface IPipelinePoints {
     pipelineIcon: React.ReactElement;
 
     onOutputPipelinePointClick?: (posX: number, posY: number) => void;
+    onInputPipelinePointClick?: (posX: number, posY: number) => void;
 }
 
 const PipelinePoints: React.FC<IPipelinePoints> = (props: IPipelinePoints): React.ReactElement => {
     const usePipelineInput = props.type !== BlueprintNodeType.Event;
     const outputPipelineRef = React.useRef<HTMLDivElement>(null);
+    const inputPipelineRef = React.useRef<HTMLDivElement>(null);
     
     const outputPipelineClick = () => {
         const rect = outputPipelineRef.current?.getBoundingClientRect() as DOMRect;
-
         props.onOutputPipelinePointClick?.(rect.left, rect.top);
+    }
+
+    const inputPipelineClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+
+        const rect = inputPipelineRef.current?.getBoundingClientRect() as DOMRect;
+        props.onInputPipelinePointClick?.(rect.left + rect.width * 1.5, rect.top);
     }
 
     return (
         <div className='blueprint-node-pipeline-points'>
             <div
                 className='blueprint-node-pipeline-points__pipeline-input'
+                onClick={inputPipelineClick}
                 style={{
                     visibility: usePipelineInput ? 'visible' : 'hidden'
-                }}>
+                }}
+                ref={inputPipelineRef}>
                 {props.pipelineIcon}
             </div>
             <div
@@ -112,4 +127,24 @@ const PipelinePoints: React.FC<IPipelinePoints> = (props: IPipelinePoints): Reac
             </div>
         </div>
     );
+}
+
+interface IBlueprintBody {
+    shcema: string;
+    uischema: string;
+    data: string;
+}
+
+const BlueprintBody: React.FC<IBlueprintBody> = (props: IBlueprintBody): React.ReactElement => {
+    return (
+        <div className='blueprint-node__body'>
+            <JsonForms
+                schema={JSON.parse(props.shcema)}
+                uischema={JSON.parse(props.uischema)}
+                data={props.data}
+                renderers={blueprintRenderers} 
+                cells={materialCells}               
+            />
+        </div>
+    )
 }

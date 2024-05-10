@@ -1,4 +1,4 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { Guid } from 'guid-typescript';
 import { IBlueprintsInfoProvider } from './IBlueprintInfoProvider';
 import { BlueprintNodeType, IBlueprintBlockDescriptor, IBlueprintDescriptor, IBlueprintNode, IBlueprintPipelineLink } from './model';
@@ -6,6 +6,8 @@ import { EventEmitter } from '../core/utils/events/EventEmitter';
 import { BlueprintEditorEvents } from './events';
 import { IEventEmitter } from '../core/utils/events/IEventEmitter';
 import { NotificationEvent } from '../core/utils/events/NotificationEvent';
+import { IMessageService } from '../core/services/MessageService/MessageService';
+import { CORE_TYPES } from '../core/module-types';
 
 import 'reflect-metadata';
 
@@ -17,7 +19,13 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
 
     private eventEmitter = new EventEmitter<BlueprintEditorEvents>();
 
-    constructor() {
+    private messageService: IMessageService;
+
+    constructor(
+        @inject(CORE_TYPES.IMessageService) messageService: IMessageService
+    ) {
+        this.messageService = messageService;
+
         this.configureLibrary();
         this.configureNodesMap();
     }
@@ -58,7 +66,7 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
 
-    public updatedNodePosition(uri: string, uuid: string, posX: number, posY: number) {
+    public updatedNodePosition(uri: string, uuid: string, movementX: number, movementY: number) {
         if (!this.editorsDataCache.has(uri)) {
             return;
         }
@@ -70,17 +78,23 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             nodeIndex = index;
 
             return node.uuid === uuid;
-        });
+        }) as IBlueprintNode;
 
         updatedNodes[nodeIndex] = {
             ...target,
-            posX: posX,
-            posY: posY
+            posX: target.posX + movementX,
+            posY: target.posY + movementY,
         } as IBlueprintNode;
 
         this.editorsDataCache.set(uri, {
             ...editor,
-            nodes: updatedNodes
+            nodes: updatedNodes,
+            links: this.getUpdatedLinks(
+                target?.uuid as string,
+                editor.links,
+                movementX,
+                movementY
+            )
         });
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
@@ -96,6 +110,9 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             ...editor,
             nodes: editor.nodes.slice().filter((node: IBlueprintNode) => {
                 return node.uuid !== uuid;
+            }),
+            links: editor.links.slice().filter((link: IBlueprintPipelineLink) => {
+                return link.leftNodeUUID !== uuid && link.rightNodeUUID !== uuid;
             })
         });
 
@@ -111,7 +128,45 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
     }
 
     public createLink(uri: string, pipelineLink: IBlueprintPipelineLink) {
-        
+        const editor = this.editorsDataCache.get(uri);
+        if (!editor) {
+            return;
+        }
+
+        if (pipelineLink.leftNodeUUID === pipelineLink.rightNodeUUID) {
+            this.messageService.showErrorMessage({
+                title: 'Ошибка пайплайна',
+                description: 'Связь не может соединять входной и выходной узлы одного и того же блока'
+            });
+            
+            return;
+        } 
+
+        const updatedLinks = editor.links.slice();
+        updatedLinks.push(pipelineLink);
+
+        this.editorsDataCache.set(uri, {
+            ...editor,
+            links: updatedLinks
+        });
+
+        this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
+    }
+
+    public removeLink(uri: string, uuid: string) {
+        const editor = this.editorsDataCache.get(uri);
+        if (!editor) {
+            return;
+        }
+
+        this.editorsDataCache.set(uri, {
+            ...editor,
+            links: editor.links.slice().filter((link: IBlueprintPipelineLink) => {
+                return link.uuid !== uuid;
+            })
+        });
+
+        this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
     }
 
     private changeNodeOrder(uri: string, uuid: string, toFront: boolean = true) {
@@ -141,6 +196,32 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
         });
 
         this.eventEmitter.fireEvent(new NotificationEvent<BlueprintEditorEvents>(BlueprintEditorEvents.BluprintUpdated));
+    }
+
+    private getUpdatedLinks(
+        nodeUUID: string,
+        links: IBlueprintPipelineLink[],
+        movementX: number,
+        movementY: number
+    ): IBlueprintPipelineLink[] {
+        return links.slice().map((link: IBlueprintPipelineLink) => {
+            if (link.leftNodeUUID === nodeUUID) {
+                return {
+                    ...link,
+                    startPointPosX: link.startPointPosX + movementX,
+                    startPointPosY: link.startPointPosY + movementY
+                }
+            }
+
+            if (link.rightNodeUUID === nodeUUID) {
+                return {
+                    ...link,
+                    endPointPosX: link.endPointPosX + movementX,
+                    endPointPosY: link.endPointPosY + movementY
+                }
+            }
+            return link;
+        })
     }
 
     private configureLibrary() {
@@ -200,7 +281,9 @@ export class BlueprintsInfoProviderMockImpl implements IBlueprintsInfoProvider {
             description: 'Some description',
             posX: 0,
             posY: 0,
-            schema: '',
+            schema: '{"type": "object", "properties": { "InputString": { "type": "string" }}}',
+            data: '',
+            uischema: '{"type": "VerticalLayout", "elements": [{ "type": "StringControl", "scope": "#/properties/InputString" }]}',
             type: type
         }
     }

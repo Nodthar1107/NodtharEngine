@@ -14,11 +14,15 @@
         cursor: no-drop;
 
         .blueprint-node {
-            cursor: no-drop !important;
+            cursor: no-drop;
         }
 
         .blueprint-node-pipeline-points__pipeline-input {
             cursor: pointer;
+        }
+
+        .blueprint-node-pipeline-points__pipeline-output {
+            cursor: no-drop;
         }
     }
 
@@ -149,7 +153,8 @@
     }
 
     &__body {
-        height: 60px;
+        padding: 10px 5px;
+        min-height: 20px;
     }
 }
 

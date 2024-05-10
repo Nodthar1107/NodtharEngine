@@ -1,0 +1,14 @@
+.input-string-control {
+    &__label {
+        margin-right: 5px;
+
+        font-family: var(--text-font-family);
+        color: var(--text-color);
+    }
+
+    &__input {
+        width: 100px;
+        height: 16px;
+        border-radius: 4px;
+    }
+}

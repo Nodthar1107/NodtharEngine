@@ -15,5 +15,7 @@ export enum CommandContext {
 
     FILES_EXPLORER_RESOURCE_WIDGET_CONTEXT = 'files-explorer-resource-widget-context',
 
-    BLUEPRINTS_EDITOR_NODE_CONTEXT = 'blueprints-editor-node-context'
+    BLUEPRINTS_EDITOR_NODE_CONTEXT = 'blueprints-editor-node-context',
+
+    BLUEPRINTS_EDITOR_LINK_CONTEXT = 'blueprints-editor-link-context'
 }

@@ -5,6 +5,7 @@ interface IBlueprintPipelineLinkProps {
     startPointPosY: number;
     endPointPosX: number;
     endPointPosY: number;
+    onContext: (event: React.MouseEvent) => void;
 }
 
 export const BlueprintPipelineLink: React.FC<IBlueprintPipelineLinkProps> = (
@@ -13,7 +14,7 @@ export const BlueprintPipelineLink: React.FC<IBlueprintPipelineLinkProps> = (
     const linkLength = Math.sqrt(
         Math.pow(props.endPointPosX - props.startPointPosX, 2) +
         Math.pow(props.endPointPosY - props.startPointPosY, 2)
-    );
+    ) - 10;
     const degNegate = !(props.endPointPosY >= props.startPointPosY);
     const countedDeg = (Math.atan(
         (props.endPointPosX - props.startPointPosX) /
@@ -31,7 +32,8 @@ export const BlueprintPipelineLink: React.FC<IBlueprintPipelineLinkProps> = (
                 width: linkLength,
                 transformOrigin: '8px 8px',
                 transform: `rotate(${deg}deg)`
-            }}    
+            }}
+            onContextMenu={props.onContext} 
         />
     );
 }

@@ -9,6 +9,11 @@ export interface INodeId {
     nodeUUID: string;
 }
 
+export interface ILinkInfo {
+    editorUri: string;
+    linkUUID: string;
+}
+
 @injectable()
 export class BlueprintsEditorCommandsContribution implements ICommandContribution {
     private blueprintsInfoProvider: IBlueprintsInfoProvider;
@@ -21,6 +26,7 @@ export class BlueprintsEditorCommandsContribution implements ICommandContributio
 
     public registerCommands(register: ICommandRegister) {
         this.registerNodeContextCommands(register);
+        this.registerLinkContextCommands(register);
     }
 
     private registerNodeContextCommands(register: ICommandRegister) {
@@ -56,5 +62,16 @@ export class BlueprintsEditorCommandsContribution implements ICommandContributio
                 this.blueprintsInfoProvider.removeNode(nodeInfo.editorUri, nodeInfo.nodeUUID);
             }
         });
+    }
+
+    private registerLinkContextCommands(register: ICommandRegister) {
+        register.registerCommand({
+            context: 'blueprints-editor-link-context',
+            id: 'blueprintsEditor.link.remove',
+            title: 'Удалить',
+            execute: (linkInfo: ILinkInfo) => {
+                this.blueprintsInfoProvider.removeLink(linkInfo.editorUri, linkInfo.linkUUID);
+            }
+        })
     }
 }

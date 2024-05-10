@@ -17,6 +17,8 @@ export interface IBlueprintNode {
     type: BlueprintNodeType;
     description: string;
     schema: string;
+    uischema: string;
+    data: string;
 }
 
 export interface IBlueprintBlockDescriptor {
