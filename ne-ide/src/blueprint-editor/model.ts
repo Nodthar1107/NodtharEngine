@@ -45,8 +45,14 @@ export enum BlueprintType {
     Pawn = 'Pawn'
 }
 
+export interface IAssignedModelDescriptor {
+    label: string;
+    uri: string;
+}
+
 export interface IBlueprintDescriptor {
-    type: BlueprintType
+    type: BlueprintType;
+    assignedModelRef?: IAssignedModelDescriptor;
     nodes: IBlueprintNode[];
     links: IBlueprintPipelineLink[];
 }

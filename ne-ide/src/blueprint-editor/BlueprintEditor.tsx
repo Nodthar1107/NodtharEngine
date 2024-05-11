@@ -13,6 +13,7 @@ import { ICustomDialogBaseProps } from '../core/services/DialogService/DialogSer
 import {
     BlueprintEditorOperationType,
     BlueprintType,
+    IAssignedModelDescriptor,
     IBlueprintNode,
     IBlueprintPipelineLink,
     ICreateLinkOperation,
@@ -32,6 +33,7 @@ import { BlueprintPipelineLink } from './BlueprintPipelineLink';
 import { Debouncer } from '../core/utils/Debouncer';
 
 import './style.scss';
+import { AvailabelPropertiesPanel } from './AvailabelPropertiesPanel';
 
 interface ICoords {
     x: number,
@@ -48,6 +50,7 @@ interface IBlueprintEditorState {
     previousUri: string;
     operation: IEditorOperation | null;
     type: BlueprintType;
+    modelDescriptor?: IAssignedModelDescriptor;
     nodes: IBlueprintNode[];
     links: IBlueprintPipelineLink[];
     centerOffset: ICoords;
@@ -68,6 +71,7 @@ export class BlueprintEditor
             previousUri: this.props.uri,
             operation: null,
             type: blueprintDescriptor.type,
+            modelDescriptor: undefined,
             nodes: blueprintDescriptor.nodes,
             links: blueprintDescriptor.links,
             centerOffset: {
@@ -130,6 +134,7 @@ export class BlueprintEditor
                 {...this.getSpecialProps()}
                 ref={this.editorRef}>
                 {this.renderInformationPanel()}
+                {this.renderAvailabelPropertiesPanel()}
                 {this.renderCommands()}
                 {this.renderNodes()}
                 {this.renderLinks()}
@@ -138,9 +143,16 @@ export class BlueprintEditor
     }
 
     private renderInformationPanel(): React.ReactNode {
+        const outOfModel = '--None--'
+        const assignedModelValue = this.state.modelDescriptor
+            ? this.state.modelDescriptor.label
+            : outOfModel;
+
+        // TODO: доделать привязку трехмерной модели к блюпринту
+        
         return (
             <div className='blueprint-editor__info-panel'>
-                <div className='blueprint-editor__blueprint-type'>
+                <div className='blueprint-editor__blueprint-type' title='Тип блюпринта'>
                     <select value={this.state.type} onChange={this.onBlueprintTypeChange.bind(this)}>
                         {Object.keys(BlueprintType).map((type: string, index: number) => {
                             return <option value={type} key={index}>{type}</option>
@@ -148,9 +160,20 @@ export class BlueprintEditor
                     </select>
                 </div>
                 <div className='blueprint-editor__assigned-model'>
-
+                    <select value={assignedModelValue} onChange={() => {}}>
+                        <option value={outOfModel}>{outOfModel}</option>
+                    </select>
                 </div>
             </div>
+        );
+    }
+
+    private renderAvailabelPropertiesPanel(): React.ReactNode {
+        return (
+            <AvailabelPropertiesPanel
+                className='availabel-properties-panel_position'
+                bluprintInfoProvider={this.props.blueprintsInfoProvider}
+            />
         );
     }
 

@@ -67,6 +67,11 @@
         width: 100px;
         text-align: center;
     }
+
+    &__assigned-model select {
+        width: 200px;
+        text-align: center;
+    }
 }
 
 .blueprints-list-view {
@@ -207,6 +212,36 @@
             fill: var(--icon-hovered-fill-color);
             stroke: var(--icon-hovered-fill-color);
         } 
+    }
+}
+
+.availabel-properties-panel {
+    width: 200px;
+    height: 400px;
+
+    cursor: default;
+
+    border-radius: 6px;
+    border: 1px solid black;
+    background-color: #1D1C1D;
+    
+    &_position {
+        position: absolute;
+
+        top: 40px;
+        left: 10px;
+
+        z-index: 1;
+    }
+
+    &__header {
+        padding: 5px 10px;
+        border-bottom: 1px solid black;
+
+        text-align: center;
+
+        color: var(--text-color);
+        font-family: var(--text-font-family);
     }
 }
 
