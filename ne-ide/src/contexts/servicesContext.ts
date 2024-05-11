@@ -8,6 +8,7 @@ import { IMessageService } from '../core/services/MessageService/MessageService'
 import { IEditorsManager } from '../editor-viewer/managers/IEditorsManager';
 import { IEditorRendererProviderService } from '../editor-viewer/EditorRenderers/EditorRendererProvider';
 import { IBlueprintsInfoProvider } from '../blueprint-editor/IBlueprintInfoProvider';
+import { IServerDispatcher } from 'src/server-dispatcher/IServerDispatcher';
 
 const InitialContex = {
     commandsProvider: {} as ICommandsProvider,
@@ -18,7 +19,8 @@ const InitialContex = {
     messageService: {} as IMessageService,
     editorsManager: {} as IEditorsManager,
     editorRendererProviderService: {} as IEditorRendererProviderService,
-    blueprintsInfoProvider: {} as IBlueprintsInfoProvider
+    blueprintsInfoProvider: {} as IBlueprintsInfoProvider,
+    serverDispatcher: {} as IServerDispatcher
 };
 
 export type ProvidersContextType = typeof InitialContex;

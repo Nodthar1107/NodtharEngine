@@ -27,6 +27,9 @@ import { BlueprintModule } from './blueprint-editor/module';
 import 'reflect-metadata';
 import { IBlueprintsInfoProvider } from './blueprint-editor/IBlueprintInfoProvider';
 import { BLUEPRINT_EDITOR_MODULE } from './blueprint-editor/module-types';
+import { ServerDispatcherModule } from './server-dispatcher/module';
+import { IServerDispatcher } from './server-dispatcher/IServerDispatcher';
+import { SERVER_DISPATCHER_TYPES } from './server-dispatcher/module-types';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -40,7 +43,8 @@ const injector = new Container();
     new FilesExplorerModule(),
     new ActivityBarModule(),
     new EditorViewerModule(),
-    new BlueprintModule()
+    new BlueprintModule(),
+    new ServerDispatcherModule()
 ].forEach((module: IDIModule) => {
     module.registerModule(injector);
 });
@@ -57,7 +61,8 @@ root.render(
                 messageService: injector.get<IMessageService>(CORE_TYPES.IMessageService),
                 editorsManager: injector.get<IEditorsManager>(EDITOR_VIEWER_MODULE.IEditorManager),
                 editorRendererProviderService: injector.get<IEditorRendererProviderService>(EDITOR_VIEWER_MODULE.IEditorRendererProviderService),
-                blueprintsInfoProvider: injector.get<IBlueprintsInfoProvider>(BLUEPRINT_EDITOR_MODULE.IBlueprintsInfoProvider)
+                blueprintsInfoProvider: injector.get<IBlueprintsInfoProvider>(BLUEPRINT_EDITOR_MODULE.IBlueprintsInfoProvider),
+                serverDispatcher: injector.get<IServerDispatcher>(SERVER_DISPATCHER_TYPES.IServerDispatcher)
             }}>
             <App />
         </ProvidersContext.Provider>

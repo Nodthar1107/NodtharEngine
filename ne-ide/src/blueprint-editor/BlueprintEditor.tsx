@@ -473,7 +473,6 @@ export class BlueprintEditor
 
     private onBlueprintNodeValuesChange(uuid: string, state: Pick<JsonFormsCore, 'data' | 'errors'>) {
         this.debouncer.execute(() => {
-            console.log(uuid, state.data);
             this.props.blueprintsInfoProvider.updateNodeData(this.props.uri, uuid, state.data);
         }, 300);
     }
