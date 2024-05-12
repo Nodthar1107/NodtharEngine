@@ -1,5 +1,8 @@
 import { injectable } from 'inversify';
-import { IRpcEvent, IRpcResponseEvent, IServerDispatcher, ResolvePromiseType } from './IServerDispatcher';
+import { ConnectionStatus, IRpcEvent, IRpcResponseEvent, IServerDispatcher, ResolvePromiseType, ServerDispactherEvents,  } from './IServerDispatcher';
+import { EventEmitter } from '../core/utils/events/EventEmitter';
+import { IEventEmitter } from '../core/utils/events/IEventEmitter';
+import { NotificationEvent } from '../core/utils/events/NotificationEvent';
 
 import 'reflect-metadata'
 
@@ -7,13 +10,17 @@ import 'reflect-metadata'
 export class ServerDispatcher implements IServerDispatcher {
     private port = 8000;
     private hostname = 'localhost';
+    private connectionStatus = ConnectionStatus.PENDING;
 
     private socket: WebSocket;
     private eventsQueue: IRpcEvent[] = [];
 
+    private eventEmitter = new EventEmitter<ServerDispactherEvents>();
+
     constructor() {
-        this.socket = new WebSocket(`ws://localhost:8000`);
+        this.socket = new WebSocket(`ws://${this.hostname}:${this.port}`);
         this.socket.addEventListener('open', (event) => {
+            this.setConnectionStatus(ConnectionStatus.CONNECTED);
             console.log(`Содеинение с ${this.socket.url} открыто`);
 
             this.socket.addEventListener('message', (event: MessageEvent<IRpcResponseEvent>) => {
@@ -35,8 +42,22 @@ export class ServerDispatcher implements IServerDispatcher {
                 }
             });
 
+            this.socket.addEventListener('close', () => {
+                this.setConnectionStatus(ConnectionStatus.CONNECTION_LOST);
+            })
+
             this.sendNotification('method/aboba')
         });
+
+        setTimeout(() => {
+            if (this.connectionStatus === ConnectionStatus.PENDING) {
+                this.setConnectionStatus(ConnectionStatus.CONNECTION_LOST);
+            }
+        }, 1000);
+    }
+
+    public getEventEmitter(): IEventEmitter<ServerDispactherEvents> {
+        return this.eventEmitter;
     }
 
     public sendNotification(method: string): void {
@@ -60,6 +81,10 @@ export class ServerDispatcher implements IServerDispatcher {
             this.send(method, params);
         });
     }
+
+    public getConnectionStatus(): ConnectionStatus {
+        return this.connectionStatus;
+    }
     
     private send(method: string, params?: any[]) {
         this.socket.send(JSON.stringify({
@@ -74,5 +99,13 @@ export class ServerDispatcher implements IServerDispatcher {
             method: method,
             resolve: resolve
         });
+    }
+
+    private setConnectionStatus(status: ConnectionStatus) {
+        this.connectionStatus = status;
+
+        this.eventEmitter.fireEvent(
+            new NotificationEvent<ServerDispactherEvents>(ServerDispactherEvents.CONNECTION_STATUS_UPDATED)
+        );
     }
 }

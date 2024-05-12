@@ -83,7 +83,7 @@ export class MessageServiceRenderer extends React.Component<
     private onMessageTimeout() {
         const timestamp = new Date().valueOf();
         const updatedQueue = this.state.messagesQueue.filter((message: ITimestampMessage) => {
-            return timestamp - message.timestamp < TIME_TO_LIVE;
+            return (timestamp - message.timestamp < TIME_TO_LIVE || message.ignoreTimeToLive);
         });
 
         this.setState({

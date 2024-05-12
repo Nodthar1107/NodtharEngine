@@ -68,13 +68,20 @@ body, html {
 }
 
 .NodtharEngine {
-    display: flex;
-
     min-height: 100vh;
-    justify-content: start;
-    align-items: stretch;
 
     user-select: none;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.working-space {
+    display: flex;
+    flex: 1 1 auto;
 }
 
 .main-section {

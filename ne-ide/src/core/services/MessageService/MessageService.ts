@@ -5,6 +5,7 @@ import 'reflect-metadata';
 export interface IMessageOptions {
     title: string;
     description?: string;
+    ignoreTimeToLive?: boolean;
 }
 
 export type Severity = 'info' | 'error';
@@ -14,7 +15,7 @@ export interface IMessageDetails extends IMessageOptions {
 }
 
 export interface ITimestampMessage extends IMessageDetails {
-    timestamp: number
+    timestamp: number;
 }
 
 export interface IMessageService {

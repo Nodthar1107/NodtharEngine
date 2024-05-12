@@ -7,6 +7,7 @@ interface IEngineMessageProps {
     severityIcon: React.ReactElement;
     severity: string;
     timeToLive: number;
+    ignoreTimeToLive?: boolean;
 
     closeButton: React.ReactElement;
 

@@ -1,0 +1,19 @@
+.connection-status-panel {
+    height: 24px;
+    padding: 0px 20px;
+
+    line-height: 24px;
+    color: white;
+
+    &_pending {
+        background-color: rgb(242, 255, 0);
+    }
+
+    &_connected {
+        background-color: #007ACC;
+    }
+
+    &_lost {
+        background-color: rgb(255, 5, 5);
+    }
+}
