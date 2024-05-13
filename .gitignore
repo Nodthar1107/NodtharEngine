@@ -4,3 +4,7 @@ ne-ide/dist
 #dependencies
 ne-ide/node_modules
 
+**/.classpath
+**/.project
+**/target/
+**/.settings/
