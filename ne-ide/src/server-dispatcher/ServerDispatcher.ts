@@ -23,9 +23,12 @@ export class ServerDispatcher implements IServerDispatcher {
             this.setConnectionStatus(ConnectionStatus.CONNECTED);
             console.log(`Содеинение с ${this.socket.url} открыто`);
 
-            this.socket.addEventListener('message', (event: MessageEvent<IRpcResponseEvent>) => {
-                const response = event.data;
-                console.log('Данные с сервера', event.data)
+            this.socket.addEventListener('message', (event: MessageEvent<string>) => {
+                console.log(event.data);
+                const r = event.data.split(/\n/ ).join("");
+                console.log(r);
+                const response = JSON.parse(r);
+                console.log(response)
     
                 let targetEvent: IRpcEvent | undefined;
                 this.eventsQueue.filter((rpcEvent: IRpcEvent) => {
@@ -88,10 +91,7 @@ export class ServerDispatcher implements IServerDispatcher {
     }
     
     private send(method: string, params?: any[]) {
-        this.socket.send(JSON.stringify({
-            method: method,
-            ...(params && { params: params } ) 
-        }));
+        this.socket.send(method);
     }
 
     private registerRequestEvent(method: string, resolve: ResolvePromiseType) {

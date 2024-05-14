@@ -75,9 +75,7 @@ public class AppServerLauncher {
 		{
 			String message = readMessage();
 			System.out.println(String.format("Message: %s", message));
-			byte[] res = ("Aboba biba").getBytes("UTF-8");
-			out.write(res, 0, res.length);
-			out.flush();
+			writeMessage(message);
 		}
 	}
 	
@@ -89,32 +87,28 @@ public class AppServerLauncher {
 			in.read();
 			
 			int sizeDescriptor = in.read();
-			int messageSize = 0;
-			int offset = 0;
+			long messageSize = 0;
 			if (sizeDescriptor - 128 <= 125) {
 				messageSize = sizeDescriptor - 128;
-				offset = 2;
 			}
 			else if (sizeDescriptor - 128 == 126)
 			{
 				byte[] size = new byte[2];
 				in.read(size);
 				
-				messageSize = (int) (((size[0] & 0xFF) << 8) | (size[1] & 0xFF));
-				offset = 4;
+				messageSize = (long) (((size[0] & 0xFF) << 8) | (size[1] & 0xFF));
 			}
 			else if (sizeDescriptor - 128 == 127)
 			{
-				byte[] size = new byte[4];
+				byte[] size = new byte[8];
 				in.read(size);
 				
-				messageSize = (int) ((size[0] & 0xFF) << 24 | (size[1] & 0xFF) << 16 | (size[2] & 0xFF) << 8 | (size[3] & 0xFF));
-				offset = 6;
+				messageSize = (long) ((size[0] & 0xFF) << 56 | (size[1] & 0xFF) << 48 | (size[2] & 0xFF) << 40 | (size[3] & 0xFF) << 32 |
+						(size[4] & 0xFF) << 24 | (size[5] & 0xFF) << 16 | (size[6] & 0xFF) << 8 | (size[7] & 0xFF));
 			}
 			
 			byte[] key = new byte[4];
 			in.read(key);
-			offset += 4;
 			
 			byte[] buffer = new byte[1024];
 			StringBuilder builder = new StringBuilder();
@@ -145,5 +139,39 @@ public class AppServerLauncher {
 		}
 		
 		return new String(decoded);
+	}
+	
+	private void writeMessage(String message) throws IOException
+	{
+		out.write(0x81);
+		byte[] buffer = message.getBytes();
+		
+		if (buffer.length < 126)
+		{
+			out.write(buffer.length + 128);
+			out.write(buffer.length);
+		}
+		else if (buffer.length < 65536)
+		{
+			out.write(126);
+			out.write((buffer.length >> 8) & 0xFF);
+			out.write(buffer.length & 0xFF);
+		}
+		else
+		{
+			out.write(127);
+			out.write((buffer.length >> 56) & 0xFF);
+			out.write((buffer.length >> 48) & 0xFF);
+			out.write((buffer.length >> 40) & 0xFF);
+			out.write((buffer.length >> 32) & 0xFF);
+			out.write((buffer.length >> 24) & 0xFF);
+			out.write((buffer.length >> 16) & 0xFF);
+			out.write((buffer.length >> 8) & 0xFF);
+			out.write(buffer.length & 0xFF);
+		}
+		
+		out.write(buffer);
+		
+		out.flush();
 	}
 }
