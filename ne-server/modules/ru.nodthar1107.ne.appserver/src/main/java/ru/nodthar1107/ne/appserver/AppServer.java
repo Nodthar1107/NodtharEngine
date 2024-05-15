@@ -1,10 +1,6 @@
 package ru.nodthar1107.ne.appserver;
 
-import org.glassfish.tyrus.server.Server;
-
 import com.google.inject.AbstractModule;
-
-import jakarta.websocket.DeploymentException;
 
 public class AppServer
 {
