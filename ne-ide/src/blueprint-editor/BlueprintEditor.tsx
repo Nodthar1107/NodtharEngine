@@ -227,7 +227,7 @@ export class BlueprintEditor
     private renderLinks(): React.ReactNode {
         let newLink: React.ReactNode | undefined;
         if (this.state.operation?.type === BlueprintEditorOperationType.CreatePipelineLink) {
-            newLink = this.renderLink((this.state.operation as ICreateLinkOperation).link);
+            newLink = this.renderLink((this.state.operation as ICreateLinkOperation).link, false);
         }
 
         return (
@@ -240,13 +240,13 @@ export class BlueprintEditor
         );
     }
 
-    private renderLink(link: IBlueprintPipelineLink): React.ReactNode {
+    private renderLink(link: IBlueprintPipelineLink, useOffset: boolean = true): React.ReactNode {
         return (
             <BlueprintPipelineLink
-                startPointPosX={link.startPointPosX + this.state.centerOffset.x}
-                startPointPosY={link.startPointPosY + this.state.centerOffset.y}
-                endPointPosX={link.endPointPosX + this.state.centerOffset.x}
-                endPointPosY={link.endPointPosY + this.state.centerOffset.y}
+                startPointPosX={useOffset ? link.startPointPosX + this.state.centerOffset.x : link.startPointPosX}
+                startPointPosY={useOffset ? link.startPointPosY + this.state.centerOffset.y : link.startPointPosY}
+                endPointPosX={useOffset ? link.endPointPosX + this.state.centerOffset.x : link.endPointPosX}
+                endPointPosY={useOffset ? link.endPointPosY + this.state.centerOffset.y : link.endPointPosY}
                 onContext={this.onPipelineContext.bind(this, link.uuid)}
             />
         );
@@ -441,8 +441,10 @@ export class BlueprintEditor
                     this.props.uri, {
                         ...createdLink,
                         rightNodeUUID: endNodeUUID,
-                        endPointPosX: posX - rect.left,
-                        endPointPosY: posY - rect.top
+                        startPointPosX: createdLink.startPointPosX - this.state.centerOffset.x,
+                        startPointPosY: createdLink.startPointPosY - this.state.centerOffset.y,
+                        endPointPosX: posX - rect.left - this.state.centerOffset.x,
+                        endPointPosY: posY - rect.top - this.state.centerOffset.y
                 });
             });
         }

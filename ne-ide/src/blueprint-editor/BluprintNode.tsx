@@ -100,7 +100,9 @@ const PipelinePoints: React.FC<IPipelinePoints> = (props: IPipelinePoints): Reac
     const outputPipelineRef = React.useRef<HTMLDivElement>(null);
     const inputPipelineRef = React.useRef<HTMLDivElement>(null);
     
-    const outputPipelineClick = () => {
+    const outputPipelineClick = (event: React.MouseEvent) => {
+        event.stopPropagation();
+
         const rect = outputPipelineRef.current?.getBoundingClientRect() as DOMRect;
         props.onOutputPipelinePointClick?.(rect.left, rect.top);
     }
